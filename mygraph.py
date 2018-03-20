@@ -209,6 +209,7 @@ class Graph(object):
         self._simple = simple
         self._directed = directed
         self._next_label_value = 0
+        self._tag = None
 
         for i in range(n):
             self.add_vertex(Vertex(self))
@@ -218,7 +219,18 @@ class Graph(object):
         A programmer-friendly representation of the Graph.
         :return: The string to approximate the constructor arguments of the `Graph'
         """
-        return 'Graph(directed={}, simple={}, #edges={n_edges}, #vertices={n_vertices})'.format(
+
+        tag_string = ''
+        if self._tag is not None:
+            tag_string = f'tag="{self._tag}", '
+
+        return \
+            'Graph(' \
+            + tag_string + \
+            'directed={}, ' \
+            'simple={}, ' \
+            '#edges={n_edges}, ' \
+            '#vertices={n_vertices})'.format(
             self._directed, self._simple, n_edges=len(self._e), n_vertices=len(self._v))
 
     def __str__(self) -> str:
@@ -226,7 +238,15 @@ class Graph(object):
         A user-friendly representation of this graph
         :return: A textual representation of the vertices and edges of this graph
         """
-        return 'V=[' + ", ".join(map(str, self._v)) + ']\nE=[' + ", ".join(map(str, self._e)) + ']'
+
+        tag_string = ''
+        if self._tag is not None:
+            tag_string = f'"{self._tag}"\n'
+
+        return \
+            tag_string + \
+            'V=[{0}]\n' \
+            'E=[{1}]'.format(", ".join(map(str, self._v)), ", ".join(map(str, self._e)))
 
     def __eq__(self, other):
         if isinstance(self, other.__class__):
@@ -271,6 +291,14 @@ class Graph(object):
         :return: The `set` of edges of the graph
         """
         return list(self._e)
+
+    @property
+    def tag(self):
+        return self._tag
+
+    @tag.setter
+    def tag(self, tag):
+        self._tag = tag
 
     def __iter__(self):
         """
