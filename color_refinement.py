@@ -3,7 +3,6 @@ import os
 import time
 
 from graph_io import load_graph, write_dot
-from mygraph import *
 
 GRAPHS_FOLDER = 'graphs'
 EXPORT_FOLDER = 'export'
