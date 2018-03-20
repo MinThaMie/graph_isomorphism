@@ -84,9 +84,9 @@ class TestPr2(unittest.TestCase):
         h.add_edge(e_h1)
         h.add_edge(e_h2)
         coloring = color_refinement(initialize_coloring(g + h))
-        self.assertEqual(2, coloring.__len__())
-        self.assertListEqual([v_g1, v_g3, v_h1, v_h3], coloring[0])
-        self.assertListEqual([v_g2, v_h2],             coloring[1])
+        self.assertEqual(2, coloring.num_colors)
+        self.assertListEqual([v_g1, v_g3, v_h1, v_h3], coloring.get(0))
+        self.assertListEqual([v_g2, v_h2],             coloring.get(1))
 
     def test_color_refinement_large(self):
         # g: 1 - 2 - 3 - 4 - 6
@@ -134,9 +134,9 @@ class TestPr2(unittest.TestCase):
         h.add_edge(e_h5)
         h.add_edge(e_h6)
         coloring = color_refinement(initialize_coloring(g + h))
-        self.assertEqual(6, coloring.__len__())
-        self.assertListEqual([v_g1, v_h1], coloring[0])
-        self.assertListEqual([v_g6, v_h6], coloring[1])
+        self.assertEqual(6, coloring.num_colors)
+        self.assertListEqual([v_g1, v_h1], coloring.get(0))
+        self.assertListEqual([v_g6, v_h6], coloring.get(1))
 
     def test_get_number_isomorphisms_unbalanced(self):
         g = Graph(False, 3)
