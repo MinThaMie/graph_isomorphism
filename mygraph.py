@@ -43,6 +43,7 @@ class Vertex(object):
         self._graph = graph
         self.label = label
         self._incidence = {}
+        self._color = 0
 
     def __repr__(self):
         """
@@ -111,6 +112,13 @@ class Vertex(object):
         Returns the degree of the vertex
         """
         return sum(map(len, self._incidence.values()))
+
+    @property
+    def color(self) -> int:
+        return self._color
+
+    def set_color(self, color):
+        self._color = color
 
 
 class Edge(object):
