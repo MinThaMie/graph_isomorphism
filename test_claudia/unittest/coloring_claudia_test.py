@@ -3,23 +3,34 @@ from coloring_claudia import *
 
 
 class TestPr2(unittest.TestCase):
+    def helper(self, n_colors):
+        g = Graph(False)
+        vertices = [Vertex(g, i) for i in range(n_colors)]
+        coloring = Coloring()
+        color = coloring.next_color()
+        for v in vertices:
+            coloring.set(color, v)
+        return g, vertices, coloring
+
 
     def test_create_partition(self):
-        g = Graph(False)
-        v_g1 = Vertex(g)
-        v_g2 = Vertex(g)
-        v_g3 = Vertex(g)
-        coloring = {0: [v_g1, v_g2, v_g3]}
+        g, vertices, coloring = self.helper(3)
+        v_g1, v_g2, v_g3 = vertices
+        # v_g1 = Vertex(g)
+        # v_g2 = Vertex(g)
+        # v_g3 = Vertex(g)
+        # coloring = {0: [v_g1, v_g2, v_g3]}
         new_coloring = create_partition(coloring, v_g1, v_g2)
-        self.assertEqual(2, new_coloring.__len__())
-        self.assertListEqual([v_g1, v_g2], new_coloring[0])
-        self.assertListEqual([v_g3],       new_coloring[1])
+        self.assertEqual(2, new_coloring.num_colors) #__len__())
+        self.assertListEqual([v_g1, v_g2], new_coloring.get(1))
+        self.assertListEqual([v_g3],       new_coloring.get(0))
 
     def test_initialize_coloring(self):
         # empty graph
-        g = Graph(False)
-        coloring = initialize_coloring(g)
-        self.assertEqual(0, coloring.__len__())
+        g, v, coloring = self.helper(0)
+        # g = Graph(False)
+        # coloring = initialize_coloring(g)
+        self.assertEqual(0, coloring.num_colors)
         # 1 - 2 - 3
         v_g1 = Vertex(g)
         v_g2 = Vertex(g)
@@ -125,7 +136,12 @@ class TestPr2(unittest.TestCase):
         self.assertFalse(is_bijection(no_bijection2))
 
     def test_choose_partition(self):
-        coloring = {0: [1, 2, 3, 4]}
+        G = Graph(directed=True)
+        vertices = [Vertex(G,i) for i in range(1,6)]
+        coloring = Coloring()
+        coloring.set_multiple(0, vertices[1:4])
+
+        # coloring = {0: [1, 2, 3, 4]}
         coloring1 = {0: [1, 2],
                      1: [1, 2, 3, 4],
                      2: [1, 2, 3, 4, 5, 6]}
