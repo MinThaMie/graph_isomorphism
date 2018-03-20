@@ -228,6 +228,11 @@ class Graph(object):
         """
         return 'V=[' + ", ".join(map(str, self._v)) + ']\nE=[' + ", ".join(map(str, self._e)) + ']'
 
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return self.__dict__ == other.__dict__
+        return NotImplemented
+
     def _next_label(self) -> int:
         """
         Generates unique labels for vertices within the graph
