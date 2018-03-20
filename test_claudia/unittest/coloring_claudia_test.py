@@ -1,5 +1,5 @@
 import unittest
-from practicum2 import *
+from coloring_claudia import *
 
 
 class TestPr2(unittest.TestCase):
@@ -189,7 +189,7 @@ class TestPr2(unittest.TestCase):
         g.add_edge(e1)
         g.add_edge(e2)
         g.add_edge(e3)
-        twins = get_twins(g)
+        twins = get_twins(g) #TODO: returns a tuple of lists, but a list is expected below in the test
         print(twins)
         self.assertListEqual([(v1, v2), (v1, v3), (v2, v3)], twins)
         v4 = Vertex(g)

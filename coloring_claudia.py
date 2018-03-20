@@ -187,7 +187,7 @@ def choose_vertex(partition: List["Vertex"], g: "Graph") -> "Vertex":
     :return: a vertex of graph g in the partition, `None` if no vertex of graph g could be found
     """
     for vertex in partition:
-        if g in vertex.graph:
+        if g in vertex.graphs:
             return vertex
     return None
 
@@ -203,7 +203,7 @@ def get_vertices_of_graph(partition: List["Vertex"], g: "Graph") -> List["Vertex
     """
     vertices = list()
     for v in partition:
-        if g in v.graph:
+        if g in v.graphs:
             vertices.append(v)
     return vertices
 

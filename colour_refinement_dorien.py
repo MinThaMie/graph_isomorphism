@@ -6,7 +6,7 @@ This is a module for the color refinement algorithm
 from graph_io import *
 import time
 from coloring_dorien import *
-from tools import debug
+from tools import *
 PATH = 'graphs/branching/'
 GRAPH = 'trees90.grl'
 

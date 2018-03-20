@@ -2,11 +2,11 @@
 Test file for Color Refinement Algorithm
 """
 import unittest
-from color_refinement import isomorphic
+from colour_refinement_dorien import isomorphic
 from graph_io import *
 import os
 
-PATH = './graphs/colorref'
+PATH = '../graphs/colorref'
 EXPECTED = dict()
 EXPECTED['colorref_smallexample_2_49.grl'] = {'G0G1': True}
 EXPECTED['colorref_smallexample_4_7.grl'] = {'G1G3': True, 'G0G2': None}

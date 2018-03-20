@@ -1,5 +1,5 @@
 import unittest
-from practicum2 import *
+from coloring_claudia import *
 
 
 class TestPr2(unittest.TestCase):
