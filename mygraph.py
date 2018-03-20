@@ -197,7 +197,7 @@ class Edge(object):
 
 
 class Graph(object):
-    def __init__(self, directed: bool, n: int=0, simple: bool=False):
+    def __init__(self, directed: bool = False, n: int = 0, simple: bool = False):
         """
         Creates a graph.
         :param directed: Whether the graph should behave as a directed graph.
@@ -209,6 +209,7 @@ class Graph(object):
         self._simple = simple
         self._directed = directed
         self._next_label_value = 0
+        self._tag = None
 
         for i in range(n):
             self.add_vertex(Vertex(self))
@@ -218,7 +219,18 @@ class Graph(object):
         A programmer-friendly representation of the Graph.
         :return: The string to approximate the constructor arguments of the `Graph'
         """
-        return 'Graph(directed={}, simple={}, #edges={n_edges}, #vertices={n_vertices})'.format(
+
+        tag_string = ''
+        if self._tag is not None:
+            tag_string = f'tag="{self._tag}", '
+
+        return \
+            'Graph(' \
+            + tag_string + \
+            'directed={}, ' \
+            'simple={}, ' \
+            '#edges={n_edges}, ' \
+            '#vertices={n_vertices})'.format(
             self._directed, self._simple, n_edges=len(self._e), n_vertices=len(self._v))
 
     def __str__(self) -> str:
@@ -226,7 +238,20 @@ class Graph(object):
         A user-friendly representation of this graph
         :return: A textual representation of the vertices and edges of this graph
         """
-        return 'V=[' + ", ".join(map(str, self._v)) + ']\nE=[' + ", ".join(map(str, self._e)) + ']'
+
+        tag_string = ''
+        if self._tag is not None:
+            tag_string = f'"{self._tag}"\n'
+
+        return \
+            tag_string + \
+            'V=[{0}]\n' \
+            'E=[{1}]'.format(", ".join(map(str, self._v)), ", ".join(map(str, self._e)))
+
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return self.__dict__ == other.__dict__
+        return NotImplemented
 
     def _next_label(self) -> int:
         """
@@ -256,16 +281,24 @@ class Graph(object):
     @property
     def vertices(self) -> List["Vertex"]:
         """
-        :return: The `set` of vertices of the graph
+        :return: The `list` of vertices of the graph
         """
-        return list(self._v)
+        return self._v
 
     @property
     def edges(self) -> List["Edge"]:
         """
-        :return: The `set` of edges of the graph
+        :return: The `list` of edges of the graph
         """
-        return list(self._e)
+        return self._e
+
+    @property
+    def tag(self):
+        return self._tag
+
+    @tag.setter
+    def tag(self, tag):
+        self._tag = tag
 
     def __iter__(self):
         """
@@ -293,7 +326,6 @@ class Graph(object):
         for e in vertex.incidence:
             self.del_edge(e)
         self._v.remove(vertex)
-
 
     def add_edge(self, edge: "Edge"):
         """
