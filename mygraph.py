@@ -281,16 +281,16 @@ class Graph(object):
     @property
     def vertices(self) -> List["Vertex"]:
         """
-        :return: The `set` of vertices of the graph
+        :return: The `list` of vertices of the graph
         """
-        return list(self._v)
+        return self._v
 
     @property
     def edges(self) -> List["Edge"]:
         """
-        :return: The `set` of edges of the graph
+        :return: The `list` of edges of the graph
         """
-        return list(self._e)
+        return self._e
 
     @property
     def tag(self):
@@ -326,7 +326,6 @@ class Graph(object):
         for e in vertex.incidence:
             self.del_edge(e)
         self._v.remove(vertex)
-
 
     def add_edge(self, edge: "Edge"):
         """
