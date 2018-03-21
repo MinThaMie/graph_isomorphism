@@ -3,7 +3,7 @@ Module with generally used tools
 """
 from collections import Counter
 
-DEBUG = False
+DEBUG = True
 
 
 def debug(*args):

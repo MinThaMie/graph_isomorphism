@@ -1,28 +1,28 @@
 """
 This is a module for the color refinement algorithm
+version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
-# version: 14-3-18, Dorien Meijer Cluwen
 
-from graph_io import *
 import time
-from coloring_dorien import *
+from graph_io import *
+from coloring import *
 from tools import *
-PATH = 'graphs/branching/'
-GRAPH = 'trees90.grl'
+from color_refiment_helper import *
+
+PATH = './graphs/treepaths/'
+GRAPH = 'threepaths320.gr'
 
 
-def color_refine(graph: "Graph", coloring: "Coloring"=None):
+def color_refine(coloring: "Coloring"=None) -> "Coloring":
     """
-    Do the color refinement alg.
-    :param graph: A graph G = (V,E)
+    Color Refinement Algorithm
+
+    Returns a stable coloring based on the input coloring.
+    #TODO: Also add how it does it?
     :param coloring: Initial coloring
-    :return: The input Graph 'graph' and a stable coloring alpha_i of G
+    :return: A stable coloring alpha_i of G
     """
-    # Initialize coloring (if needed)
-    if coloring is None:
-        coloring = get_degree_coloring(graph)
-
-    # Refine coloring
+    #TODO: Make recursive like Claudia's version?
     has_changed = True
     while has_changed:
         new_coloring = Coloring()
@@ -41,7 +41,7 @@ def color_refine(graph: "Graph", coloring: "Coloring"=None):
             # Check if coloring is unbalanced, then we must stop
             if unbalanced: #len(new_coloring.get(new_color)) == 1: #TODO 1 or odd?
               debug('Coloring is unbalanced')
-              return graph, new_coloring
+              return new_coloring
 
         debug('New coloring ', new_coloring)
         has_changed = (coloring.num_colors != new_coloring.num_colors)
@@ -50,7 +50,7 @@ def color_refine(graph: "Graph", coloring: "Coloring"=None):
 
     debug('No changes found')
 
-    return graph, coloring
+    return coloring
 
 
 def isomorphic(G: "Graph", H: "Graph"):
@@ -60,7 +60,8 @@ def isomorphic(G: "Graph", H: "Graph"):
     :param H: Graph H
     :return: graph G + H, True/False/None (if they are (not) isomorph or maybe)
     """
-    g2, coloring = color_refine(G + H)
+    g2 = G + H
+    coloring = color_refine(get_degree_coloring(g2))
 
     # Determine isomorphism
     status = coloring.status(G,H)
@@ -74,20 +75,20 @@ def isomorphic(G: "Graph", H: "Graph"):
 
 def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring"=None, count=True):
     """
-    Count the number of isomorphisms from G to H using branching and color refinement.
+    Returns the number of isomorphisms from G to H using branching and color refinement for the given coloring.
     :param g: Graph G
     :param h: Graph H
     :param coloring: Initial coloring
     :param count: True if want to count the number of isomorphisms, otherwise stop as soon as one is found
-    :return: The number of isomorphisms from G to H that follow the initial coloring
+    :return: The number of isomorphisms from G to H that follow the given coloring
     """
     graph = g + h
-    # Initialize coloring (if needed)
+    # Initialize coloring (if needed) #TODO: Do here or in get_number_isomorphisms?
     if coloring is None:
         coloring = get_degree_coloring(graph)
 
     # Refine the initial coloring
-    graph, coloring = color_refine(graph, coloring)
+    coloring = color_refine(coloring)
     coloring_status = coloring.status(g, h)
 
     if coloring_status == "Bijection":
@@ -96,6 +97,7 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring"=None, count=T
         return 0
 
     # Choose a color class C with |C| >= 4
+    # TODO use partion and choose_vertex methods
     num = 0
     for color in coloring.colors:
         vertices = coloring.get(color)
@@ -107,6 +109,7 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring"=None, count=T
             x = vertices_in_g[0]
             for y in vertices_in_h:
                 # Give x and y a new color (give rest the same color as they had)
+                # TODO use create_partition method?
                 new_coloring = coloring.copy()
                 new_color = new_coloring.next_color()
                 new_coloring.recolor(x, new_color, color=color)
@@ -124,27 +127,37 @@ def are_isomorphic(G: "Graph", H: "Graph"):
     return False
 
 
-def identical_colored_neighborhood(u: "Vertex", v: "Vertex", coloring: "Coloring"):
-    ncolors_u = [coloring.color(w) for w in u.neighbours]
-    ncolors_v = [coloring.color(w) for w in v.neighbours]
-    return compare(ncolors_u, ncolors_v)
+def get_number_isomorphisms(g: "Graph", h: "Graph") -> int:
+    """
+    Returns the number of isomorphisms for graph g and h.
+
+    First, the coloring is initialized by degree of the vertices. Next, the number of isomorphisms is counted by
+    applying the color-refinement algorithm and branching the
+    :param g: graph for which to determine the number of isomorphisms
+    :param h: graph for which to determine the number of isomorphisms
+    :return: The number of isomorphisms for graph g and h
+    """
+    # Preprocess #TODO: Add preprocess methods
+    if len(g) != len(h) or len(g.edges) != len(h.edges):
+        return 0
+
+    coloring = get_degree_coloring(g+h) #TODO: Do here or in count_isomporphism?
+    start = time.time()
+    num = count_isomorphism(g, h, coloring)
+    print('There are', num, 'isomorphisms')
+    print('Took', time.time() - start, 'seconds\n')
+    return num
 
 
-def get_degree_coloring(graph: "Graph"):
-    # Initialize colors to degrees
-    coloring = Coloring()
-    for v in graph.vertices:
-        coloring.set(v.degree, v)
-    debug('Init coloring ', coloring)
-    return coloring
+def get_number_automorphisms(g: "Graph") -> int:
+    """
+    Returns the number of automorphisms of graph g.
 
-
-def get_unit_coloring(graph: "Graph"):
-    coloring = Coloring()
-    for v in graph.vertices:
-        coloring.set(0, v)
-    debug('Init coloring ', coloring)
-    return coloring
+    Applies the GI-problem to itself.
+    :param g: graphs for which to determine the number of isomorphisms
+    :return: The number of automorphisms for graph g
+    """
+    return get_number_isomorphisms(g, g.deepcopy())
 
 
 if __name__ == "__main__":
@@ -155,6 +168,9 @@ if __name__ == "__main__":
 
     for i in range(len(graphs)):
         for j in range(len(graphs)):
+            if j == i:
+                start= time.time()
+                num = get_number_automorphisms(graphs[i])
             if j > i:
                 start = time.time()
                 G, isomorph = isomorphic(graphs[i], graphs[j])
@@ -163,6 +179,6 @@ if __name__ == "__main__":
                 print('There are',num,'isomorphisms')
                 print('Took',time.time()-start,'seconds\n')
 
-    with open('graphs/colorful.dot','w') as f:
-        write_dot(G,f)
+    # with open('graphs/colorful.dot','w') as f:
+    #     write_dot(G,f)
 

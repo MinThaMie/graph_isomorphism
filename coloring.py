@@ -63,12 +63,12 @@ class Coloring(object):
         for color in self.colors:
             vertices = self.get(color)
             if len(vertices) % 2 == 1:
-                return "Unbalanced"
+                return "Unbalanced" #corresponds to is_unbalanced() method
             else:
                 vertices_in_g = [v for v in vertices if v.in_graph(g)]
                 vertices_in_h = [v for v in vertices if v.in_graph(h)]
                 if len(vertices_in_g) != len(vertices_in_h):
-                    return "Unbalanced"
+                    return "Unbalanced" #In my opinion also unbalanced if not exactly half the vertices are from G
                 else:
                     if len(vertices) != 2:
                         maybe = True
@@ -76,7 +76,21 @@ class Coloring(object):
         if maybe:
             return None
         else:
-            return "Bijection"
+            return "Bijection" #responds to is_bijection method
+
+        # is_unbalanced()
+        # for k in coloring.colors:
+        #         values = coloring.get(k)
+        #         if (len(values) % 2) == 1:
+        #             return True
+        #     return False
+
+        # is_bijection
+        # for key in coloring.colors:
+        #     values = coloring.get(key)
+        #     if len(values) != 2:
+        #         return False
+        # return True
 
     def copy(self):
         new_coloring = Coloring()
