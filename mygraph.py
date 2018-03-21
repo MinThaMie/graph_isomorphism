@@ -365,20 +365,32 @@ class Graph(Hashable):
         edge.tail.incidence.remove(edge)
 
     def __add__(self, other: "Graph") -> "Graph":
-        """
-        Make a disjoint union of two graphs.
-        :param other: Graph to add to `self'.
-        :return: New graph which is a disjoint union of `self' and `other'.
-        """
-        # TODO: implementation
-        pass
+        """Make a disjoint union of two graphs.
 
-    def __iadd__(self, other: Union[Edge, Vertex]) -> "Graph":
+        :param Graph other: Graph to add to `self'.
+        :return: New graph object which is a disjoint union of `self' and `other'.
         """
-        Add either an `Edge` or `Vertex` with the += syntax.
-        :param other: The object to be added
-        :return: The modified graph
+
+        graph = Graph(n=0, simple=self.simple or other.simple, directed=self.directed or other.directed)
+
+        for vertex in self.vertices + other.vertices:
+            graph.add_vertex(vertex)
+
+        for edge in self.edges + other.edges:
+            graph.add_edge(edge)
+
+        return graph
+
+    def __iadd__(self, other: Union['Graph', Vertex, Edge]) -> "Graph":
+        """Add a `Graph`, `Vertex` or `Edge` with the += operator.
+
+        :param other: The object to be added.
+        :return: The modified graph.
         """
+
+        if isinstance(self, other.__class__):
+            return self + other
+
         if isinstance(other, Vertex):
             self.add_vertex(other)
 

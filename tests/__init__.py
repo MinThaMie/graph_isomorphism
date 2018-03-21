@@ -96,6 +96,29 @@ class Tests(unittest.TestCase):
         self.assertNotEqual(self.non_trivial_graph, self.non_trivial_graph_different_label)
         self.assertNotEqual(self.non_trivial_graph, self.non_trivial_graph_different_weight)
 
+    def test_mygraph_graph_add(self):
+        # Assert that the empty graph added to itself is itself
+        self.assertEqual(self.empty_graph, self.empty_graph + self.empty_graph)
+
+        # Assert that adding the empty graph to a non-empty graph is the non-empty graph
+        self.non_trivial_graph.tag = Graph().tag  # Get the default graph tag
+
+        self.assertEqual(self.non_trivial_graph, self.non_trivial_graph + self.empty_graph)
+        self.assertEqual(self.non_trivial_graph, self.empty_graph + self.non_trivial_graph)
+
+        # Assert that all vertices and edges of two individual non-empty graphs are in their disjoint union
+        disjoint_union = self.non_trivial_graph + self.connected_graph_order_2
+        expected_vertices = self.non_trivial_graph.vertices + self.connected_graph_order_2.vertices
+        expected_edges = self.non_trivial_graph.edges + self.connected_graph_order_2.edges
+        self.assertEqual(expected_vertices, disjoint_union.vertices)
+        self.assertEqual(expected_edges, disjoint_union.edges)
+
+        # Assert the same, but use the inline addition operator
+        self.non_trivial_graph += self.connected_graph_order_2
+        self.assertEqual(expected_vertices, self.non_trivial_graph.vertices)
+        self.assertEqual(expected_edges, self.non_trivial_graph.edges)
+
+
     def test_mygraph_graph_next_label(self):
         generated_max = max(Graph._generated_label_values, default=0)
         Graph._generated_label_values |= set(range(0, 2 * generated_max))
