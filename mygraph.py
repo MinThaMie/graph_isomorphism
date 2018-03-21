@@ -4,7 +4,7 @@ This is a module for working with directed and undirected multigraphs.
 # version: 29-01-2015, Paul Bonsma
 # version: 01-02-2017, Pieter Bos, Tariq Bontekoe
 
-from typing import List, Union, Set
+from typing import List, Union, Set, Hashable
 
 
 class GraphError(Exception):
@@ -28,20 +28,18 @@ class Vertex(object):
     except for `__str__`.
     """
 
-    def __init__(self, graph: "Graph", label=None):
-        """
-        Creates a vertex, part of `graph`, with optional label `label`.
-        (Labels of different vertices may be chosen the same; this does
-        not influence correctness of the methods, but will make the string
-        representation of the graph ambiguous.)
-        :param graph: The graph that this `Vertex` is a part of
-        :param label: Optional parameter to specify a label for the
+    def __init__(self, label=None):
+        """Instantiate a vertex with optional label `label` (labels of different vertices may be chosen the same;
+        this does not influence correctness of the methods, but will make the string representation of the graph
+        ambiguous.)
+
+        :param label: Optional parameter to specify a label for the vertex.
         """
 
         if label is None:
             label = Graph.next_label()
 
-        self._graph = graph
+        self._graphs = set()
         self.label = label
         self._incidence = {}
 
@@ -79,12 +77,13 @@ class Vertex(object):
         self._incidence[other].add(edge)
 
     @property
-    def graph(self) -> "Graph":
-        """
-        The graph of this vertex
+    def graphs(self) -> Set['Graph']:
+        """The graph this vertex has been added to.
+
         :return: The graph of this vertex
         """
-        return self._graph
+
+        return self._graphs
 
     @property
     def incidence(self) -> List["Edge"]:
@@ -127,8 +126,6 @@ class Edge(object):
         :param head: In case the graph is directed, this is the head of the arrow.
         :param weight: Optional weight of the vertex, which can be any type, but usually is a number.
         """
-        if tail.graph != head.graph:
-            raise GraphError("Can only add edges between vertices of the same graph")
 
         self._tail = tail
         self._head = head
@@ -197,7 +194,7 @@ class Edge(object):
         return self.head == vertex or self.tail == vertex
 
 
-class Graph(object):
+class Graph(Hashable):
     _generated_label_values = set()
     _next_label_value = 0
 
@@ -232,7 +229,7 @@ class Graph(object):
         self._tag = None
 
         for i in range(n):
-            self.add_vertex(Vertex(self))
+            self.add_vertex(Vertex())
 
     def __repr__(self):
         """
@@ -324,19 +321,19 @@ class Graph(object):
         return len(self._v)
 
     def add_vertex(self, vertex: "Vertex"):
-        """
-        Add a vertex to the graph.
-        :param vertex: The vertex to be added.
-        """
-        if vertex.graph != self:
-            raise GraphError("A vertex must belong to the graph it is added to")
+        """Add a vertex to the graph.
 
+        :param Vertex vertex: The vertex to be added.
+        """
+
+        vertex.graphs.add(self)
         self._v.append(vertex)
 
     def del_vertex(self, vertex: "Vertex"):
-        for e in vertex.incidence:
-            self.del_edge(e)
+        for edge in vertex.incidence:
+            self.del_edge(edge)
         self._v.remove(vertex)
+        vertex.graphs.remove(self)
 
     def add_edge(self, edge: "Edge"):
         """
@@ -389,6 +386,9 @@ class Graph(object):
             self.add_edge(other)
 
         return self
+
+    def __hash__(self) -> int:
+        return hash(self.__dict__.values())
 
     def find_edge(self, u: "Vertex", v: "Vertex") -> Set["Edge"]:
         """

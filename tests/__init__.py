@@ -1,7 +1,7 @@
 import unittest
 from copy import deepcopy
 
-from mygraph import Graph, Edge
+from mygraph import Graph, Edge, Vertex
 
 
 class Tests(unittest.TestCase):
@@ -53,6 +53,22 @@ class Tests(unittest.TestCase):
         non_trivial_graph_different_weight.add_edge(Edge(tail=edge.tail, head=edge.head, weight=1))
         non_trivial_graph_different_weight.tag = 'non_trivial_graph_different_weight'
         self.non_trivial_graph_different_weight = non_trivial_graph_different_weight
+
+    def test_mygraph_vertex_graphs(self):
+        vertex = Vertex()
+
+        self.assertEqual(set(), vertex.graphs)
+
+        self.non_trivial_graph.add_vertex(vertex)
+        self.assertTrue(self.non_trivial_graph in vertex.graphs)
+
+        self.connected_graph_order_2.add_vertex(vertex)
+        self.assertTrue(self.connected_graph_order_2 in vertex.graphs)
+        self.assertTrue(self.non_trivial_graph in vertex.graphs)
+
+        self.non_trivial_graph.del_vertex(vertex)
+        self.assertFalse(self.non_trivial_graph in vertex.graphs)
+        self.assertTrue(self.connected_graph_order_2 in vertex.graphs)
 
     def test_mygraph_graph_tag(self):
         graph = Graph()
