@@ -37,8 +37,9 @@ class Vertex(object):
         :param graph: The graph that this `Vertex` is a part of
         :param label: Optional parameter to specify a label for the
         """
+
         if label is None:
-            label = graph._next_label()
+            label = Graph.next_label()
 
         self._graph = graph
         self.label = label
@@ -197,6 +198,26 @@ class Edge(object):
 
 
 class Graph(object):
+    _generated_label_values = set()
+    _next_label_value = 0
+
+    @staticmethod
+    def next_label() -> int:
+        """Generate a unique label.
+
+        :return: A unique label.
+        """
+
+        next_label_value = Graph._next_label_value
+
+        while next_label_value in Graph._generated_label_values:
+            next_label_value += 1
+
+        Graph._generated_label_values.add(next_label_value)
+        Graph._next_label_value = next_label_value + 1
+
+        return next_label_value
+
     def __init__(self, directed: bool = False, n: int = 0, simple: bool = False):
         """
         Creates a graph.
@@ -208,7 +229,6 @@ class Graph(object):
         self._e = list()
         self._simple = simple
         self._directed = directed
-        self._next_label_value = 0
         self._tag = None
 
         for i in range(n):
@@ -252,15 +272,6 @@ class Graph(object):
         if isinstance(self, other.__class__):
             return self.__dict__ == other.__dict__
         return NotImplemented
-
-    def _next_label(self) -> int:
-        """
-        Generates unique labels for vertices within the graph
-        :return: A unique label
-        """
-        result = self._next_label_value
-        self._next_label_value += 1
-        return result
 
     @property
     def simple(self) -> bool:

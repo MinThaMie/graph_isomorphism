@@ -7,6 +7,10 @@ from mygraph import Graph, Edge
 class Tests(unittest.TestCase):
 
     def setUp(self):
+        # Prepare some vertex labels for general use
+        vertex_labels = ['spam', 'ham', 'eggs', 'foo', 'bar', 'baz', 'qux', 'quux', 'quuz', 'corge', 'grault', 'garply',
+                         'waldo', 'fred', 'plugh', 'xyzzy', 'thud']
+
         # Instantiate the empty graph
         empty_graph = Graph()
         # empty_graph.tag = 'empty_graph'  # Don't uncomment
@@ -17,6 +21,8 @@ class Tests(unittest.TestCase):
         vertices = connected_graph_order_2.vertices
         connected_graph_order_2.add_edge(Edge(tail=vertices[0], head=vertices[1]))
         connected_graph_order_2.tag = 'connected_graph_order_2'
+        for (vertex, label) in zip(connected_graph_order_2.vertices, vertex_labels):
+            vertex.label = label
         self.connected_graph_order_2 = connected_graph_order_2
 
         # Instantiate the disconnected graph of order 2, which is the complement of a connected graph of order 2
@@ -73,6 +79,14 @@ class Tests(unittest.TestCase):
         # are unequal
         self.assertNotEqual(self.non_trivial_graph, self.non_trivial_graph_different_label)
         self.assertNotEqual(self.non_trivial_graph, self.non_trivial_graph_different_weight)
+
+    def test_mygraph_graph_next_label(self):
+        generated_max = max(Graph._generated_label_values, default=0)
+        Graph._generated_label_values |= set(range(0, 2 * generated_max))
+        self.assertEqual(2 * generated_max, Graph.next_label())
+        self.assertEqual(2 * generated_max + 1, Graph._next_label_value)
+        self.assertEqual(Graph._next_label_value, Graph.next_label())
+
 
 if __name__ == '__main__':
     unittest.main()
