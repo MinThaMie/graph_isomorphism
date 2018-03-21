@@ -4,7 +4,7 @@ import tools
 filename = 'colorref_smallexample_2_49'
 
 G = load_file(filename + '.grl')
-solve(G)
+solve(G, [])
 for graph in G:
     write_file(graph)
 

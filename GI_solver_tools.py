@@ -13,46 +13,49 @@ def write_file(G):
         write_dot(G, f)
 
 
-def solve(g: list()) -> list():
-    h = preprocess(g)
-    refine(h)
+def solve(g: list(), graphs_preprocessed: list()) -> list():
+    for i in range(len(g)):
+        for j in range(len(g)):
+            if i is not j:
+                if i not in graphs_preprocessed:
+                    preprocess(g[i])
+                    graphs_preprocessed.append(i)
+                if j not in graphs_preprocessed:
+                    preprocess(g[j])
+                    graphs_preprocessed.append(j)
+                refine(g[i], g[j])
 
 
-def preprocess(g: list()) -> list():
-    preprocessesed_graphs = assign_primary_colornums(g)
-    return preprocessesed_graphs
-
-
-def assign_primary_colornums(g: list()) -> list():
-    for graph in g:
-        for vertex in graph.vertices:
-            vertex.colornum = vertex.degree
+def preprocess(g: "Graph") -> Graph:
+    g = assign_primary_colornums(g)
     return g
 
 
-def get_colornums(g: list()) -> list():
-    colorlist = []
-    for graph in g:
-        graph_colornums = []
-        for vertex in graph:
-            graph_colornums.append(vertex.colornum)
-        colorlist.append(graph_colornums)
-    return colorlist
+def assign_primary_colornums(g: "Graph") -> Graph:
+    for vertex in g.vertices:
+        vertex.colornum = vertex.degree
+    return g
 
 
-def is_omorph(g: list()) -> bool:
+def get_colornums(g: Graph) -> list():
+    graph_colornums = []
+    for vertex in g:
+        graph_colornums.append(vertex.colornum)
+    graph_colornums.append(graph_colornums)
+    return graph_colornums
+
+
+def is_omorph(g: "Graph", h: "Graph") -> bool:
     return False  # TODO check for isomorphism
 
 
-def refine(g: list()) -> list():
-    if not is_omorph(g):
-        h = deepcopy_list(g)
-        colornums_old = get_colornums(g)
+def refine(g: "Graph", h: "Graph") -> Tuple["Graph", "Graph"]:
+    if not is_omorph(g, h):
+        return g, h
 
 
-
-def deepcopy_list(l: list()) -> list():
+def deepcopy_graph(g: "Graph") -> "Graph":
     deepcopy = []
-    for element in l:
+    for element in g.vertices:
         deepcopy.append(element)
     return deepcopy
