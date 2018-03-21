@@ -8,4 +8,4 @@ solve(G)
 for graph in G:
     write_file(graph)
 
-tools.dot_to_pdf('colorful.dot', filename + '_solved.pdf', True)
+tools.dot_to_pdf('colorful.dot', filename + '_solved.pdf', False)

@@ -1,5 +1,5 @@
 from graph_io import *
-from graphingable import *
+from graph import *
 
 
 def load_file(file: str):
@@ -15,8 +15,7 @@ def write_file(G):
 
 def solve(g: list()) -> list():
     h = preprocess(g)
-    old_colorlist = get_colornums(h)
-    refine(h, old_colorlist)
+    refine(h)
 
 
 def preprocess(g: list()) -> list():
@@ -42,13 +41,18 @@ def get_colornums(g: list()) -> list():
 
 
 def is_omorph(g: list()) -> bool:
-    graph1 = g[0]
-    graph2 = g[1]
-    if graph1 == graph2:
-        return True
-    return False
+    return False  # TODO check for isomorphism
 
 
-def refine(g: list(), old_colorlist: list()) -> list():
+def refine(g: list()) -> list():
     if not is_omorph(g):
-        old_colorlist
+        h = deepcopy_list(g)
+        colornums_old = get_colornums(g)
+
+
+
+def deepcopy_list(l: list()) -> list():
+    deepcopy = []
+    for element in l:
+        deepcopy.append(element)
+    return deepcopy
