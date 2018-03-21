@@ -1,5 +1,5 @@
 from graph_io import *
-from mygraph import *
+from graphingable import *
 
 
 def load_file(file: str):
@@ -13,25 +13,25 @@ def write_file(G):
         write_dot(G, f)
 
 
-def solve(g: list()):
+def solve(g: list()) -> list():
     h = preprocess(g)
     old_colorlist = get_colornums(h)
-    check_for_isomorphism(h, old_colorlist)
+    refine(h, old_colorlist)
 
 
-def preprocess(g: list()):
-    processes_graph = assign_primary_colornums(g)
-    return processes_graph
+def preprocess(g: list()) -> list():
+    preprocessesed_graphs = assign_primary_colornums(g)
+    return preprocessesed_graphs
 
 
-def assign_primary_colornums(g: list()):
+def assign_primary_colornums(g: list()) -> list():
     for graph in g:
         for vertex in graph.vertices:
             vertex.colornum = vertex.degree
     return g
 
 
-def get_colornums(g: list()):
+def get_colornums(g: list()) -> list():
     colorlist = []
     for graph in g:
         graph_colornums = []
@@ -41,5 +41,14 @@ def get_colornums(g: list()):
     return colorlist
 
 
-def check_for_isomorphism(g: list(), old_colorlist: list()):
-    pass
+def is_omorph(g: list()) -> bool:
+    graph1 = g[0]
+    graph2 = g[1]
+    if graph1 == graph2:
+        return True
+    return False
+
+
+def refine(g: list(), old_colorlist: list()) -> list():
+    if not is_omorph(g):
+        old_colorlist

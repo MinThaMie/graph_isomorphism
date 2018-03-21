@@ -52,7 +52,7 @@ class Vertex(object):
         """
         return 'Vertex(label={}, #incident={})'.format(self.label, len(self._incidence))
 
-    def __str__(self) -> str:
+    def __str__(self) -> object:
         """
         A user-friendly representation of the vertex, that is, its label.
         :return: The string representation of the label.
@@ -152,7 +152,7 @@ class Edge(object):
         """
         return 'Edge(head={}, tail={}, weight={})'.format(self.head.label, self.tail.label, self.weight)
 
-    def __str__(self) -> str:
+    def __str__(self) -> object:
         """
         A user friendly representation of this edge
         :return: A user friendly representation of this edge
@@ -233,7 +233,7 @@ class Graph(object):
         return 'Graph(directed={}, simple={}, #edges={n_edges}, #vertices={n_vertices})'.format(
             self._directed, self._simple, n_edges=len(self._e), n_vertices=len(self._v))
 
-    def __str__(self) -> str:
+    def __str__(self) -> object:
         """
         A user-friendly representation of this graph
         :return: A textual representation of the vertices and edges of this graph
