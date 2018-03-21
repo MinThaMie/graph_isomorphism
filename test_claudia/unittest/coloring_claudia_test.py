@@ -1,5 +1,5 @@
 import unittest
-from coloring_claudia import *
+from color_refiment_helper import *
 
 
 class TestPr2(unittest.TestCase):
@@ -93,33 +93,33 @@ class TestPr2(unittest.TestCase):
         self.assertFalse(has_same_color_neighbours(v_g1, v_g4, coloring))
 
     # TODO: Rewrite
-    def test_is_unbalanced(self):
-        graph = self.create_graph_helper([[1, 2], [3, 4],[5,6]])
-        balanced = self.create_coloring_helper(graph,{0: [1, 2],
-                    1: [1, 2, 3, 4, 5, 6],
-                    2: [1, 2, 3, 4]})
-        unbalanced = self.create_coloring_helper(graph,{0: [1]})
-        unbalanced2 = self.create_coloring_helper(graph,{0: [1, 2],
-                       1: [1, 2, 3, 4, 5, 6],
-                       2: [1, 2, 3]})
-        self.assertFalse(is_unbalanced(balanced))
-        self.assertTrue(unbalanced)
-        self.assertTrue(unbalanced2)
+    # def test_is_unbalanced(self):
+    #     graph = self.create_graph_helper([[1, 2], [3, 4],[5,6]])
+    #     balanced = self.create_coloring_helper(graph,{0: [1, 2],
+    #                 1: [1, 2, 3, 4, 5, 6],
+    #                 2: [1, 2, 3, 4]})
+    #     unbalanced = self.create_coloring_helper(graph,{0: [1]})
+    #     unbalanced2 = self.create_coloring_helper(graph,{0: [1, 2],
+    #                    1: [1, 2, 3, 4, 5, 6],
+    #                    2: [1, 2, 3]})
+    #     self.assertFalse(is_unbalanced(balanced))
+    #     self.assertTrue(unbalanced)
+    #     self.assertTrue(unbalanced2)
 
     # TODO: Rewrite
-    def test_is_bijection(self):
-        graph = self.create_graph_helper([[1, 2], [3, 4]])
-        bijection = self.create_coloring_helper(graph, {0: [1, 2],
-                     2: [3, 4]})
-        no_bijection = self.create_coloring_helper(graph, {0: [1, 2],
-                        1: [1, 2, 3, 4],
-                        2: [1, 2]})
-        no_bijection2 = self.create_coloring_helper(graph,{0: [1, 2],
-                         1: [1, 2],
-                         2: [1, 2, 3, 4]})
-        self.assertTrue(bijection.status(graph,graph) == "Bijection")
-        self.assertFalse(no_bijection.status != "Bijection")
-        self.assertFalse(no_bijection2.status == "Bijection")
+    # def test_is_bijection(self):
+    #     graph = self.create_graph_helper([[1, 2], [3, 4]])
+    #     bijection = self.create_coloring_helper(graph, {0: [1, 2],
+    #                  2: [3, 4]})
+    #     no_bijection = self.create_coloring_helper(graph, {0: [1, 2],
+    #                     1: [1, 2, 3, 4],
+    #                     2: [1, 2]})
+    #     no_bijection2 = self.create_coloring_helper(graph,{0: [1, 2],
+    #                      1: [1, 2],
+    #                      2: [1, 2, 3, 4]})
+    #     self.assertTrue(bijection.status(graph,graph) == "Bijection")
+    #     self.assertFalse(no_bijection.status != "Bijection")
+    #     self.assertFalse(no_bijection2.status == "Bijection")
 
     def test_choose_color(self):
         graph = self.create_graph_helper([[1,2],[3,4],[5,6],[7,8]])

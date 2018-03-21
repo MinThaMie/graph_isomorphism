@@ -2,15 +2,15 @@
 Test file for Color Refinement Algorithm
 """
 import unittest
-from colour_refinement_dorien import isomorphic
+from color_refinement import is_isomorphisms
 from graph_io import *
 import os
 
 PATH = '../graphs/colorref'
 EXPECTED = dict()
 EXPECTED['colorref_smallexample_2_49.grl'] = {'G0G1': True}
-EXPECTED['colorref_smallexample_4_7.grl'] = {'G1G3': True, 'G0G2': None}
-EXPECTED['colorref_smallexample_6_15.grl'] = {'G0G1': True, 'G2G3': True, 'G4G5': None}
+EXPECTED['colorref_smallexample_4_7.grl'] = {'G1G3': True, 'G0G2': True}
+EXPECTED['colorref_smallexample_6_15.grl'] = {'G0G1': True, 'G2G3': True, 'G4G5': True}
 
 
 def get_expected_result(filename, g_name, h_name):
@@ -37,7 +37,7 @@ def testfile(filename):
     for i in range(len(graphs)):
         for j in range(len(graphs)):
             if j > i:
-                G, isomorph = isomorphic(graphs[i], graphs[j])
+                isomorph = is_isomorphisms(graphs[i], graphs[j])
                 expected = get_expected_result(filename, graphs[i].name, graphs[j].name)
                 message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[j].name + " in " + filename
                 results.append([expected, isomorph, message])

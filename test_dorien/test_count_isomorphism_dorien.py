@@ -2,7 +2,7 @@
 Test file for Color Refinement Algorithm
 """
 import unittest
-from colour_refinement_dorien import count_isomorphism
+from color_refinement import get_number_isomorphisms
 from graph_io import *
 import os
 
@@ -33,7 +33,7 @@ def testfile(filename):
     for i in range(len(graphs)):
         for j in range(len(graphs)):
             if j > i:
-                num = count_isomorphism(graphs[i], graphs[j])
+                num = get_number_isomorphisms(graphs[i], graphs[j], True)
                 expected = expected_result(filename, graphs[i].name, graphs[j].name)
                 message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[j].name + " in " + filename
                 results.append([expected, num, message])
@@ -46,7 +46,6 @@ class CountIsomorphismCase(unittest.TestCase):
     def test_files(self):
         files = get_files()
         for file in files:
-            print(file)
             results = testfile(file)
             for result in results:
                 self.assertEqual(result[0], result[1], result[2])

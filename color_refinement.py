@@ -1,6 +1,5 @@
-from coloring_dorien import *
+from color_refiment_helper import *
 from tools import *
-
 
 
 def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=True) -> int:
@@ -18,7 +17,7 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=
     """
     # TODO: make sure initial coloring is done
     new_coloring = color_refine(coloring)
-    coloring_status = coloring.status(g, h)
+    coloring_status = new_coloring.status(g, h)
     if coloring_status == "Unbalanced":
         return 0
     if coloring_status == "Bijection":
@@ -37,14 +36,9 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=
     return number_isomorphisms
 
 
-
-
-
-
 def color_refine(coloring: "Coloring") -> "Coloring":
     """
     Do the color refinement alg.
-    :param graph: A graph G = (V,E)
     :param coloring: Initial coloring
     :return: The input Graph 'graph' and a stable coloring alpha_i of G
     """
@@ -59,21 +53,21 @@ def color_refine(coloring: "Coloring") -> "Coloring":
                 u = vertices.pop()
                 new_coloring.set(new_color, u)
                 for v in list(vertices):
-                    if has_same_color_neignhours(u, v, coloring):
+                    if has_same_color_neighbours(u, v, coloring):
                         new_coloring.set(new_color, v)
                         vertices.remove(v)
                         unbalanced = not unbalanced
             # Check if coloring is unbalanced, then we must stop
-            if unbalanced: #len(new_coloring.get(new_color)) == 1: #TODO 1 or odd?
-              debug('Coloring is unbalanced')
-              return new_coloring
+            if unbalanced:
+                # len(new_coloring.get(new_color)) == 1:
+                # TODO 1 or odd?
+                debug('Coloring is unbalanced')
+                return new_coloring
 
         debug('New coloring ', new_coloring)
         has_changed = (coloring.num_colors != new_coloring.num_colors)
         coloring = new_coloring
-
     debug('No changes found')
-
     return coloring
 
 
@@ -85,6 +79,7 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
         applying the color-refinement algorithm and branching the
         :param g: graph for which to determine the number of isomorphisms
         :param h: graph for which to determine the number of isomorphisms
+        :param count:
         :return: The number of isomorphisms for graph g and h
         """
     if len(g) != len(h):
