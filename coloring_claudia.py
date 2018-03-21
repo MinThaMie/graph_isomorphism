@@ -5,8 +5,7 @@ from coloring import *
 from colour_refinement_dorien import get_degree_coloring, identical_colored_neighborhood
 
 
-
-def count_isomorphism(g: "Graph", h: "Graph", coloring: "dict") -> int:
+def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring") -> int:
     """
     Returns the number of isomorphisms of graph g and h for a given stable coloring. #Is the starting coloring always stable?
 
@@ -33,7 +32,7 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "dict") -> int:
     return number_isomorphisms
 
 
-def create_partition(old_coloring: "dict", vertex1: "Vertex", vertex2: "Vertex") -> "dict":
+def create_partition(old_coloring: "Coloring", vertex1: "Vertex", vertex2: "Vertex") -> "Coloring":
     """
     Returns a new coloring where both vertices are in a new partition and removed from the one they belonged to.
 
@@ -42,36 +41,42 @@ def create_partition(old_coloring: "dict", vertex1: "Vertex", vertex2: "Vertex")
     :param vertex2: vertex to be in the separate partition
     :return: a new coloring with vertex1 and vertex2 as a seperate partition
     """
-    new_coloring = {}
-    new_partition = list()
-    new_partition.append(vertex1)
-    new_partition.append(vertex2)
-    new_coloring[0] = new_partition
-    for key in old_coloring.keys():
-        vertices = list(old_coloring[key])
-        if vertex1 in vertices:
-            vertices.remove(vertex1)
-            vertices.remove(vertex2)
-        new_coloring[key + 1] = list(vertices)
+    # new_coloring = {}
+    # new_partition = list()
+    # new_partition.append(vertex1)
+    # new_partition.append(vertex2)
+    # new_coloring[0] = new_partition
+    # for key in old_coloring.keys():
+    #     vertices = list(old_coloring[key])
+    #     if vertex1 in vertices:
+    #         vertices.remove(vertex1)
+    #         vertices.remove(vertex2)
+    #     new_coloring[key + 1] = list(vertices)
+    # return new_coloring
+    new_coloring = old_coloring.copy()
+    new_color = new_coloring.next_color()
+    new_coloring.recolor(vertex1, new_color)
+    new_coloring.recolor(vertex2, new_color)
     return new_coloring
 
 
-def initialize_coloring(g: "Graph") -> dict:
+def initialize_coloring(g: "Graph") -> "Coloring":
     """
     Creates an initial coloring where the vertices with the same degree are in the same partition.
 
     :param g: graph on which the coloring needs to be applied
     :return: an initial coloring of graph g
     """
-    coloring = {}
-    for vertex in g.vertices:
-        if vertex.degree not in coloring.keys():
-            coloring[vertex.degree] = []
-        coloring[vertex.degree].append(vertex)
-    return coloring
+    # coloring = {}
+    # for vertex in g.vertices:
+    #     if vertex.degree not in coloring.keys():
+    #         coloring[vertex.degree] = []
+    #     coloring[vertex.degree].append(vertex)
+    # return coloring
+    return get_degree_coloring(g)
 
 
-def color_refinement(old_coloring: "dict") -> "dict":
+def color_refinement(old_coloring: "Coloring") -> "Coloring":
     """
     Returns a stable coloring based on the input coloring.
 
@@ -82,21 +87,22 @@ def color_refinement(old_coloring: "dict") -> "dict":
     :param old_coloring:
     :return: a stable coloring
     """
-    new_coloring = {}
-    colornr = 0
-    for key in old_coloring.keys():
-        vertices = list(old_coloring[key])
+    new_coloring = Coloring()
+    colornr = new_coloring.next_color()
+    for key in old_coloring.colors:
+        vertices = old_coloring.get(key) #get() does list copy
         while len(vertices) > 0:
             u = vertices.pop(0)
-            if colornr not in new_coloring.keys():
-                new_coloring[colornr] = []
-            new_coloring[colornr].append(u)
+            # if colornr not in new_coloring.keys():
+            #     new_coloring[colornr] = []
+            # new_coloring[colornr].append(u)
+            new_coloring.set(colornr, u)
             for v in list(vertices):
                 if has_same_color_neignhours(u, v, old_coloring):
-                    new_coloring[colornr].append(v)
+                    new_coloring.set(colornr,v)
                     vertices.remove(v)
-            colornr = colornr + 1
-    changed = len(old_coloring.keys()) != len(new_coloring.keys())
+            colornr = new_coloring.next_color()
+    changed = old_coloring.num_colors != new_coloring.num_colors
     if changed:
         if is_unbalanced(new_coloring):
             return new_coloring
@@ -105,7 +111,7 @@ def color_refinement(old_coloring: "dict") -> "dict":
         return new_coloring
 
 
-def has_same_color_neignhours(u: "Vertex", v: "Vertex", coloring: "dict") -> bool:
+def has_same_color_neignhours(u: "Vertex", v: "Vertex", coloring: "Coloring") -> bool:
     """
     Returns whether the vertices u and v have the same colored neighbourhood for the given coloring.
 
@@ -114,9 +120,10 @@ def has_same_color_neignhours(u: "Vertex", v: "Vertex", coloring: "dict") -> boo
     :param coloring: coloring
     :return: `True` if the vertices have the same colored neighbourhood, `False` otherwise
     """
-    color_u = [find_key(w, coloring) for w in u.neighbours]
-    color_v = [find_key(w, coloring) for w in v.neighbours]
-    return Counter(color_u) == Counter(color_v)
+    return identical_colored_neighborhood(u,v,coloring)
+    # color_u = [find_key(w, coloring) for w in u.neighbours]
+    # color_v = [find_key(w, coloring) for w in v.neighbours]
+    # return Counter(color_u) == Counter(color_v)
 
 
 def find_key(value, dictionary: "dict"):
@@ -133,7 +140,7 @@ def find_key(value, dictionary: "dict"):
     return None
 
 
-def is_unbalanced(coloring: "dict") -> bool:
+def is_unbalanced(coloring: "Coloring") -> bool:
     """
     Returns whether the coloring is balanced.
 
@@ -141,14 +148,14 @@ def is_unbalanced(coloring: "dict") -> bool:
     :param coloring:
     :return: `True` if the coloring is unbalanced, `False` if the coloring is balanced
     """
-    for k in coloring.keys():
-        values = coloring[k]
+    for k in coloring.colors:
+        values = coloring.get(k)
         if (len(values) % 2) == 1:
             return True
     return False
 
 
-def is_bijection(coloring: "dict") -> bool:
+def is_bijection(coloring: "Coloring") -> bool:
     """
     Returns whether the coloring defines a bijection.
 
@@ -158,14 +165,14 @@ def is_bijection(coloring: "dict") -> bool:
     :param coloring:
     :return: `True` if the coloring defines a bijection, `False` otherwise
     """
-    for key in coloring.keys():
-        values = coloring[key]
+    for key in coloring.colors:
+        values = coloring.get(key)
         if len(values) != 2:
             return False
     return True
 
 
-def choose_partition(coloring: "dict") -> List["Vertex"]:
+def choose_partition(coloring: "Coloring") -> List["Vertex"]:
     """
     Selects a partition with at least four vertices.
 
@@ -173,8 +180,8 @@ def choose_partition(coloring: "dict") -> List["Vertex"]:
     :param coloring:
     :return: a partition with at least four vertices, `None` if no partition could be found
     """
-    for key in coloring.keys():
-        values = list(coloring[key])
+    for key in coloring.colors:
+        values = list(coloring.get(key))
         if len(values) >= 4 and len(values) % 2 == 0:
             return values
     return []
@@ -209,6 +216,8 @@ def get_vertices_of_graph(partition: List["Vertex"], g: "Graph") -> List["Vertex
         if g in v.graphs:
             vertices.append(v)
     return vertices
+    #Same as `return [v for v in partition if g in v.graphs]
+    #Or equivalently [v for v in partion if v.in_graph(G)]
 
 
 # def is_isomorphic(g: "Graph", h: "Graph"):
