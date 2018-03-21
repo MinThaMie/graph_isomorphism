@@ -7,7 +7,7 @@ from graph_io import load_graph, write_dot
 GRAPHS_FOLDER = 'graphs'
 EXPORT_FOLDER = 'export'
 
-FILE_NAME = 'torus24'
+FILE_NAME = 'colorref_smallexample_4_16'
 
 
 def main():
@@ -25,8 +25,10 @@ def main():
                 colored_sets.update(new_colorsets)
                 some_change = True
         changed = some_change
+    total_time = time.time() - start_time
+
     export_graph(graphs[g], g)
-    print("Time: " + str(time.time() - start_time))
+    print("Time: " + str(total_time))
     print("Isomorphs: " + str(count(colored_sets)))
     # export_graphs(graphs)
 
@@ -53,6 +55,7 @@ def initial_coloring(graph, color):
 
 def refine(colorset, color):
     v0 = colorset.pop()
+    temp_set = set()
     new_colorsets = {}
     for i in range(1, len(colorset)):
         vertex = colorset.pop()
@@ -75,14 +78,17 @@ def refine(colorset, color):
                 vertex.set_color(color)
                 color += 1
         else:
-            colorset.add(vertex)
+            temp_set.add(vertex)
+    for temp in temp_set:
+        colorset.add(temp)
+    colorset.add(v0)
     return new_colorsets
 
 
 def get_neighbour_colors(vertex):
-    v_colors = set()
+    v_colors = []
     for n in vertex.neighbours:
-        v_colors.add(n.color)
+        v_colors.append(n.color)
     return v_colors
 
 
