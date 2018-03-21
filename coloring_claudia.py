@@ -1,18 +1,18 @@
 from graph_io import *
 from collections import Counter
 from graph import *
-from coloring_dorien import *
+from coloring import *
 from colour_refinement_dorien import get_degree_coloring, identical_colored_neighborhood
 
 
 def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring") -> int:
     """
-    Returns the number of isomorphisms of graph g and h for a given stable coloring.
+    Returns the number of isomorphisms of graph g and h for a given stable coloring. #Is the starting coloring always stable?
 
     If the coloring is unbalanced, it will return 0.
     If the coloring defines a bijection, it will return 1.
     If neither applies, a partition is chosen from which a vertex of graph g is mapped to all possible vertices of graph
-    h in the same partition. For each mapping, the number of isomorphisms is calculated and summed.
+    h in the same partition. For each mapping, the number of isomorphisms is calculated and summed. #You normally tell what the method does, not how
     :param g: first graph to compare
     :param h: second graph to compare
     :param coloring: stable coloring of graph g and h

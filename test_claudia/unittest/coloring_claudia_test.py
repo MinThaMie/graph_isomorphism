@@ -103,43 +103,48 @@ class TestPr2(unittest.TestCase):
         self.assertIsNone(find_key(5, dictionary))
 
     def test_is_unbalanced(self):
-        balanced = {0: [1, 2],
+        graph = self.create_graph_helper([[1, 2], [3, 4],[5,6]])
+        balanced = self.create_coloring_helper(graph,{0: [1, 2],
                     1: [1, 2, 3, 4, 5, 6],
-                    2: [1, 2, 3, 4]}
-        unbalanced = {0: [1]}
-        unbalanced2 = {0: [1, 2],
+                    2: [1, 2, 3, 4]})
+        unbalanced = self.create_coloring_helper(graph,{0: [1]})
+        unbalanced2 = self.create_coloring_helper(graph,{0: [1, 2],
                        1: [1, 2, 3, 4, 5, 6],
-                       2: [1, 2, 3]}
-        self.assertFalse(is_unbalanced(balanced)) #TODO How to fix? My balanced method also checks if half of the vertex are from 1 graph and half from the other
+                       2: [1, 2, 3]})
+        self.assertFalse(is_unbalanced(balanced))
         self.assertTrue(unbalanced)
         self.assertTrue(unbalanced2)
 
     def test_is_bijection(self):
-        bijection = {0: [1, 2],
+        graph = self.create_graph_helper([[1, 2], [3, 4]])
+        bijection = self.create_coloring_helper(graph, {0: [1, 2],
                      1: [1, 2],
-                     2: [1, 2]}
-        no_bijection = {0: [1, 2],
+                     2: [1, 2]})
+        no_bijection = self.create_coloring_helper(graph, {0: [1, 2],
                         1: [1, 2, 3, 4],
-                        2: [1, 2]}
-        no_bijection2 = {0: [1, 2],
+                        2: [1, 2]})
+        no_bijection2 = self.create_coloring_helper(graph,{0: [1, 2],
                          1: [1, 2],
-                         2: [1, 2, 3, 4]}
+                         2: [1, 2, 3, 4]})
         self.assertTrue(is_bijection(bijection))
         self.assertFalse(is_bijection(no_bijection))
         self.assertFalse(is_bijection(no_bijection2))
 
     def test_choose_partition(self):
-        graph = Graph(directed=False, n=7)
-        coloring = self.create_coloring_helper(graph, {0: [1, 2, 3, 4]})
+        graph = self.create_graph_helper([[1,2],[3,4],[5,6],[7,8]])
+        vertices = sorted(graph.vertices, key=Vertex.__str__)
 
-        # coloring = {0: [1, 2, 3, 4]}
-        coloring1 = {0: [1, 2],
+        coloring = self.create_coloring_helper(graph, {0: [1, 2, 3, 4]})
+        self.assertListEqual(vertices[:4], choose_partition(coloring))
+
+        coloring1 = self.create_coloring_helper(graph, {0: [1, 2],
                      1: [1, 2, 3, 4],
-                     2: [1, 2, 3, 4, 5, 6]} #TODO: Cant have a vertex with more than one color
-        coloring2 = {0: [1, 2],
-                     1: [1, 2, 3, 4, 5]}
-        self.assertListEqual([1, 2, 3, 4], choose_partition(coloring))
-        self.assertListEqual([1, 2, 3, 4], choose_partition(coloring1))
+                     2: [1, 2, 3, 4, 5, 6]})
+        self.assertListEqual(vertices[:4], sorted(choose_partition(coloring1), key=Vertex.__str__))
+
+
+        coloring2 = self.create_coloring_helper(graph, {0: [1, 2],
+                     1: [1, 2, 3, 4, 5]})
         self.assertListEqual([],           choose_partition(coloring2))
 
     def test_choose_vertex(self):
@@ -192,17 +197,58 @@ class TestPr2(unittest.TestCase):
         v3 = Vertex(g)
         e1 = Edge(v1, v2)
         e2 = Edge(v1, v3)
-        e3 = Edge(v2, v3)
         g.add_edge(e1)
         g.add_edge(e2)
+        twins, false_twins = get_twins(g)
+        self.assertListEqual([], twins)
+        self.assertListEqual([(v2, v3)], false_twins)
+        e3 = Edge(v2, v3)
         g.add_edge(e3)
-        twins = get_twins(g) #TODO: returns a tuple of lists, but a list is expected below in the test
-        print(twins)
+        twins, false_twins = get_twins(g)
         self.assertListEqual([(v1, v2), (v1, v3), (v2, v3)], twins)
+        self.assertListEqual([], false_twins)
         v4 = Vertex(g)
         e4 = Edge(v3, v4)
         g.add_edge(e4)
-        self.assertListEqual([(v1, v2)], get_twins(g))
+        twins, false_twins = get_twins(g)
+        self.assertListEqual([(v1, v2)], twins)
+        self.assertListEqual([], false_twins)
+
+    def test_get_twins_module(self):
+        g = Graph(False)
+        v0 = Vertex(g)
+        v1 = Vertex(g)
+        v2 = Vertex(g)
+        v3 = Vertex(g)
+        v4 = Vertex(g)
+        v5 = Vertex(g)
+        v6 = Vertex(g)
+        v7 = Vertex(g)
+        e1 = Edge(v0, v1)
+        e2 = Edge(v0, v2)
+        e3 = Edge(v0, v3)
+        e4 = Edge(v1, v2)
+        e5 = Edge(v1, v3)
+        e6 = Edge(v1, v4)
+        e7 = Edge(v2, v3)
+        e8 = Edge(v4, v5)
+        e9 = Edge(v5, v6)
+        e10 = Edge(v5, v7)
+        e11 = Edge(v6, v7)
+        g.add_edge(e1)
+        g.add_edge(e2)
+        g.add_edge(e3)
+        g.add_edge(e4)
+        g.add_edge(e5)
+        g.add_edge(e6)
+        g.add_edge(e7)
+        g.add_edge(e8)
+        g.add_edge(e9)
+        g.add_edge(e10)
+        g.add_edge(e11)
+        twins, false_twins = get_twins(g)
+        self.assertListEqual([(v0, v2), (v0, v3), (v2, v3), (v6, v7)], twins)
+        self.assertListEqual([], false_twins)
 
 if __name__ == '__main__':
     unittest.main()
