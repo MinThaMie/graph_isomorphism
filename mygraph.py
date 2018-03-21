@@ -120,8 +120,8 @@ class Edge(object):
     """
 
     def __init__(self, tail: Vertex, head: Vertex, weight=None):
-        """
-        Creates an edge between vertices `tail` and `head`
+        """Creates an edge with optional weight between two vertices.
+
         :param tail: In case the graph is directed, this is the tail of the arrow.
         :param head: In case the graph is directed, this is the head of the arrow.
         :param weight: Optional weight of the vertex, which can be any type, but usually is a number.
@@ -132,15 +132,15 @@ class Edge(object):
         self._weight = weight
 
     def __repr__(self):
-        """
-        A programmer-friendly representation of the edge.
+        """A programmer-friendly representation of the edge.
+
         :return: The string to approximate the constructor arguments of the `Edge'
         """
         return 'Edge(head={}, tail={}, weight={})'.format(self.head.label, self.tail.label, self.weight)
 
     def __str__(self) -> str:
-        """
-        A user friendly representation of this edge
+        """A user friendly representation of this edge.
+
         :return: A user friendly representation of this edge
         """
         return '({}, {})'.format(str(self.tail), str(self.head))
@@ -246,9 +246,8 @@ class Graph(Hashable):
             + tag_string + \
             'directed={}, ' \
             'simple={}, ' \
-            '#edges={n_edges}, ' \
-            '#vertices={n_vertices})'.format(
-            self._directed, self._simple, n_edges=len(self._e), n_vertices=len(self._v))
+            '#edges={}, ' \
+            '#vertices={})'.format(self._directed, self._simple, len(self._e), len(self._v))
 
     def __str__(self) -> str:
         """
@@ -336,10 +335,10 @@ class Graph(Hashable):
         vertex.graphs.remove(self)
 
     def add_edge(self, edge: "Edge"):
-        """
-        Add an edge to the graph. And if necessary also the vertices.
-        Includes some checks in case the graph should stay simple.
-        :param edge: The edge to be added
+        """Add an edge to the graph. If necessary, also add the vertices. Some checks if the graph should stay simple
+        are included.
+
+        :param Edge edge: The edge to be added.
         """
 
         if self._simple:
@@ -426,42 +425,3 @@ class Graph(Hashable):
         """
         return v in u.neighbours and (not self.directed or any(e.head == v for e in u.incidence))
 
-
-class UnsafeGraph(Graph):
-    @property
-    def vertices(self) -> List["Vertex"]:
-        return self._v
-
-    @property
-    def edges(self) -> List["Edge"]:
-        return self._e
-
-    def add_vertex(self, vertex: "Vertex"):
-        self._v.add(vertex)
-
-    def add_edge(self, edge: "Edge"):
-        self._e.add(edge)
-
-        edge.head._add_incidence(edge)
-        edge.tail._add_incidence(edge)
-
-    def find_edge(self, u: "Vertex", v: "Vertex") -> List["Edge"]:
-        left = u._incidence.get(v, None)
-        right = None
-
-        if not self._directed:
-            right = v._incidence.get(u, None)
-
-        if left is None and right is None:
-            return set()
-
-        if left is None:
-            return right
-
-        if right is None:
-            return left
-
-        return left | right
-
-    def is_adjacent(self, u: "Vertex", v: "Vertex") -> bool:
-        return v in u._incidence or (not self._directed and u in v._incidence)
