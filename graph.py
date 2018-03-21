@@ -356,6 +356,11 @@ class Graph(object):
             G.add_edge(e_copy)
         return G
 
+    def find_vertex(self, label: int) -> "Vertex":
+        for v in self._v:
+            if v.label == label:
+                return v
+
     def __add__(self, other: "Graph") -> "Graph":
         """
         Make a disjoint union of two graphs.

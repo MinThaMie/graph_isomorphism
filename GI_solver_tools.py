@@ -37,7 +37,7 @@ def assign_primary_colornums(g: "Graph") -> Graph:
     return g
 
 
-def get_colornums(g: Graph) -> list():
+def get_colornums(g: "Graph") -> list():
     graph_colornums = []
     for vertex in g:
         graph_colornums.append(vertex.colornum)
@@ -46,16 +46,14 @@ def get_colornums(g: Graph) -> list():
 
 
 def is_omorph(g: "Graph", h: "Graph") -> bool:
-    return False  # TODO check for isomorphism
+    isomorph = False if len(g.vertices) is not len(h.vertices) else True
+    return isomorph  # TODO check for isomorphism
 
 
 def refine(g: "Graph", h: "Graph") -> Tuple["Graph", "Graph"]:
-    if not is_omorph(g, h):
+    if is_omorph(g, h):
+        print("whoohoo isomorphism found")
         return g, h
+    g_new = g.deepcopy()
+    h_new = h.deepcopy()
 
-
-def deepcopy_graph(g: "Graph") -> "Graph":
-    deepcopy = []
-    for element in g.vertices:
-        deepcopy.append(element)
-    return deepcopy
