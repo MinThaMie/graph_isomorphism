@@ -37,6 +37,7 @@ class Vertex(object):
         :param graph: The graph that this `Vertex` is a part of
         :param label: Optional parameter to specify a label for the
         """
+        self._colornum = None
         if label is None:
             label = graph._next_label()
 
@@ -111,6 +112,17 @@ class Vertex(object):
         Returns the degree of the vertex
         """
         return sum(map(len, self._incidence.values()))
+
+    @property
+    def colornum(self) -> int:
+        """
+        Returns the number representing the color of the vertex
+        """
+        return self._colornum
+
+    @colornum.setter
+    def colornum(self, value):
+        self._colornum = value
 
 
 class Edge(object):
@@ -197,7 +209,7 @@ class Edge(object):
 
 
 class Graph(object):
-    def __init__(self, directed: bool, n: int=0, simple: bool=False):
+    def __init__(self, directed: bool, n: int = 0, simple: bool = False):
         """
         Creates a graph.
         :param directed: Whether the graph should behave as a directed graph.
@@ -227,6 +239,12 @@ class Graph(object):
         :return: A textual representation of the vertices and edges of this graph
         """
         return 'V=[' + ", ".join(map(str, self._v)) + ']\nE=[' + ", ".join(map(str, self._e)) + ']'
+
+    def __eq__(self, o: object) -> bool:
+        """Overrides the default implementation"""
+        if isinstance(self, o.__class__):
+            return self.__dict__ == o.__dict__
+        return False
 
     def _next_label(self) -> int:
         """
@@ -293,7 +311,6 @@ class Graph(object):
         for e in vertex.incidence:
             self.del_edge(e)
         self._v.remove(vertex)
-
 
     def add_edge(self, edge: "Edge"):
         """
