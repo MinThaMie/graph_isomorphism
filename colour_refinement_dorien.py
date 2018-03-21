@@ -34,7 +34,7 @@ def color_refine(coloring: "Coloring"=None) -> "Coloring":
                 u = vertices.pop()
                 new_coloring.set(new_color, u)
                 for v in list(vertices):
-                    if identical_colored_neighborhood(u, v, coloring):
+                    if has_same_color_neighbours(u, v, coloring):
                         new_coloring.set(new_color, v)
                         vertices.remove(v)
                         unbalanced = not unbalanced
@@ -61,7 +61,7 @@ def isomorphic(G: "Graph", H: "Graph"):
     :return: graph G + H, True/False/None (if they are (not) isomorph or maybe)
     """
     g2 = G + H
-    coloring = color_refine(get_degree_coloring(g2))
+    coloring = color_refine(initialize_coloring(g2))
 
     # Determine isomorphism
     status = coloring.status(G,H)
@@ -85,7 +85,7 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring"=None, count=T
     graph = g + h
     # Initialize coloring (if needed) #TODO: Do here or in get_number_isomorphisms?
     if coloring is None:
-        coloring = get_degree_coloring(graph)
+        coloring = initialize_coloring(graph)
 
     # Refine the initial coloring
     coloring = color_refine(coloring)
@@ -141,7 +141,7 @@ def get_number_isomorphisms(g: "Graph", h: "Graph") -> int:
     if len(g) != len(h) or len(g.edges) != len(h.edges):
         return 0
 
-    coloring = get_degree_coloring(g+h) #TODO: Do here or in count_isomporphism?
+    coloring = initialize_coloring(g + h) #TODO: Do here or in count_isomporphism?
     start = time.time()
     num = count_isomorphism(g, h, coloring)
     print('There are', num, 'isomorphisms')

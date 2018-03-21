@@ -89,19 +89,10 @@ class TestPr2(unittest.TestCase):
         v_g1, v_g2, v_g3, v_g4, v_g5 = g.vertices
         coloring = self.create_coloring_helper(g, {0: [1], 1: [4,5], 2: [2], 3:[3]})
 
-        self.assertTrue(has_same_color_neignhours(v_g4, v_g5, coloring))
-        self.assertFalse(has_same_color_neignhours(v_g1, v_g4, coloring))
+        self.assertTrue(has_same_color_neighbours(v_g4, v_g5, coloring))
+        self.assertFalse(has_same_color_neighbours(v_g1, v_g4, coloring))
 
-    def test_find_key(self):
-        dictionary = {0: [0, 1, 2],
-                      1: [1, 2, 3],
-                      2: [4]}
-        self.assertEqual(0, find_key(0, dictionary))
-        self.assertEqual(0, find_key(1, dictionary))
-        self.assertEqual(1, find_key(3, dictionary))
-        self.assertEqual(2, find_key(4, dictionary))
-        self.assertIsNone(find_key(5, dictionary))
-
+    # TODO: Rewrite
     def test_is_unbalanced(self):
         graph = self.create_graph_helper([[1, 2], [3, 4],[5,6]])
         balanced = self.create_coloring_helper(graph,{0: [1, 2],
@@ -115,37 +106,37 @@ class TestPr2(unittest.TestCase):
         self.assertTrue(unbalanced)
         self.assertTrue(unbalanced2)
 
+    # TODO: Rewrite
     def test_is_bijection(self):
         graph = self.create_graph_helper([[1, 2], [3, 4]])
         bijection = self.create_coloring_helper(graph, {0: [1, 2],
-                     1: [1, 2],
-                     2: [1, 2]})
+                     2: [3, 4]})
         no_bijection = self.create_coloring_helper(graph, {0: [1, 2],
                         1: [1, 2, 3, 4],
                         2: [1, 2]})
         no_bijection2 = self.create_coloring_helper(graph,{0: [1, 2],
                          1: [1, 2],
                          2: [1, 2, 3, 4]})
-        self.assertTrue(is_bijection(bijection))
-        self.assertFalse(is_bijection(no_bijection))
-        self.assertFalse(is_bijection(no_bijection2))
+        self.assertTrue(bijection.status(graph,graph) == "Bijection")
+        self.assertFalse(no_bijection.status != "Bijection")
+        self.assertFalse(no_bijection2.status == "Bijection")
 
-    def test_choose_partition(self):
+    def test_choose_color(self):
         graph = self.create_graph_helper([[1,2],[3,4],[5,6],[7,8]])
         vertices = sorted(graph.vertices, key=Vertex.__str__)
 
         coloring = self.create_coloring_helper(graph, {0: [1, 2, 3, 4]})
-        self.assertListEqual(vertices[:4], choose_partition(coloring))
+        self.assertListEqual(vertices[:4], choose_color(coloring))
 
         coloring1 = self.create_coloring_helper(graph, {0: [1, 2],
                      1: [1, 2, 3, 4],
                      2: [1, 2, 3, 4, 5, 6]})
-        self.assertListEqual(vertices[:4], sorted(choose_partition(coloring1), key=Vertex.__str__))
+        self.assertListEqual(vertices[:4], sorted(choose_color(coloring1), key=Vertex.__str__))
 
 
         coloring2 = self.create_coloring_helper(graph, {0: [1, 2],
                      1: [1, 2, 3, 4, 5]})
-        self.assertListEqual([],           choose_partition(coloring2))
+        self.assertListEqual([],           choose_color(coloring2))
 
     def test_choose_vertex(self):
         g = Graph(False)
@@ -171,7 +162,7 @@ class TestPr2(unittest.TestCase):
         self.assertListEqual([],          get_vertices_of_graph([v_g, v_g2], h))
         self.assertListEqual([],          get_vertices_of_graph([],          g))
 
-    def test_is_twins(self):
+    def test_are_twins(self):
         g = Graph(False)
         v1 = Vertex(g)
         v2 = Vertex(g)
@@ -182,13 +173,13 @@ class TestPr2(unittest.TestCase):
         g.add_edge(e1)
         g.add_edge(e2)
         g.add_edge(e3)
-        self.assertTrue(is_twins(v1, v2))
-        self.assertTrue(is_twins(v1, v3))
-        self.assertTrue(is_twins(v2, v3))
+        self.assertTrue(are_twins(v1, v2))
+        self.assertTrue(are_twins(v1, v3))
+        self.assertTrue(are_twins(v2, v3))
         v4 = Vertex(g)
         e4 = Edge(v3, v4)
         g.add_edge(e4)
-        self.assertFalse(is_twins(v3, v4))
+        self.assertFalse(are_twins(v3, v4))
 
     def test_get_twins(self):
         g = Graph(False)
