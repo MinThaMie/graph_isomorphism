@@ -1,6 +1,13 @@
+"""
+This is a module for the color refinement algorithm
+version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
+"""
 from color_refiment_helper import *
-from tools import *
+import time
+from graph_io import *
 
+PATH = './graphs/treepaths/'
+GRAPH = 'threepaths160.gr'
 
 def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=True) -> int:
     """
@@ -108,3 +115,23 @@ def get_number_automorphisms(g: "Graph") -> int:
     return get_number_isomorphisms(g, g.deepcopy(), True)
 
 
+if __name__ == "__main__":
+    with open(PATH + GRAPH) as f:
+        L = load_graph(f,read_list=True)
+
+    graphs = L[0]
+
+    for i in range(len(graphs)):
+        for j in range(len(graphs)):
+            if j == i:
+                start= time.time()
+                num = get_number_automorphisms(graphs[i])
+                print('There are', num, 'automorphisms')
+                print('Took', time.time() - start, 'seconds\n')
+            if j > i:
+                start = time.time()
+                isomorph = is_isomorphisms(graphs[i], graphs[j])
+                print(graphs[i].name,'and',graphs[j].name,'isomorphic?',isomorph)
+                num = count_isomorphism(graphs[i], graphs[j])
+                print('There are',num,'isomorphisms')
+                print('Took',time.time()-start,'seconds\n')

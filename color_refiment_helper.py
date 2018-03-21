@@ -1,8 +1,20 @@
 """
 Module with helper methods for the Color Refinement Algorithm
 """
-from tools import *
 from coloring import *
+from collections import Counter
+
+DEBUG = False
+
+
+def debug(*args):
+    if DEBUG:
+        print(*args)
+
+
+def compare(s: "List", t: "List"):
+    return Counter(s) == Counter(t)
+
 
 def create_partition(old_coloring: "Coloring", vertex1: "Vertex", vertex2: "Vertex") -> "Coloring":
     """
