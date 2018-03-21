@@ -12,7 +12,7 @@ Includes functions for reading and writing graphs, in a very simple readable for
 import sys
 from typing import IO, Tuple, List, Union
 
-from graphs.graph import Graph, Edge
+from graph import Graph, Edge
 
 DEFAULT_COLOR_SCHEME = "paired12"
 NUM_COLORS = 12
@@ -32,7 +32,7 @@ def read_line(f: IO[str]) -> str:
     return line
 
 
-def read_graph(graphclass, f: IO[str]) -> Tuple[Graph, List[str], bool]:
+def read_graph(graphclass, f: IO[str], name: str="G") -> Tuple[Graph, List[str], bool]:
     """
     Read a graph from a file
     :param graphclass: The class of the graph
@@ -45,7 +45,7 @@ def read_graph(graphclass, f: IO[str]) -> Tuple[Graph, List[str], bool]:
         try:
             line = read_line(f)
             n = int(line)
-            graph = graphclass(directed=False, n=n)
+            graph = graphclass(directed=False, n=n, name=name)
             break
         except ValueError:
             if len(line) > 0 and line[-1] == '\n':
@@ -91,7 +91,7 @@ def read_graph_list(graph_class, f: IO[str]) -> Tuple[List[Graph], List[str]]:
     cont = True
 
     while cont:
-        graph, new_options, cont = read_graph(graph_class, f)
+        graph, new_options, cont = read_graph(graph_class, f, name='G'+ str(len(graphs)))
         options += new_options
         graphs.append(graph)
 
@@ -244,9 +244,54 @@ def write_dot(graph: Graph, f: IO[str], directed=False):
 
     f.write('}')
 
+
+def read_expected_result(f: IO[str]):
+    expected = dict()
+
+    while True:
+        # Read file name
+        try:
+            filename = read_line(f)
+            filename = filename[:filename.find(':')] #remove ':  ' from filename
+        except Exception:
+            pass
+
+        # Read results for this file
+        line = read_line(f)
+        expect = dict()
+        try:
+            while line.startswith('['):
+                comma = line.find(',')
+                end = line.find(']')
+                slash = line.find('/')
+
+                graph1 = 'G' + line[1:comma].strip()
+                graph2 = 'G' + line[comma + 1: end].strip()
+                if slash == -1:
+                    value = line[end + 1:].strip()
+                else:
+                    value = line[slash + 1:].strip()
+                try:
+                    value = int(value)
+                except Exception:
+                    pass
+
+                expect[graph1 + graph2] = value
+                line = read_line(f)
+        except Exception:
+            pass
+
+        expected[filename + '.grl'] = expect
+
+        if len(line) == 0:
+            break
+
+    return expected
+
+
 if __name__ == "__main__":
     from mygraphs import MyGraph
-    with open('examples/examplegraph.gr') as f:
+    with open('examplegraph.gr') as f:
         G = load_graph(f, MyGraph)
     print(G)
     G.del_vert(next(iter(G.vertices)))
