@@ -4,7 +4,7 @@ This is a module for working with directed and undirected multigraphs.
 # version: 29-01-2015, Paul Bonsma
 # version: 01-02-2017, Pieter Bos, Tariq Bontekoe
 
-from typing import List, Union, Set
+from typing import List, Union, Set, Hashable
 
 
 class GraphError(Exception):
@@ -28,19 +28,18 @@ class Vertex(object):
     except for `__str__`.
     """
 
-    def __init__(self, graph: "Graph", label=None):
-        """
-        Creates a vertex, part of `graph`, with optional label `label`.
-        (Labels of different vertices may be chosen the same; this does
-        not influence correctness of the methods, but will make the string
-        representation of the graph ambiguous.)
-        :param graph: The graph that this `Vertex` is a part of
-        :param label: Optional parameter to specify a label for the
-        """
-        if label is None:
-            label = graph._next_label()
+    def __init__(self, label=None):
+        """Instantiate a vertex with optional label `label` (labels of different vertices may be chosen the same;
+        this does not influence correctness of the methods, but will make the string representation of the graph
+        ambiguous.)
 
-        self._graph = graph
+        :param label: Optional parameter to specify a label for the vertex.
+        """
+
+        if label is None:
+            label = Graph.next_label()
+
+        self._graphs = set()
         self.label = label
         self._incidence = {}
 
@@ -78,12 +77,13 @@ class Vertex(object):
         self._incidence[other].add(edge)
 
     @property
-    def graph(self) -> "Graph":
-        """
-        The graph of this vertex
+    def graphs(self) -> Set['Graph']:
+        """The graph this vertex has been added to.
+
         :return: The graph of this vertex
         """
-        return self._graph
+
+        return self._graphs
 
     @property
     def incidence(self) -> List["Edge"]:
@@ -120,29 +120,27 @@ class Edge(object):
     """
 
     def __init__(self, tail: Vertex, head: Vertex, weight=None):
-        """
-        Creates an edge between vertices `tail` and `head`
+        """Creates an edge with optional weight between two vertices.
+
         :param tail: In case the graph is directed, this is the tail of the arrow.
         :param head: In case the graph is directed, this is the head of the arrow.
         :param weight: Optional weight of the vertex, which can be any type, but usually is a number.
         """
-        if tail.graph != head.graph:
-            raise GraphError("Can only add edges between vertices of the same graph")
 
         self._tail = tail
         self._head = head
         self._weight = weight
 
     def __repr__(self):
-        """
-        A programmer-friendly representation of the edge.
+        """A programmer-friendly representation of the edge.
+
         :return: The string to approximate the constructor arguments of the `Edge'
         """
         return 'Edge(head={}, tail={}, weight={})'.format(self.head.label, self.tail.label, self.weight)
 
     def __str__(self) -> str:
-        """
-        A user friendly representation of this edge
+        """A user friendly representation of this edge.
+
         :return: A user friendly representation of this edge
         """
         return '({}, {})'.format(str(self.tail), str(self.head))
@@ -196,8 +194,28 @@ class Edge(object):
         return self.head == vertex or self.tail == vertex
 
 
-class Graph(object):
-    def __init__(self, directed: bool, n: int=0, simple: bool=False):
+class Graph(Hashable):
+    _generated_label_values = set()
+    _next_label_value = 0
+
+    @staticmethod
+    def next_label() -> int:
+        """Generate a unique label.
+
+        :return: A unique label.
+        """
+
+        next_label_value = Graph._next_label_value
+
+        while next_label_value in Graph._generated_label_values:
+            next_label_value += 1
+
+        Graph._generated_label_values.add(next_label_value)
+        Graph._next_label_value = next_label_value + 1
+
+        return next_label_value
+
+    def __init__(self, directed: bool = False, n: int = 0, simple: bool = False):
         """
         Creates a graph.
         :param directed: Whether the graph should behave as a directed graph.
@@ -208,34 +226,48 @@ class Graph(object):
         self._e = list()
         self._simple = simple
         self._directed = directed
-        self._next_label_value = 0
+        self._tag = None
 
         for i in range(n):
-            self.add_vertex(Vertex(self))
+            self.add_vertex(Vertex())
 
     def __repr__(self):
         """
         A programmer-friendly representation of the Graph.
         :return: The string to approximate the constructor arguments of the `Graph'
         """
-        return 'Graph(directed={}, simple={}, #edges={n_edges}, #vertices={n_vertices})'.format(
-            self._directed, self._simple, n_edges=len(self._e), n_vertices=len(self._v))
+
+        tag_string = ''
+        if self._tag is not None:
+            tag_string = f'tag="{self._tag}", '
+
+        return \
+            'Graph(' \
+            + tag_string + \
+            'directed={}, ' \
+            'simple={}, ' \
+            '#edges={}, ' \
+            '#vertices={})'.format(self._directed, self._simple, len(self._e), len(self._v))
 
     def __str__(self) -> str:
         """
         A user-friendly representation of this graph
         :return: A textual representation of the vertices and edges of this graph
         """
-        return 'V=[' + ", ".join(map(str, self._v)) + ']\nE=[' + ", ".join(map(str, self._e)) + ']'
 
-    def _next_label(self) -> int:
-        """
-        Generates unique labels for vertices within the graph
-        :return: A unique label
-        """
-        result = self._next_label_value
-        self._next_label_value += 1
-        return result
+        tag_string = ''
+        if self._tag is not None:
+            tag_string = f'"{self._tag}"\n'
+
+        return \
+            tag_string + \
+            'V=[{0}]\n' \
+            'E=[{1}]'.format(", ".join(map(str, self._v)), ", ".join(map(str, self._e)))
+
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return self.__dict__ == other.__dict__
+        return NotImplemented
 
     @property
     def simple(self) -> bool:
@@ -256,16 +288,24 @@ class Graph(object):
     @property
     def vertices(self) -> List["Vertex"]:
         """
-        :return: The `set` of vertices of the graph
+        :return: The `list` of vertices of the graph
         """
-        return list(self._v)
+        return self._v
 
     @property
     def edges(self) -> List["Edge"]:
         """
-        :return: The `set` of edges of the graph
+        :return: The `list` of edges of the graph
         """
-        return list(self._e)
+        return self._e
+
+    @property
+    def tag(self):
+        return self._tag
+
+    @tag.setter
+    def tag(self, tag):
+        self._tag = tag
 
     def __iter__(self):
         """
@@ -280,26 +320,25 @@ class Graph(object):
         return len(self._v)
 
     def add_vertex(self, vertex: "Vertex"):
-        """
-        Add a vertex to the graph.
-        :param vertex: The vertex to be added.
-        """
-        if vertex.graph != self:
-            raise GraphError("A vertex must belong to the graph it is added to")
+        """Add a vertex to the graph.
 
+        :param Vertex vertex: The vertex to be added.
+        """
+
+        vertex.graphs.add(self)
         self._v.append(vertex)
 
     def del_vertex(self, vertex: "Vertex"):
-        for e in vertex.incidence:
-            self.del_edge(e)
+        for edge in vertex.incidence:
+            self.del_edge(edge)
         self._v.remove(vertex)
-
+        vertex.graphs.remove(self)
 
     def add_edge(self, edge: "Edge"):
-        """
-        Add an edge to the graph. And if necessary also the vertices.
-        Includes some checks in case the graph should stay simple.
-        :param edge: The edge to be added
+        """Add an edge to the graph. If necessary, also add the vertices. Some checks if the graph should stay simple
+        are included.
+
+        :param Edge edge: The edge to be added.
         """
 
         if self._simple:
@@ -325,20 +364,32 @@ class Graph(object):
         edge.tail.incidence.remove(edge)
 
     def __add__(self, other: "Graph") -> "Graph":
-        """
-        Make a disjoint union of two graphs.
-        :param other: Graph to add to `self'.
-        :return: New graph which is a disjoint union of `self' and `other'.
-        """
-        # TODO: implementation
-        pass
+        """Make a disjoint union of two graphs.
 
-    def __iadd__(self, other: Union[Edge, Vertex]) -> "Graph":
+        :param Graph other: Graph to add to `self'.
+        :return: New graph object which is a disjoint union of `self' and `other'.
         """
-        Add either an `Edge` or `Vertex` with the += syntax.
-        :param other: The object to be added
-        :return: The modified graph
+
+        graph = Graph(n=0, simple=self.simple or other.simple, directed=self.directed or other.directed)
+
+        for vertex in self.vertices + other.vertices:
+            graph.add_vertex(vertex)
+
+        for edge in self.edges + other.edges:
+            graph.add_edge(edge)
+
+        return graph
+
+    def __iadd__(self, other: Union['Graph', Vertex, Edge]) -> "Graph":
+        """Add a `Graph`, `Vertex` or `Edge` with the += operator.
+
+        :param other: The object to be added.
+        :return: The modified graph.
         """
+
+        if isinstance(self, other.__class__):
+            return self + other
+
         if isinstance(other, Vertex):
             self.add_vertex(other)
 
@@ -346,6 +397,9 @@ class Graph(object):
             self.add_edge(other)
 
         return self
+
+    def __hash__(self) -> int:
+        return hash(self.__dict__.values())
 
     def find_edge(self, u: "Vertex", v: "Vertex") -> Set["Edge"]:
         """
@@ -371,42 +425,3 @@ class Graph(object):
         """
         return v in u.neighbours and (not self.directed or any(e.head == v for e in u.incidence))
 
-
-class UnsafeGraph(Graph):
-    @property
-    def vertices(self) -> List["Vertex"]:
-        return self._v
-
-    @property
-    def edges(self) -> List["Edge"]:
-        return self._e
-
-    def add_vertex(self, vertex: "Vertex"):
-        self._v.add(vertex)
-
-    def add_edge(self, edge: "Edge"):
-        self._e.add(edge)
-
-        edge.head._add_incidence(edge)
-        edge.tail._add_incidence(edge)
-
-    def find_edge(self, u: "Vertex", v: "Vertex") -> List["Edge"]:
-        left = u._incidence.get(v, None)
-        right = None
-
-        if not self._directed:
-            right = v._incidence.get(u, None)
-
-        if left is None and right is None:
-            return set()
-
-        if left is None:
-            return right
-
-        if right is None:
-            return left
-
-        return left | right
-
-    def is_adjacent(self, u: "Vertex", v: "Vertex") -> bool:
-        return v in u._incidence or (not self._directed and u in v._incidence)
