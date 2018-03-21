@@ -217,12 +217,10 @@ class TestPr2(unittest.TestCase):
         e_h2 = Edge(v_h2, v_h3)
         e_h3 = Edge(v_h3, v_h4)
         e_h4 = Edge(v_h3, v_h5)
-        # print(h)
         h.add_edge(e_h1)
         h.add_edge(e_h2)
         h.add_edge(e_h3)
         h.add_edge(e_h4)
-        # print(h)
         self.assertEqual(2, get_number_automorphisms(h))
 
     # def test_is_isomorphic(self):

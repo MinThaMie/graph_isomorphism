@@ -7,31 +7,38 @@ DEBUG = False
 
 
 def debug(*args):
+    """
+    Prints debug statements when DEBUG is set to `True`
+
+    :param args: argument to be printed
+    :return:
+    """
     if DEBUG:
         print(*args)
 
 
 def compare(s: "List", t: "List", my_key=None)-> bool:
     """
-    Compares 2 lists and will do so on the sorted list
-    :param s: List
-    :param t: List
-    :param my_key: Key that you have to set to compare vertices: lambda object: object.property
-    :return: Boolean, True if the lists are the same
+    Compares if two lists are equal
+
+    :param s: List to compare
+    :param t: List to compare
+    :return: Returns `True` if list have the same length and contain the same elements. Elements do not need to have the
+    same order. Returns `False` otherwise.
     """
     return sorted(s, key=my_key) == sorted(t, key=my_key)
 
 
-def create_partition(old_coloring: "Coloring", vertex1: "Vertex", vertex2: "Vertex") -> "Coloring":
+def create_partition(coloring: "Coloring", vertex1: "Vertex", vertex2: "Vertex") -> "Coloring":
     """
-    Returns a new coloring where both vertices are in a new partition and removed from the one they belonged to.
+    Returns a new coloring where both vertices have the same new color and are removed from the one they belonged to
 
-    :param old_coloring: current coloring
-    :param vertex1: vertex to be in the separate partition
-    :param vertex2: vertex to be in the separate partition
-    :return: a new coloring with vertex1 and vertex2 as a seperate partition
+    :param coloring: current coloring
+    :param vertex1: vertex to be in the separate color
+    :param vertex2: vertex to be in the separate color
+    :return: a new coloring with vertex1 and vertex2 as a separate color
     """
-    new_coloring = old_coloring.copy()
+    new_coloring = coloring.copy()
     new_color = new_coloring.next_color()
     new_coloring.recolor(vertex1, new_color)
     new_coloring.recolor(vertex2, new_color)
@@ -40,11 +47,11 @@ def create_partition(old_coloring: "Coloring", vertex1: "Vertex", vertex2: "Vert
 
 def has_same_color_neighbours(u: "Vertex", v: "Vertex", coloring: "Coloring") -> bool:
     """
-    Returns whether the vertices u and v have the same colored neighbourhood for the given coloring.
+    Returns whether the vertices u and v have the same colored neighbourhood for the given coloring
 
     :param u: vertex of which the neighbourhood must be compared
     :param v: vertex of which the neighbourhood must be compared
-    :param coloring: coloring
+    :param coloring: current coloring
     :return: `True` if the vertices have the same colored neighbourhood, `False` otherwise
     """
     ncolors_u = [coloring.color(w) for w in u.neighbours]
@@ -54,11 +61,11 @@ def has_same_color_neighbours(u: "Vertex", v: "Vertex", coloring: "Coloring") ->
 
 def choose_color(coloring: "Coloring") -> List["Vertex"]:
     """
-    Selects a partition cell (aka color class) with at least four vertices.
+    Returns a partition cell (aka color class) with at least four vertices
 
-    Returns the first partition with at least four vertices that is found.
-    :param coloring:
-    :return: a partition with at least four vertices, `None` if no partition could be found
+    Returns the first color class with at least four vertices that is found.
+    :param coloring: current coloring
+    :return: a color class with at least four vertices, `None` if no color class could be found
     """
     for key in coloring.colors:
         vertices = list(coloring.get(key))
@@ -67,41 +74,57 @@ def choose_color(coloring: "Coloring") -> List["Vertex"]:
     return []
 
 
-def choose_vertex(partition: List["Vertex"], g: "Graph") -> "Vertex":
+def choose_vertex(color: List["Vertex"], g: "Graph") -> "Vertex":
     """
-    Selects a vertex of graph g which is in the given partition.
+    Returns a vertex of graph g which is in the given color class
 
-    Returns the first vertex of graph g in the partition.
-    :param partition:
-    :param g: graph of which the vertex must be a part
-    :return: a vertex of graph g in the partition, `None` if no vertex of graph g could be found
+    Returns the first vertex of graph g in the color.
+    :param color: color class from which the vertex must be chosen
+    :param g: graph of which the vertex must be a part of
+    :return: a vertex of graph g in the color class, `None` if no vertex of graph g could be found
     """
-    for vertex in partition:
+    for vertex in color:
         if vertex.in_graph(g):
             return vertex
     return None
 
 
-#TODO: Do we really want a function for this?
-def get_vertices_of_graph(partition: List["Vertex"], g: "Graph") -> List["Vertex"]:
+# TODO: Do we really want a function for this?
+def get_vertices_of_graph(color: List["Vertex"], g: "Graph") -> List["Vertex"]:
     """
-    Returns the vertices of graph g in the given partition.
+    Returns the vertices of graph g in the given color class
 
-    :param partition:
-    :param g:
-    :return: a list of vertices belonging to graph g in the given partition. The list is empty if no vertices of graph g
-    are found in the given partition
+    :param color: color class from which the vertices must be retrieved
+    :param g: graph of which the vertices must be a part of
+    :return: a list of vertices belonging to graph g in the given color class. The list is empty if no vertices of graph
+    g are found in the given color class
     """
-    return [v for v in partition if g in v.graphs]
+    return [v for v in color if g in v.graphs]
 
 
 def are_twins(u: "Vertex", v: "Vertex") -> bool:
+    """
+    Returns whether the two given vertices are twins
+
+    Two vertices are twins if they have the same neighbourhood except the other vertex.
+    :param u: vertex
+    :param v: vertex
+    :return: `True` if the vertices are twins, `False` otherwise
+    """
     N_u = [x for x in u.neighbours if x != v]
     N_v = [x for x in v.neighbours if x != u]
-    return compare(N_u,N_v, lambda vertex: vertex.label)
+    return compare(N_u, N_v, lambda vertex: vertex.label)
 
 
-def get_twins(g: "Graph"):  # -> List[("Vertex", "Vertex")]:
+# TODO: get_modules
+def get_twins(g: "Graph"):  # -> List[("Vertex", "Vertex")], List[("Vertex", "Vertex")]:
+    """
+    Returns a list of true twins and a list of false twins
+
+    :param g: graph for which the (false) twins need to be determined
+    :return: arg1: a list of tuples of vertices containing the true twins
+             arg2: a list of tuples of vertices containing the false twins
+    """
     twins = list()
     false_twins = list()
     for u in g.vertices:
@@ -114,23 +137,29 @@ def get_twins(g: "Graph"):  # -> List[("Vertex", "Vertex")]:
     return twins, false_twins
 
 
-def initialize_coloring(graph: "Graph"):
+def initialize_coloring(g: "Graph") -> "Coloring":
     """
-    Creates an initial coloring where the vertices with the same degree are in the same partition.
+    Creates an initial coloring for graph g where the vertices with the same degree are in the same color class
 
-    :param graph: graph on which the coloring needs to be applied
+    :param g: graph on which the coloring needs to be applied
     :return: an initial coloring of graph g by degree
     """
     coloring = Coloring()
-    for v in graph.vertices:
+    for v in g.vertices:
         coloring.set(v.degree, v)
     debug('Init coloring ', coloring)
     return coloring
 
 
-def get_unit_coloring(graph: "Graph"):
+def get_unit_coloring(g: "Graph") -> "Coloring":
+    """
+    Creates a coloring of graph g where all vertices are in the same color class
+
+    :param g: graph on which the coloring needs to be applied
+    :return: an initial coloring of graph g with all vertices in the same color class
+    """
     coloring = Coloring()
-    for v in graph.vertices:
+    for v in g.vertices:
         coloring.set(0, v)
     debug('Init coloring ', coloring)
     return coloring
