@@ -341,6 +341,21 @@ class Graph(object):
         edge.head.incidence.remove(edge)
         edge.tail.incidence.remove(edge)
 
+    def deepcopy(self) -> "Graph":
+        G = Graph(self.directed)
+        for v in self.vertices:
+            v_copy = Vertex(G)
+            v_copy.label = v.label
+            G.add_vertex(v_copy)
+        for e in self.edges:
+            tail = e.tail
+            tail_copy = G.find_vertex(tail.label)
+            head = e.head
+            head_copy = G.find_vertex(head.label)
+            e_copy = Edge(tail_copy, head_copy)
+            G.add_edge(e_copy)
+        return G
+
     def __add__(self, other: "Graph") -> "Graph":
         """
         Make a disjoint union of two graphs.
