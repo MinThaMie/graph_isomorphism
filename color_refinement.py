@@ -10,7 +10,7 @@ PATH = './graphs/treepaths/'
 GRAPH = 'threepaths160.gr'
 
 
-def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=True) -> int:
+def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool=True) -> int:
     """
     Returns the number of isomorphisms of `Graph` g and h for a given coloring
 
@@ -45,7 +45,7 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=
     return number_isomorphisms
 
 
-def color_refine(coloring: "Coloring") -> "Coloring":
+def color_refine(coloring: Coloring) -> Coloring:
     """
     Returns a stable or unbalanced coloring as a result of the basic color refinement algorithm
 
@@ -86,7 +86,7 @@ def color_refine(coloring: "Coloring") -> "Coloring":
     return coloring
 
 
-def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
+def get_number_isomorphisms(g: Graph, h: Graph, count: bool) -> int:
     """
     Returns the number of isomorphisms of graph g and h
 
@@ -107,7 +107,7 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     return count_isomorphism(g, h, coloring, count)
 
 
-def is_isomorphisms(g: "Graph", h: "Graph") -> bool:
+def is_isomorphisms(g: Graph, h: Graph) -> bool:
     """
     Returns whether the two graphs are isomorphic
 
@@ -120,7 +120,7 @@ def is_isomorphisms(g: "Graph", h: "Graph") -> bool:
     return get_number_isomorphisms(g, h, False) > 0
 
 
-def get_number_automorphisms(g: "Graph") -> int:
+def get_number_automorphisms(g: Graph) -> int:
     """
     Returns the number of isomorphisms of graph g
 
@@ -148,6 +148,6 @@ if __name__ == "__main__":
                 start = time.time()
                 isomorph = is_isomorphisms(graphs[i], graphs[j])
                 print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorph)
-                num = count_isomorphism(graphs[i], graphs[j])
+                num = count_isomorphism(graphs[i], graphs[j], initialize_coloring(graphs[i] + graphs[j]))
                 print('There are', num, 'isomorphisms')
                 print('Took', time.time() - start, 'seconds\n')

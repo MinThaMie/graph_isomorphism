@@ -52,7 +52,7 @@ class Coloring(object):
                 return color
         return None
 
-    def recolor(self, vertex: "Vertex", new_color: int, color: int=None):
+    def recolor(self, vertex: Vertex, new_color: int, color: int=None):
         """
         Puts the vertex from the color class color to a new color class (new_color)
 
@@ -104,7 +104,7 @@ class Coloring(object):
             str(color) + "(" + str(len(self._dict[color])) + "): [" + ', '.join(str(v) for v in self._dict[color]) + "]"
             for color in self._dict.keys()) + " }"
 
-    def status(self, g: "Graph", h: "Graph") -> str:
+    def status(self, g: Graph, h: Graph) -> str:
         """
         Determines the status of the coloring
 

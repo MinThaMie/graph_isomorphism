@@ -29,7 +29,7 @@ def compare(s: "List", t: "List", my_key=None)-> bool:
     return sorted(s, key=my_key) == sorted(t, key=my_key)
 
 
-def create_partition(coloring: "Coloring", vertex1: "Vertex", vertex2: "Vertex") -> "Coloring":
+def create_partition(coloring: Coloring, vertex1: Vertex, vertex2: Vertex) -> Coloring:
     """
     Returns a new coloring where both vertices have the same new color and are removed from the one they belonged to
 
@@ -45,7 +45,7 @@ def create_partition(coloring: "Coloring", vertex1: "Vertex", vertex2: "Vertex")
     return new_coloring
 
 
-def has_same_color_neighbours(u: "Vertex", v: "Vertex", coloring: "Coloring") -> bool:
+def has_same_color_neighbours(u: Vertex, v: Vertex, coloring: Coloring) -> bool:
     """
     Returns whether the vertices u and v have the same colored neighbourhood for the given coloring
 
@@ -59,7 +59,7 @@ def has_same_color_neighbours(u: "Vertex", v: "Vertex", coloring: "Coloring") ->
     return compare(ncolors_u, ncolors_v)
 
 
-def choose_color(coloring: "Coloring") -> List["Vertex"]:
+def choose_color(coloring: Coloring) -> List[Vertex]:
     """
     Returns a partition cell (aka color class) with at least four vertices
 
@@ -74,7 +74,7 @@ def choose_color(coloring: "Coloring") -> List["Vertex"]:
     return []
 
 
-def choose_vertex(color: List["Vertex"], g: "Graph") -> "Vertex":
+def choose_vertex(color: List[Vertex], g: Graph) -> Vertex:
     """
     Returns a vertex of graph g which is in the given color class
 
@@ -90,7 +90,7 @@ def choose_vertex(color: List["Vertex"], g: "Graph") -> "Vertex":
 
 
 # TODO: Do we really want a function for this?
-def get_vertices_of_graph(color: List["Vertex"], g: "Graph") -> List["Vertex"]:
+def get_vertices_of_graph(color: List[Vertex], g: Graph) -> List[Vertex]:
     """
     Returns the vertices of graph g in the given color class
 
@@ -102,7 +102,7 @@ def get_vertices_of_graph(color: List["Vertex"], g: "Graph") -> List["Vertex"]:
     return [v for v in color if g in v.graphs]
 
 
-def are_twins(u: "Vertex", v: "Vertex") -> bool:
+def are_twins(u: Vertex, v: Vertex) -> bool:
     """
     Returns whether the two given vertices are twins
 
@@ -117,7 +117,7 @@ def are_twins(u: "Vertex", v: "Vertex") -> bool:
 
 
 # TODO: get_modules
-def get_twins(g: "Graph"):  # -> List[("Vertex", "Vertex")], List[("Vertex", "Vertex")]:
+def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
     """
     Returns a list of true twins and a list of false twins
 
@@ -137,7 +137,7 @@ def get_twins(g: "Graph"):  # -> List[("Vertex", "Vertex")], List[("Vertex", "Ve
     return twins, false_twins
 
 
-def initialize_coloring(g: "Graph") -> "Coloring":
+def initialize_coloring(g: Graph) -> Coloring:
     """
     Creates an initial coloring for graph g where the vertices with the same degree are in the same color class
 
@@ -151,7 +151,7 @@ def initialize_coloring(g: "Graph") -> "Coloring":
     return coloring
 
 
-def get_unit_coloring(g: "Graph") -> "Coloring":
+def get_unit_coloring(g: Graph) -> Coloring:
     """
     Creates a coloring of graph g where all vertices are in the same color class
 
