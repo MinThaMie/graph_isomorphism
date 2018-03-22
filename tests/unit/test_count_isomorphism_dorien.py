@@ -7,7 +7,7 @@ import unittest
 from color_refinement import get_number_isomorphisms
 from graph_io import *
 
-PATH = '../graphs/branching'
+PATH = 'graphs/branching'
 EXPECTED = dict()
 
 
@@ -51,7 +51,7 @@ class CountIsomorphismCase(unittest.TestCase):
             results = testfile(file)
             for result in results:
                 self.assertEqual(result[0], result[1], result[2])
-                print(result[2], 'got', result[1])
+                # print(result[2], 'got', result[1])
 
 
 if __name__ == '__main__':
