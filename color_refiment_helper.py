@@ -2,7 +2,6 @@
 Module with helper methods for the Color Refinement Algorithm
 """
 from coloring import *
-from collections import Counter
 
 DEBUG = False
 
@@ -13,7 +12,13 @@ def debug(*args):
 
 
 def compare(s: "List", t: "List"):
-    return Counter(s) == Counter(t)
+    """
+    Compares 2 lists and will do so on the sorted list
+    :param s: List
+    :param t: List
+    :return: Boolean, True if the lists are the same
+    """
+    return s.sort() == t.sort()
 
 
 def create_partition(old_coloring: "Coloring", vertex1: "Vertex", vertex2: "Vertex") -> "Coloring":
