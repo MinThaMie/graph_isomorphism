@@ -16,13 +16,10 @@ def compare(s: "List", t: "List", my_key=None):
     Compares 2 lists and will do so on the sorted list
     :param s: List
     :param t: List
-    :param my_key: String that you have to set to compare vertices. If so you have to set it to: "lambda x.label"
+    :param my_key: Key that you have to set to compare vertices: lambda object: object.property
     :return: Boolean, True if the lists are the same
     """
-    if my_key is None:
-        return sorted(s) == sorted(t)
-    else:
-        return sorted(s, key=lambda vertex: vertex.label) == sorted(t, key=lambda vertex: vertex.label)
+    return sorted(s, key=my_key) == sorted(t, key=my_key)
 
 
 def create_partition(old_coloring: "Coloring", vertex1: "Vertex", vertex2: "Vertex") -> "Coloring":
@@ -101,7 +98,7 @@ def get_vertices_of_graph(partition: List["Vertex"], g: "Graph") -> List["Vertex
 def are_twins(u: "Vertex", v: "Vertex") -> bool:
     N_u = [x for x in u.neighbours if x != v]
     N_v = [x for x in v.neighbours if x != u]
-    return compare(N_u,N_v, "lambda x.label")
+    return compare(N_u,N_v, lambda vertex: vertex.label)
 
 
 def get_twins(g: "Graph"):  # -> List[("Vertex", "Vertex")]:
@@ -112,7 +109,7 @@ def get_twins(g: "Graph"):  # -> List[("Vertex", "Vertex")]:
             if v.label > u.label:
                 if u.is_adjacent(v) and are_twins(u, v):
                     twins.append((u, v))
-                if compare(u.neighbours,v.neighbours, "lambda x.label"):
+                if compare(u.neighbours,v.neighbours, lambda vertex: vertex.label):
                     false_twins.append((u, v))
     return twins, false_twins
 
