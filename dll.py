@@ -39,3 +39,13 @@ class DoubleLinkedList(object):
             node.next = None
         else:
             self.insert_after(self.last_node, node)
+
+    def remove(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+        node.next = None
+        node.prev = None
+        if self._first_node is node:
+            self._first_node = node.next
+        if self._last_node is node:
+            self._last_node = node.prev
