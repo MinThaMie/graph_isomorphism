@@ -49,3 +49,4 @@ class DoubleLinkedList(object):
             self._first_node = node.next
         if self._last_node is node:
             self._last_node = node.prev
+
