@@ -1,20 +1,21 @@
 class Node(object):
 
-    def __init__(self, vertex, prev, next):
-        self.vertex = vertex
-        self.prev = prev
-        self.next = next
+    def __init__(self, vertex: "Vertex", prev: "Vertex"=None, next: "Vertex"=None):
+        self._vertex = vertex
+        self._prev = prev
+        self._next = next
 
 
 class DoubleLinkedList(object):
-    firstNode = None
-    lastNode = None
+    def __init__(self, node: "Vertex"=None):
+        self._first_node = node
+        self._last_node = node
 
     def insert_after(self, node, new_node):
         new_node.prev = node
         if node.next is None:
             new_node.next = None
-            self.lastNode = new_node
+            self._last_node = new_node
         else:
             new_node.next = node.next
             node.next.prev = new_node
@@ -24,17 +25,17 @@ class DoubleLinkedList(object):
         new_node.next = node
         if node.prev is None:
             new_node.prev = None
-            self.firstNode = new_node
+            self._first_node = new_node
         else:
             new_node.prev = node.prev
             node.prev.next = new_node
         node.prev = new_node
 
     def append(self, node):
-        if self.firstNode is None:
-            self.firstNode = node
-            self.lastNode = node
+        if self._first_node is None:
+            self._first_node = node
+            self._last_node = node
             node.prev = None
             node.next = None
         else:
-            self.insert_after(self.lastNode, node)
+            self.insert_after(self.last_node, node)
