@@ -1,6 +1,7 @@
 import unittest
-from color_refiment_helper import *
+
 from color_refinement import *
+
 
 class TestPr2(unittest.TestCase):
 
@@ -86,7 +87,7 @@ class TestPr2(unittest.TestCase):
         coloring = color_refine(initialize_coloring(g + h))
         self.assertEqual(2, coloring.num_colors)
         self.assertListEqual([v_h3, v_g1, v_g3, v_h1], coloring.get(0))
-        self.assertListEqual([v_h2, v_g2],             coloring.get(1))
+        self.assertListEqual([v_h2, v_g2], coloring.get(1))
 
     def test_color_refinement_large(self):
         # g: 1 - 2 - 3 - 4 - 6
@@ -194,7 +195,7 @@ class TestPr2(unittest.TestCase):
         g = Graph(False, 2)
         h = Graph(False, 3)
         self.assertEqual(0, get_number_isomorphisms(g, h, True))
-        
+
     def test_get_number_automorphisms(self):
         # g: 1 - 2
         g = Graph(False)
@@ -226,6 +227,7 @@ class TestPr2(unittest.TestCase):
 
     # def test_is_isomorphic(self):
     #     TODO
+
 
 if __name__ == '__main__':
     unittest.main()

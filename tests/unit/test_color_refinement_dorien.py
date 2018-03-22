@@ -1,10 +1,11 @@
 """
 Test file for Color Refinement Algorithm
 """
+import os
 import unittest
+
 from color_refinement import is_isomorphisms
 from graph_io import *
-import os
 
 PATH = '../graphs/colorref'
 EXPECTED = dict()
@@ -39,7 +40,8 @@ def testfile(filename):
             if j > i:
                 isomorph = is_isomorphisms(graphs[i], graphs[j])
                 expected = get_expected_result(filename, graphs[i].name, graphs[j].name)
-                message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[j].name + " in " + filename
+                message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[
+                    j].name + " in " + filename
                 results.append([expected, isomorph, message])
     return results
 
@@ -53,7 +55,7 @@ class ColorRefineCase(unittest.TestCase):
             results = testfile(file)
             for result in results:
                 self.assertEqual(result[0], result[1], result[2])
-                #print(result[2], 'got', result[1])
+                # print(result[2], 'got', result[1])
 
 
 if __name__ == '__main__':

@@ -1,10 +1,11 @@
 """
 Test file for Color Refinement Algorithm
 """
+import os
 import unittest
+
 from color_refinement import get_number_isomorphisms
 from graph_io import *
-import os
 
 PATH = '../graphs/branching'
 EXPECTED = dict()
@@ -35,7 +36,8 @@ def testfile(filename):
             if j > i:
                 num = get_number_isomorphisms(graphs[i], graphs[j], True)
                 expected = expected_result(filename, graphs[i].name, graphs[j].name)
-                message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[j].name + " in " + filename
+                message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[
+                    j].name + " in " + filename
                 results.append([expected, num, message])
     return results
 
