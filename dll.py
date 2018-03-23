@@ -1,32 +1,34 @@
 """
 Module for Doubly Linked Lists
 """
+#See for more info on generics in python https://docs.python.org/3/library/typing.html
+from typing import TypeVar
+T = TypeVar('T')
 
 
 class Node(object):
-
-    def __init__(self, vertex: "Vertex", prev: "Vertex" = None, next: "Vertex" = None):
-        self._vertex = vertex
+    def __init__(self, value: "T", prev: "Node" = None, next: "Node" = None):
+        self._value = value
         self.prev = prev
         self.next = next
 
     @property
-    def value(self) -> "Vertex":
-        return self._vertex
+    def value(self) -> "T":
+        return self._value
 
     def __str__(self):
-        return str(self._vertex)
+        return str(self._value)
 
 
 class DoubleLinkedList(object):
-    def __init__(self, val: "Vertex" = None):
+    def __init__(self, val: "T" = None):
         self._head = None
         self._tail = None
         self._size = 0
         if val:
             self.pushleft(val)
 
-    def pushleft(self, val: "Vertex"):
+    def pushleft(self, val: "T"):
         """Add element to the start of the list"""
         new_node = Node(val)
         if self._size == 0:
@@ -38,7 +40,7 @@ class DoubleLinkedList(object):
             self._head = new_node
         self._size += 1
 
-    def push(self, val: "Vertex"):
+    def push(self, val: "T"):
         """Add element to the end of the list"""
         new_node = Node(val)
         if self._size == 0:
@@ -50,7 +52,7 @@ class DoubleLinkedList(object):
             self._tail = new_node
         self._size += 1
 
-    # def insert_after(self, node, val: "Vertex"):
+    # def insert_after(self, node, val: "T"):
     #     new_node = Node(val)
     #     new_node.prev = node
     #     if node.next is None:
@@ -62,7 +64,7 @@ class DoubleLinkedList(object):
     #     node.next = new_node
     #     self._size += 1
     #
-    # def insert_before(self, node, val: "Vertex"):
+    # def insert_before(self, node, val: "T"):
     #     new_node = Node(val)
     #     new_node.next = node
     #     if node.prev is None:
@@ -84,7 +86,7 @@ class DoubleLinkedList(object):
     #         self.insert_after(self.last_node, node)
     #     self._size += 1
 
-    def pop(self) -> "Vertex":
+    def pop(self) -> "T":
         """Remove last node and return value"""
         if self._size == 0:
             return None
@@ -102,7 +104,7 @@ class DoubleLinkedList(object):
         self._size -= 1
         return self._head.vertex
 
-    def delete(self, value: "Vertex"):
+    def delete(self, value: "T"):
         """Remove node with given value if existing"""
         node = self._head
         while node is not None:
@@ -110,7 +112,7 @@ class DoubleLinkedList(object):
                 self.remove(node)
             node = node.next
 
-    def remove(self, node: "Node") -> "Vertex":
+    def remove(self, node: "Node") -> "T":
         """Removes and returns value of given node, connects previous and next"""
         node.prev.next = node.next
         node.next.prev = node.prev
