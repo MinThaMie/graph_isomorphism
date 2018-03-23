@@ -11,7 +11,7 @@ def debug(*args):
         print(*args)
 
 
-def compare(s: "List", t: "List", my_key=None):
+def compare(s: "List", t: "List", my_key=None)-> bool:
     """
     Compares 2 lists and will do so on the sorted list
     :param s: List
