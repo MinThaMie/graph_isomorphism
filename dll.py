@@ -1,3 +1,6 @@
+from graph import Vertex
+
+
 class Node(object):
 
     def __init__(self, vertex: "Vertex", prev: "Vertex"=None, next: "Vertex"=None):
@@ -38,7 +41,7 @@ class DoubleLinkedList(object):
             node.prev = None
             node.next = None
         else:
-            self.insert_after(self.last_node, node)
+            self.insert_after(self._last_node, node)
 
     def remove(self, node):
         node.prev.next = node.next
@@ -49,4 +52,3 @@ class DoubleLinkedList(object):
             self._first_node = node.next
         if self._last_node is node:
             self._last_node = node.prev
-
