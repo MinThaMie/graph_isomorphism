@@ -2,7 +2,6 @@
 Module with helper methods for the Color Refinement Algorithm
 """
 from coloring import *
-from collections import Counter
 
 DEBUG = False
 
@@ -12,8 +11,15 @@ def debug(*args):
         print(*args)
 
 
-def compare(s: "List", t: "List"):
-    return Counter(s) == Counter(t)
+def compare(s: "List", t: "List", my_key=None)-> bool:
+    """
+    Compares 2 lists and will do so on the sorted list
+    :param s: List
+    :param t: List
+    :param my_key: Key that you have to set to compare vertices: lambda object: object.property
+    :return: Boolean, True if the lists are the same
+    """
+    return sorted(s, key=my_key) == sorted(t, key=my_key)
 
 
 def create_partition(old_coloring: "Coloring", vertex1: "Vertex", vertex2: "Vertex") -> "Coloring":
@@ -92,7 +98,7 @@ def get_vertices_of_graph(partition: List["Vertex"], g: "Graph") -> List["Vertex
 def are_twins(u: "Vertex", v: "Vertex") -> bool:
     N_u = [x for x in u.neighbours if x != v]
     N_v = [x for x in v.neighbours if x != u]
-    return compare(N_u,N_v)
+    return compare(N_u,N_v, lambda vertex: vertex.label)
 
 
 def get_twins(g: "Graph"):  # -> List[("Vertex", "Vertex")]:
@@ -103,7 +109,7 @@ def get_twins(g: "Graph"):  # -> List[("Vertex", "Vertex")]:
             if v.label > u.label:
                 if u.is_adjacent(v) and are_twins(u, v):
                     twins.append((u, v))
-                if compare(u.neighbours,v.neighbours):
+                if compare(u.neighbours,v.neighbours, lambda vertex: vertex.label):
                     false_twins.append((u, v))
     return twins, false_twins
 

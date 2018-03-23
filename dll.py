@@ -163,3 +163,9 @@ if __name__ == '__main__':
     for u in lst:
         print(u)
     print(lst)
+
+    lst2 = DoubleLinkedList(1)
+    lst2.push(2)
+    lst2.push(2)
+    lst2.pushleft(3)
+    print(lst2)
