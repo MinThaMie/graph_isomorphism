@@ -158,7 +158,7 @@ class DoublyLinkedListCase(unittest.TestCase):
         self.assertEqual(node2.next, node.prev, "New node is inserted after 'node2")
 
         expected = [i for i in range(n)]
-        expected.insert(m-1, 10)
+        expected.insert(m, 10)
         count = 0
         for i in self.dll:
             self.assertEqual(i, expected[count])
@@ -192,10 +192,11 @@ class DoublyLinkedListCase(unittest.TestCase):
         node = self.dll.find(2)
         prev = node.prev
         next = node.next
-        self.dll.delete(node)
+        self.dll.remove(node)
         self.assertEqual(len(self.dll), n - 1, "Length should be " + str(n - 1))
         self.assertIsNone(self.dll.find(2), "There should be no value of 2 in the dll")
-        self.assertEqual(prev.next, next.prev, "Links previous and next nodes")
+        self.assertEqual(prev.next, next, "Links previous to next node")
+        self.assertEqual(next.prev, prev, "Links next node to previous")
 
         # Delete non existing value
         node = Node(4)
