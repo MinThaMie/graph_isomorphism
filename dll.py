@@ -1,13 +1,16 @@
+from graph import Vertex
+
+
 class Node(object):
 
-    def __init__(self, vertex: "Integer", prev: "Integer"=None, next: "Integer"=None):
+    def __init__(self, vertex: "Vertex", prev: "Vertex"=None, next: "Vertex"=None):
         self._vertex = vertex
         self._prev = prev
         self._next = next
 
 
 class DoubleLinkedList(object):
-    def __init__(self, node: "Integer"=None):
+    def __init__(self, node: "Vertex"=None):
         self._first_node = node
         self._last_node = node
 
@@ -38,17 +41,14 @@ class DoubleLinkedList(object):
             node.prev = None
             node.next = None
         else:
-            self.insert_after(self.last_node, node)
+            self.insert_after(self._last_node, node)
 
     def remove(self, node):
-        if self._first_node is node:
-            self._first_node = node.next
-        elif self._last_node is node:
-            self._last_node = node.prev
-        else:
-            node.prev.next = node.next
-            node.next.prev = node.prev
+        node.prev.next = node.next
+        node.next.prev = node.prev
         node.next = None
         node.prev = None
-
-
+        if self._first_node is node:
+            self._first_node = node.next
+        if self._last_node is node:
+            self._last_node = node.prev
