@@ -83,17 +83,12 @@ def fast_color_refine(graph: "Graph"):
     # takes initial coloring
     qlist = DoubleLinkedList()
     color_map = {}
-    neigh_map = {}
     #TODO: Replace this with better things, because it's now just used to get the amount of colors
     # because I did not figure out how to do this with the Coloring class yet
-    # Neigh_map might not be neccessary
     for v in graph.vertices:
         if v.colornum not in color_map.keys():
             color_map[v.colornum] = []
         color_map[v.colornum].append(v)
-        if v not in neigh_map.keys():
-            neigh_map[v] = None
-        neigh_map[v] = v.neighbours
     first_color = sorted(list(color_map.keys()))[0]
     qlist.append(Node(first_color))
     #TODO: Create a loop with the queue
@@ -101,7 +96,7 @@ def fast_color_refine(graph: "Graph"):
     for v in graph.vertices:
         count = 0
         if v.colornum is not qlist._first_node:
-            for x in neigh_map.get(v):
+            for x in v.neighbours:
                 if x.colornum is qlist._first_node:
                     count += 1
         if v.colornum not in class_list.keys():
