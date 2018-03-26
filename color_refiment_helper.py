@@ -134,3 +134,10 @@ def get_unit_coloring(graph: "Graph"):
         coloring.set(0, v)
     debug('Init coloring ', coloring)
     return coloring
+
+
+def get_coloring(graph: "Graph")->Coloring:
+    coloring = Coloring()
+    for v in graph.vertices:
+        coloring.set(v.colornum, v)
+    return coloring
