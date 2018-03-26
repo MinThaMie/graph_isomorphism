@@ -6,8 +6,8 @@ from color_refiment_helper import *
 import time
 from graph_io import *
 
-PATH = './graphs/treepaths/'
-GRAPH = 'threepaths160.gr'
+PATH = './graphs/colorref/'
+GRAPH = 'colorref_smallexample_4_16.grl'
 
 def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=True) -> int:
     """
@@ -78,6 +78,68 @@ def color_refine(coloring: "Coloring") -> "Coloring":
     return coloring
 
 
+def fast_color_refine(coloring: "Coloring") -> "Coloring":
+    # Start with first color
+    qlist = DoubleLinkedList()
+    current_color = list(coloring.colors)[0]
+    qlist.append(current_color)
+
+    #TODO: Create a loop with the queue
+    # Count neighbours of 'first color' for each vertex
+    counter = {}
+    for c in coloring.colors:
+        dict = {}
+        for v in coloring.get(c):
+            # Get number of neighbours with current_color
+
+            n_neighbours = len([u for u in v.neighbours if coloring.color(u) == current_color])
+            dict[v] = n_neighbours
+        counter[c] = dict
+
+    for c in coloring.colors:
+        to_split = {}
+        # Partitions class 'c' into cells according to #neighbours of 'first color'
+        vertices_of_c = coloring.get(c)
+
+        while len(vertices_of_c) > 0:
+            new_color = coloring.next_color()
+            y = vertices_of_c.pop()
+
+            for b in list(vertices_of_c):
+                w = counter[c][y]
+                d = counter[c][b]
+                if w != d:
+                    if w not in to_split.keys():
+                        to_split[w] = list()
+                    to_split[w].append(b)
+                    vertices_of_c.remove(b)
+
+        # Does the actual splitting
+        first_partition = True
+        for key in to_split.keys():
+            if first_partition:
+                first_partition = False
+                continue
+            else:
+               for v in to_split[key]:
+                   coloring.recolor(v, new_color, v.colornum)
+            new_color = coloring.next_color()
+
+        # Decide which color to add to queue
+        print(to_split)
+        partition_cell_lenghts = [len(v) for v in to_split.values()]
+        # TODO
+        qlist.append()
+        print(partition_cell_lenghts)
+
+    # Remove C1
+    qlist.pop_left()
+
+
+def my_test(g):
+    fast_color_refine(g)
+
+
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     """
         Returns the number of isomorphisms for graph g and h.
@@ -121,17 +183,18 @@ if __name__ == "__main__":
 
     graphs = L[0]
 
-    for i in range(len(graphs)):
-        for j in range(len(graphs)):
-            if j == i:
-                start= time.time()
-                num = get_number_automorphisms(graphs[i])
-                print('There are', num, 'automorphisms')
-                print('Took', time.time() - start, 'seconds\n')
-            if j > i:
-                start = time.time()
-                isomorph = is_isomorphisms(graphs[i], graphs[j])
-                print(graphs[i].name,'and',graphs[j].name,'isomorphic?',isomorph)
-                num = count_isomorphism(graphs[i], graphs[j])
-                print('There are',num,'isomorphisms')
-                print('Took',time.time()-start,'seconds\n')
+    my_test(initialize_coloring(graphs[0]))
+    # for i in range(len(graphs)):
+    #     for j in range(len(graphs)):
+    #         if j == i:
+    #             start= time.time()
+    #             num = get_number_automorphisms(graphs[i])
+    #             print('There are', num, 'automorphisms')
+    #             print('Took', time.time() - start, 'seconds\n')
+    #         if j > i:
+    #             start = time.time()
+    #             isomorph = is_isomorphisms(graphs[i], graphs[j])
+    #             print(graphs[i].name,'and',graphs[j].name,'isomorphic?',isomorph)
+    #             num = count_isomorphism(graphs[i], graphs[j])
+    #             print('There are',num,'isomorphisms')
+    #             print('Took',time.time()-start,'seconds\n')
