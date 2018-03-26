@@ -7,7 +7,7 @@ import unittest
 from color_refinement import get_number_isomorphisms
 from graph_io import *
 
-PATH = '../../graphs/branching'
+PATH = 'graphs/branching'
 EXPECTED = dict()
 
 
