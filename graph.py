@@ -253,6 +253,10 @@ class Graph(object):
         """
         return self._name
 
+    @name.setter
+    def name(self, name: str):
+        self._name = name
+
     @property
     def simple(self) -> bool:
         """Whether this graph is a simple graph, i.e., it does not have multi-edges or loops.
