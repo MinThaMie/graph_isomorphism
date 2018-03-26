@@ -360,7 +360,7 @@ class Graph(object):
         disjoint_union = Graph(
             directed=self.directed or other.directed,
             n=0,
-            simple=self.simple or other.simple,
+            simple=self.simple and other.simple,
             name=disjoint_union_name
         )
 

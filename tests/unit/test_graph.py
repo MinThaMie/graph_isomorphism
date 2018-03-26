@@ -48,6 +48,24 @@ class GraphTests(unittest.TestCase):
         self.assertEqual('', (g + h).name)
         self.assertEqual('', (h + g).name)
 
+        # Assert that the disjoint union with a directed graph results in a directed graph
+        directed = Graph(directed=True)
+        undirected = Graph(directed=False)
+
+        self.assertTrue((directed + directed).directed)
+        self.assertTrue((directed + undirected).directed)
+        self.assertTrue((undirected + directed).directed)
+        self.assertFalse((undirected + undirected).directed)
+
+        # Assert that the disjoint unions with a non-simple graph results in a non-simple graph
+        simple = Graph(directed=False, simple=True)
+        non_simple = Graph(directed=False, simple=False)
+
+        self.assertTrue((simple + simple).simple)
+        self.assertFalse((simple + non_simple).simple)
+        self.assertFalse((non_simple + simple).simple)
+        self.assertFalse((non_simple + non_simple).simple)
+
 
 if __name__ == '__main__':
     unittest.main()
