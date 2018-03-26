@@ -1,31 +1,39 @@
 """
 Module for Doubly Linked Lists
 """
-#See for more info on generics in python https://docs.python.org/3/library/typing.html
+# See for more info on generics in python https://docs.python.org/3/library/typing.html
 from typing import TypeVar
+
 T = TypeVar('T')
 
 
 class Node(object):
-    def __init__(self, value: T, prev: Node=None, next: Node=None):
+    def __init__(self, value: T, prev_node: Node = None, next_node: Node = None):
         """
         Initializes a node
 
-        Creates a node with vertex as the node, and prev as the previous node and next as the next node in the list. If
-        no previous and next node are given, these values are set to `None`
+        Creates a node with the value as the node, and prev as the previous node and next as the next node in the list.
+        If no previous and next node are given, these values are set to `None`
         :param vertex: node to add
-        :param prev: previous node
-        :param next: next node
+        :param prev_node: previous node
+        :param next_node: next node
         """
         self._value = value
-        self.prev = prev
-        self.next = next
+        self.prev = prev_node
+        self.next = next_node
 
     @property
     def value(self) -> T:
+        """
+        Returns the value of the node
+        :return: the value of the node
+        """
         return self._value
 
     def __str__(self):
+        """
+        Returns a string representation of the node
+        """
         return str(self._value)
 
 
@@ -34,14 +42,22 @@ class DoubleLinkedList(object):
         """
         Initializes a double linked list
 
-        If a node is given, the first and last node of the list are set to that node. Otherwise, they are empty.
+        The head and tail are set to `None` and the size of the list is 0.
         """
         self._head = None
         self._tail = None
         self._size = 0
 
     def append_left(self, val: T):
-        """Add element to the start of the list"""
+        """
+        Adds a value at the start of the DoubleLinkedList
+
+        Creates a new node with the given value. This node is set as the head of the DoubleLinkedList. If the list was
+        empty, also the tail is set to this node. If there was already a head of the list, the current head gets the
+        added node as previous node, and the added node gets the previous head as next node.
+        Afterward, the size of the list is increased by one.
+        :param val: value of the node to add
+        """
         new_node = Node(val)
         if self._size == 0:
             self._head = new_node
@@ -53,11 +69,14 @@ class DoubleLinkedList(object):
         self._size += 1
 
     def append(self, val: T):
-        """Add element to the end of the list"""
         """
-        Inserts a node at the end of the list
+        Adds a value at the end of the DoubleLinkedList
 
-        :param node: node to add to the list
+        Creates a new node with the given value. This node is set as the tail of the DoubleLinkedList. If the list was
+        empty, also the head is set to this node. If there was already a tail of the list, the current tail gets the
+        added node as next node, and the added node gets the previous tail as previous node.
+        Afterward, the size of the list is increased by one.
+        :param val: value of the node to add
         """
         new_node = Node(val)
         if self._size == 0:
@@ -69,7 +88,15 @@ class DoubleLinkedList(object):
         self._size += 1
 
     def pop(self) -> T:
-        """Remove last node and return value"""
+        """
+        Removes and returns the tail of the list
+
+        If the list has more than one node, the tail is removed and the previous node of the tail is set as the new
+        tail. This new tail now has no next node. If the list has one element, the tail is set to `None`. And if the
+        list is empty, the list is not adapted and `None` is returned.
+        Finally, the size of the list is decreased by one.
+        :return: the value of the tail of the list
+        """
         if self._size == 0:
             return None
         elif self._size == 1:
@@ -82,7 +109,15 @@ class DoubleLinkedList(object):
         return last_node.value
 
     def pop_left(self):
-        """Remove first node and return value"""
+        """
+        Removes and returns the head of the list
+
+        If the list has more than one node, the head is removed and the next node of the head is set as the new head.
+        This new head now has no previous node. If the list has one element, the head is set to `None`. And if the list
+        is empty, the list is not adapted and `None` is returned.
+        Finally, the size of the list is decreased by one.
+        :return: the value of the head of the list
+        """
         if self._size == 0:
             return None
         elif self._size == 1:
@@ -95,12 +130,16 @@ class DoubleLinkedList(object):
         self._size -= 1
         return first_node.value
 
-    def insert_after(self, node: "Node", val: T):
+    def insert_after(self, node: Node, val: T):
         """
-        Inserts a node (new_node) after another node
+        Inserts a value after another node
 
-        :param node: node after which the new node must be added
-        :param new_node: node to add to the list
+        Creates a new node with the given value. The new node has the _node_ as previous node and the next node of
+        _node_ is set as the next node of the added node. If _node_ is the tail of the list, the tail is set to the new
+        node and the new node has no next node.
+        Afterwards, the size of the list is increased by one.
+        :param node: node after which the new value must be added
+        :param val: value to add to the list
         """
         new_node = Node(val)
         new_node.prev = node
@@ -113,12 +152,16 @@ class DoubleLinkedList(object):
         node.next = new_node
         self._size += 1
 
-    def insert_before(self, node: "Node", val: T):
+    def insert_before(self, node: Node, val: T):
         """
-        Inserts a node (new_node) before another node
+        Inserts a value before another node
 
-        :param node: node before which the new node must be added
-        :param new_node: node to add to the list
+        Creates a new node with the given value. The new node has the _node_ as next node and the previous node of
+        _node_ is set as the previous node of the added node. If _node_ is the head of the list, the head is set to the
+        new node and the new node has no previous node.
+        Afterwards, the size of the list is increased by one.
+        :param node: node before which the new value must be added
+        :param val: value to add to the list
         """
         new_node = Node(val)
         new_node.next = node
@@ -132,11 +175,11 @@ class DoubleLinkedList(object):
         self._size += 1
 
     def remove(self, value: T):
-        """Remove node with given value if existing"""
         """
-        Removes a node from the list
+        Removes a node with the given value from the list
 
-        :param node: node to remove from the list
+        Removes the first occurrence of the given value from the list.
+        :param value: the value to remove from the list
         """
         node = self._head
         while node is not None:
@@ -145,8 +188,19 @@ class DoubleLinkedList(object):
                 return
             node = node.next
 
-    def delete(self, node: "Node") -> T:
-        """Deletes and returns value of given node, connects previous and next"""
+    def delete(self, node: Node) -> T:
+        """
+        Deletes the given node from the list and returns it's value
+
+        Deletes the given node from the list. The node before of the deleted node has now the next node of the deleted
+        node as next node. And the node after the deleted node now has the previous node of the deleted node as previous
+        node.
+        If the deleted node is the head, the head is set to the next node of the deleted node.
+        If the deleted node is the tail, the tail is set to the previous node of the deleted node.
+        Afterwards, the size of the list is decreased by one.
+        :param node: node to delete
+        :return: the value of the deleted node
+        """
         if node.value not in self:
             return None
 
@@ -165,8 +219,14 @@ class DoubleLinkedList(object):
         self._size -= 1
         return node.value
 
-    def find(self, value: T) -> "Node":
-        """Returns first node with given value, or None if no such node is found"""
+    def find(self, value: T) -> Node:
+        """
+        Returns the node with the given value
+
+        Returns the first occurrence of the given value. If no node with the value is found, `None` is returned.
+        :param value: value to find in the list
+        :return: the node with the given value
+        """
         node = self._head
         while node is not None:
             if node.value == value:
@@ -175,11 +235,17 @@ class DoubleLinkedList(object):
         return None
 
     def __len__(self) -> int:
-        """Number of nodes in the doubly linked list"""
+        """
+        Returns the length of the list
+
+        :return: number of nodes in the list
+        """
         return self._size
 
     def __str__(self):
-        """Nice representation, needs to loop over all elements!"""
+        """
+        Returns a string representation of the list
+        """
         txt = "["
         node = self._head
         while node is not None:
@@ -202,11 +268,12 @@ class DoubleLinkedList(object):
             yield node.value
             node = node.prev
 
-    def __contains__(self, item: T):
-        """Check if element is contained in the DoubleLinkedList
-        Now we can do `if elem in dll then <something> end`
-        :param item: Item of which we want to know if it is contained in the dll
-        :return: True if found, False otherwise
+    def __contains__(self, item: T) -> bool:
+        """
+        Returns whether a value is in the list
+
+        :param item: value to find in the list
+        :return: `True` if a node with the given value is in the list, `False` otherwise
         """
         return (self.find(item) is not None);
 
