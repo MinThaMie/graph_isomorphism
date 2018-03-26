@@ -8,7 +8,7 @@ from graph_io import *
 from dll import *
 
 PATH = './graphs/colorref/'
-GRAPH = 'example.grl'
+GRAPH = 'colorref_smallexample_6_15.grl'
 
 def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=True) -> int:
     """
@@ -92,6 +92,7 @@ def fast_color_refine(graph: "Graph"):
         color_map[v.colornum].append(v)
     first_color = sorted(list(color_map.keys()))[0]
     queue.append(first_color)
+    print("Queue")
     while len(queue) > 0:
         class_list = {}
         # Count neighbours of 'first color' for each vertex
@@ -105,15 +106,14 @@ def fast_color_refine(graph: "Graph"):
                 class_list[v.colornum] = []
             class_list[v.colornum].append((v, count))
         for c in class_list.keys():
+            print("Color:", c)
             to_split = {}
             # Partitions class 'c' into cells according to #neighbours of 'first color'
             if len(class_list[c]) > 1:  # Cells with only one vertex can't be split
                 for x, (y, w) in enumerate(class_list[c]):  # y: Vertex, w: # neighbours of color 'first color'
                     for a,(b, d) in enumerate(class_list[c]):  # b: Vertex, d: # neighbours of color 'first color'
                         if y is not b and w is not d:  # if y != b and amount of neighbours different -> split
-                            if w not in to_split.keys():
-                                to_split[w] = set()
-                            to_split[w].add(y)
+                            to_split[d] = to_split.get(d, set()).union({b})
             new_colour = len(color_map.keys()) + 1  # Coloring.next_color
             # Does the actual splitting
             to_append = {}
@@ -129,12 +129,16 @@ def fast_color_refine(graph: "Graph"):
                         to_append[len(to_split[key])] = new_colour
                         lengt_append.append(len(to_split[key]))
                 new_colour = len(color_map.keys()) + 1
+            print("To append:", to_append)
             if len(lengt_append) > 0:
                 if queue.find(to_append.get(min(lengt_append))) is None: # inQueue boolean
                     queue.append(to_append.get(min(lengt_append)))
+            print("Queue after append: ", queue)
         queue.pop_left()
+        print("After pop: ", queue)
     with open('mygraph.dot', 'w') as f:
         write_dot(graph, f)
+    return get_coloring(graph)
 
 
 def my_test(g):
@@ -188,7 +192,7 @@ if __name__ == "__main__":
 
     graphs = L[0]
     print("New graph pair:")
-    my_test(graphs[0])
+    my_test(graphs[2] + graphs[0])
 
     # for i in range(len(graphs)):
     #     for j in range(len(graphs)):
