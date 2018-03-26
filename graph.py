@@ -3,6 +3,7 @@ This is a module for working with directed and undirected multigraphs.
 """
 # version: 29-01-2015, Paul Bonsma
 # version: 01-02-2017, Pieter Bos, Tariq Bontekoe
+# version: 13-37-1337, NU2 🎓
 
 from typing import List, Union, Set
 
@@ -213,7 +214,7 @@ class Edge(object):
 
 
 class Graph(object):
-    def __init__(self, directed: bool, n: int=0, simple: bool=False, name: str='G'):
+    def __init__(self, directed: bool, n: int = 0, simple: bool = False, name: str = 'G'):
         """
         Creates a graph.
         :param directed: Whether the graph should behave as a directed graph.
@@ -243,7 +244,8 @@ class Graph(object):
         A user-friendly representation of this graph
         :return: A textual representation of the vertices and edges of this graph
         """
-        return "G" + self._name + ':\nV=[' + ", ".join(map(str, self._v)) + ']\nE=[' + ", ".join(map(str, self._e)) + ']'
+        return "G" + self._name + ':\nV=[' + ", ".join(map(str, self._v)) + ']\nE=[' + ", ".join(
+            map(str, self._e)) + ']'
 
     def _next_label(self) -> str:
         """
@@ -392,7 +394,7 @@ class Graph(object):
         return self
 
     def edge_exists(self, u: "Vertex", v: "Vertex") -> bool:
-        return len(self.find_edge(u,v)) == 0
+        return len(self.find_edge(u, v)) == 0
 
     def find_edge(self, u: "Vertex", v: "Vertex") -> Set["Edge"]:
         """
@@ -406,7 +408,7 @@ class Graph(object):
 
         if not self._directed:
             result.union(set([x for x in v.incidence if x == u]))
-            #result |= v.incidence.get(u, set())
+            # result |= v.incidence.get(u, set())
 
         return set(result)
 
@@ -443,42 +445,3 @@ class Graph(object):
 
         # Remove v from vertices
         self._v.remove(v)
-
-class UnsafeGraph(Graph):
-    @property
-    def vertices(self) -> List["Vertex"]:
-        return self._v
-
-    @property
-    def edges(self) -> List["Edge"]:
-        return self._e
-
-    def add_vertex(self, vertex: "Vertex"):
-        self._v.add(vertex)
-
-    def add_edge(self, edge: "Edge"):
-        self._e.add(edge)
-
-        edge.head._add_incidence(edge)
-        edge.tail._add_incidence(edge)
-
-    def find_edge(self, u: "Vertex", v: "Vertex") -> List["Edge"]:
-        left = u._incidence.get(v, None)
-        right = None
-
-        if not self._directed:
-            right = v._incidence.get(u, None)
-
-        if left is None and right is None:
-            return set()
-
-        if left is None:
-            return right
-
-        if right is None:
-            return left
-
-        return left | right
-
-    def is_adjacent(self, u: "Vertex", v: "Vertex") -> bool:
-        return v in u._incidence or (not self._directed and u in v._incidence)
