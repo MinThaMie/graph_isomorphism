@@ -175,12 +175,12 @@ class DoublyLinkedListCase(unittest.TestCase):
             self.dll.append(i)
 
         # Delete existing value
-        self.dll.delete(2)
+        self.dll.remove(2)
         self.assertEqual(len(self.dll), n - 1, "Length should be " + str(n - 1))
         self.assertIsNone(self.dll.find(2), "There should be no value of 2 in the dll")
 
         # Delete non existing value
-        self.dll.delete(-1)
+        self.dll.remove(-1)
         self.assertEqual(len(self.dll), n - 1, "Length should still be" + str(n - 1))
 
     def test_remove(self):
@@ -192,7 +192,7 @@ class DoublyLinkedListCase(unittest.TestCase):
         node = self.dll.find(2)
         prev = node.prev
         next = node.next
-        self.dll.remove(node)
+        self.dll.delete(node)
         self.assertEqual(len(self.dll), n - 1, "Length should be " + str(n - 1))
         self.assertIsNone(self.dll.find(2), "There should be no value of 2 in the dll")
         self.assertEqual(prev.next, next, "Links previous to next node")
@@ -200,7 +200,7 @@ class DoublyLinkedListCase(unittest.TestCase):
 
         # Delete non existing value
         node = Node(4)
-        self.dll.delete(node)
+        self.dll.remove(node)
         self.assertEqual(len(self.dll), n - 1, "Length should still be" + str(n - 1))
 
 

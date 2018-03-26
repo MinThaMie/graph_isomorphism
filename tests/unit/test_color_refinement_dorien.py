@@ -7,7 +7,7 @@ import unittest
 from color_refinement import is_isomorphisms
 from graph_io import *
 
-PATH = 'graphs/colorref'
+PATH = '../../graphs/colorref'
 EXPECTED = dict()
 EXPECTED['colorref_smallexample_2_49.grl'] = {'G0G1': True}
 EXPECTED['colorref_smallexample_4_7.grl'] = {'G1G3': True, 'G0G2': True}

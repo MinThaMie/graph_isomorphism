@@ -7,13 +7,13 @@ T = TypeVar('T')
 
 
 class Node(object):
-    def __init__(self, value: "T", prev: "Node" = None, next: "Node" = None):
+    def __init__(self, value: T, prev: "Node" = None, next: "Node" = None):
         self._value = value
         self.prev = prev
         self.next = next
 
     @property
-    def value(self) -> "T":
+    def value(self) -> T:
         return self._value
 
     def __str__(self):
@@ -26,7 +26,7 @@ class DoubleLinkedList(object):
         self._tail = None
         self._size = 0
 
-    def append_left(self, val: "T"):
+    def append_left(self, val: T):
         """Add element to the start of the list"""
         new_node = Node(val)
         if self._size == 0:
@@ -38,7 +38,7 @@ class DoubleLinkedList(object):
             self._head = new_node
         self._size += 1
 
-    def append(self, val: "T"):
+    def append(self, val: T):
         """Add element to the end of the list"""
         new_node = Node(val)
         if self._size == 0:
@@ -49,7 +49,7 @@ class DoubleLinkedList(object):
             self._tail = new_node
         self._size += 1
 
-    def pop(self) -> "T":
+    def pop(self) -> T:
         """Remove last node and return value"""
         if self._size == 0:
             return None
@@ -76,8 +76,7 @@ class DoubleLinkedList(object):
         self._size -= 1
         return first_node.value
 
-
-    def insert_after(self, node: "Node", val: "T"):
+    def insert_after(self, node: "Node", val: T):
         new_node = Node(val)
         new_node.prev = node
         if node.next is None:
@@ -89,7 +88,7 @@ class DoubleLinkedList(object):
         node.next = new_node
         self._size += 1
 
-    def insert_before(self, node: "Node", val: "T"):
+    def insert_before(self, node: "Node", val: T):
         new_node = Node(val)
         new_node.next = node
         if node.prev is None:
@@ -101,25 +100,27 @@ class DoubleLinkedList(object):
         node.prev = new_node
         self._size += 1
 
-    def delete(self, value: "T"):
+    def remove(self, value: T):
         """Remove node with given value if existing"""
         node = self._head
         while node is not None:
             if node.value == value:
-                self.remove(node)
+                self.delete(node)
                 return
             node = node.next
 
-    def remove(self, node: "Node") -> "T":
-        """Removes and returns value of given node, connects previous and next"""
-        node.prev.next = node.next
-        node.next.prev = node.prev
+    def delete(self, node: "Node") -> T:
+        """Deletes and returns value of given node, connects previous and next"""
+        if node.prev is not None:
+            node.prev.next = node.next
+        if node.next is not None:
+            node.next.prev = node.prev
 
         node.next = node.prev = None
         self._size -= 1
         return node.value
 
-    def find(self, value: "T") -> "Node":
+    def find(self, value: T) -> "Node":
         """Returns first node with given value, or None if no such node is found"""
         node = self._head
         while node is not None:
@@ -156,6 +157,14 @@ class DoubleLinkedList(object):
             yield node.value
             node = node.prev
 
+    def __contains__(self, item: T):
+        """Check if element is contained in the DoubleLinkedList
+        Now we can do `if elem in dll then <something> end`
+        :param item: Item of which we want to know if it is contained in the dll
+        :return: True if found, False otherwise
+        """
+        return (self.find(item) is not None);
+
 
 if __name__ == '__main__':
     from graph import Vertex, Graph
@@ -163,16 +172,19 @@ if __name__ == '__main__':
     g = Graph(False)
     v = [Vertex(g) for i in range(5)]
     n = Node(v[0])
-    lst = DoubleLinkedList(v[0])
-    lst.pushleft(v[1])
-    lst.push(v[2])
+    lst = DoubleLinkedList()
+    lst.append([0])
+    lst.append_left(v[1])
+    lst.append(v[2])
+    print(type(lst))
 
     for u in lst:
         print(u)
     print(lst)
 
-    lst2 = DoubleLinkedList(1)
-    lst2.push(2)
-    lst2.push(2)
-    lst2.pushleft(3)
+    lst2 = DoubleLinkedList()
+    lst2.append(1)
+    lst2.append(2)
+    lst2.append(2)
+    lst2.append_left(3)
     print(lst2)
