@@ -93,7 +93,6 @@ def fast_color_refine(graph: "Graph"):
     first_color = sorted(list(color_map.keys()))[0]
     queue.append(first_color)
     while len(queue) > 0:
-        print("start: ", queue)
         class_list = {}
         # Count neighbours of 'first color' for each vertex
         for v in graph.vertices:
@@ -127,7 +126,6 @@ def fast_color_refine(graph: "Graph"):
                         if v.colornum not in color_map.keys():
                             color_map[v.colornum] = []
                         color_map[v.colornum].append(v)
-                        print("color node ", v.label, ": ",  v.colornum)
                         to_append[len(to_split[key])] = new_colour
                         lengt_append.append(len(to_split[key]))
                 new_colour = len(color_map.keys()) + 1
@@ -135,7 +133,6 @@ def fast_color_refine(graph: "Graph"):
                 if queue.find(to_append.get(min(lengt_append))) is None: # inQueue boolean
                     queue.append(to_append.get(min(lengt_append)))
         queue.pop_left()
-        print("end", queue)
     with open('mygraph.dot', 'w') as f:
         write_dot(graph, f)
 
