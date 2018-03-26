@@ -111,12 +111,21 @@ class DoubleLinkedList(object):
 
     def delete(self, node: "Node") -> T:
         """Deletes and returns value of given node, connects previous and next"""
-        if node.prev is not None:
-            node.prev.next = node.next
-        if node.next is not None:
-            node.next.prev = node.prev
+        if node.value not in self:
+            return None
 
-        node.next = node.prev = None
+        prev_node, next_node = node.prev, node.next
+        if prev_node is not None:
+            prev_node.next = next_node
+        if next_node is not None:
+            next_node.prev = prev_node
+
+        if node == self._head:
+            self._head = next_node
+        if node == self._tail:
+            self._tail = prev_node
+        node.next = None
+        node.prev = None
         self._size -= 1
         return node.value
 
