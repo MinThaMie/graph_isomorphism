@@ -4,22 +4,23 @@ This is a module for the Coloring class used in the Color Refinement Algorithm
 # version: 7-3-18, Dorien Meijer Cluwen
 
 from graph import *
+from dll import DoubleLinkedList
 
 
 class Coloring(object):
     def __init__(self):
         self._dict = {}
 
-    def set(self, color: "Integer", vertex: "Vertex"):
+    def set(self, color: int, vertex: Vertex):
         if color not in self._dict.keys():
-          self._dict[color] = []
+            self._dict[color] = DoubleLinkedList()
         self._dict[color].append(vertex)
         vertex.colornum = color
 
-    def get(self, color) -> List["Vertex"]:
+    def get(self, color) -> DoubleLinkedList:
         return list(self._dict[color])
 
-    def color(self, vertex) -> "Integer":
+    def color(self, vertex) -> int:
         for color in self._dict.keys():
             if vertex in self._dict[color]:
                 return color
