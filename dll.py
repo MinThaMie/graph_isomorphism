@@ -8,7 +8,7 @@ T = TypeVar('T')
 
 
 class Node(object):
-    def __init__(self, value: T, prev_node: Node = None, next_node: Node = None):
+    def __init__(self, value: T, prev_node:"Node"= None, next_node:"Node"= None):
         """
         Initializes a node
 

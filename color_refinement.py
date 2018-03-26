@@ -10,7 +10,7 @@ PATH = './graphs/treepaths/'
 GRAPH = 'threepaths160.gr'
 
 
-def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool=True) -> int:
+def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
     """
     Returns the number of isomorphisms of `Graph` g and h for a given coloring
 

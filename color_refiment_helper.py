@@ -16,7 +16,7 @@ def debug(*args):
         print(*args)
 
 
-def compare(s: List, t: List, my_key=None)-> bool:
+def compare(s: List, t: List, my_key=None) -> bool:
     """
     Compares if two lists are equal
 
@@ -132,7 +132,7 @@ def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
             if v.label > u.label:
                 if u.is_adjacent(v) and are_twins(u, v):
                     twins.append((u, v))
-                if compare(u.neighbours,v.neighbours, lambda vertex: vertex.label):
+                if compare(u.neighbours, v.neighbours, lambda vertex: vertex.label):
                     false_twins.append((u, v))
     return twins, false_twins
 
