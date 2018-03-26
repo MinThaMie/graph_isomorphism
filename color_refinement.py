@@ -5,6 +5,7 @@ version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 from color_refiment_helper import *
 import time
 from graph_io import *
+from dll import *
 
 PATH = './graphs/treepaths/'
 GRAPH = 'threepaths160.gr'
@@ -78,6 +79,60 @@ def color_refine(coloring: "Coloring") -> "Coloring":
     return coloring
 
 
+def fast_color_refine(graph: "Graph"):
+    # takes initial coloring
+    qlist = DoubleLinkedList()
+    color_map = {}
+    neigh_map = {}
+    #TODO: Replace this with better things, because it's now just used to get the amount of colors
+    # because I did not figure out how to do this with the Coloring class yet
+    # Neigh_map might not be neccessary
+    for v in graph.vertices:
+        if v.colornum not in color_map.keys():
+            color_map[v.colornum] = []
+        color_map[v.colornum].append(v)
+        if v not in neigh_map.keys():
+            neigh_map[v] = None
+        neigh_map[v] = v.neighbours
+    first_color = sorted(list(color_map.keys()))[0]
+    qlist.append(Node(first_color))
+    #TODO: Create a loop with the queue
+    class_list = {}
+    for v in graph.vertices:
+        count = 0
+        if v.colornum is not qlist._first_node:
+            for x in neigh_map.get(v):
+                if x.colornum is qlist._first_node:
+                    count += 1
+        if v.colornum not in class_list.keys():
+            class_list[v.colornum] = []
+        class_list[v.colornum].append((v, count))
+    for c in class_list.keys():
+        to_split = {}
+        for x, (y, w) in enumerate(class_list[c]):
+            for a,(b, d) in enumerate(class_list[c]):
+                if y is not b and w is not d:
+                    if w not in to_split.keys():
+                        to_split[w] = set()
+                    to_split[w].add(y)
+        new_colour = len(color_map.keys())
+        for key in to_split.keys():
+            if key > 0:
+                for v in to_split[key]:
+                    v.colornum = new_colour
+                    qlist.append(new_colour)
+            new_colour += 1
+    qlist.remove(qlist._first_node)
+
+
+def my_test(g):
+    graph = g
+    for v in graph.vertices:
+        v.colornum = v.degree
+    fast_color_refine(graph)
+
+
+
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     """
         Returns the number of isomorphisms for graph g and h.
@@ -120,18 +175,21 @@ if __name__ == "__main__":
         L = load_graph(f,read_list=True)
 
     graphs = L[0]
+    print("New graph pair:")
+    my_test(graphs[0])
 
-    for i in range(len(graphs)):
-        for j in range(len(graphs)):
-            if j == i:
-                start= time.time()
-                num = get_number_automorphisms(graphs[i])
-                print('There are', num, 'automorphisms')
-                print('Took', time.time() - start, 'seconds\n')
-            if j > i:
-                start = time.time()
-                isomorph = is_isomorphisms(graphs[i], graphs[j])
-                print(graphs[i].name,'and',graphs[j].name,'isomorphic?',isomorph)
-                num = count_isomorphism(graphs[i], graphs[j])
-                print('There are',num,'isomorphisms')
-                print('Took',time.time()-start,'seconds\n')
+    # for i in range(len(graphs)):
+    #     for j in range(len(graphs)):
+    #         if j == i:
+    #             start= time.time()
+    #             num = get_number_automorphisms(graphs[i])
+    #             print('There are', num, 'automorphisms')
+    #             print('Took', time.time() - start, 'seconds\n')
+    #         if j > i:
+    #             start = time.time()
+    #             isomorph = is_isomorphisms(graphs[i], graphs[j])
+    #             print(graphs[i].name,'and',graphs[j].name,'isomorphic?',isomorph)
+    #             num = count_isomorphism(graphs[i], graphs[j])
+    #             print('There are',num,'isomorphisms')
+    #             print('Took',time.time()-start,'seconds\n')
+
