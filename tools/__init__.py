@@ -18,7 +18,7 @@ def dot_to_pdf(dot_file_path: str, pdf_file_path: str, open_outfile: bool = Fals
 
 
 def unique_integer() -> int:
-    """Generate a unique positive integer."""
+    """Generate a unique non-negative integer."""
 
     # Note: int is unbounded (no max, except for system limit) in Python 3
     # Source: https://stackoverflow.com/a/7604981/3169029
