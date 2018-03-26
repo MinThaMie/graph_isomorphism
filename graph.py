@@ -201,6 +201,8 @@ class Edge(object):
 
 
 class Graph(object):
+    disjoint_union_operator = '⊎'
+
     def __init__(self, directed: bool, n: int = 0, simple: bool = False, name: str = 'G'):
         """Instantiate a graph.
 
@@ -350,25 +352,37 @@ class Graph(object):
         :param Graph other: The other graph to form a disjoint union with.
         :return: A new graph instance being the disjoint union of this graph and the other.
         """
-        if self == other:
-            return self
 
-        unionGraph = Graph(self.directed and other.directed, 0, self.simple & other.simple)
-        for g in [self, other]:
-            for v in g.vertices:
-                v.add_graph(unionGraph)
-                unionGraph.add_vertex(v)
-            for e in g.edges:
-                unionGraph.add_edge(e)
+        disjoint_union_name = ''
+        if self.name and other.name:
+            disjoint_union_name = f'{self.name} {Graph.disjoint_union_operator} {other.name}'
 
-        return unionGraph
+        disjoint_union = Graph(
+            directed=self.directed or other.directed,
+            n=0,
+            simple=self.simple or other.simple,
+            name=disjoint_union_name
+        )
 
-    def __iadd__(self, other: Union[Edge, Vertex]) -> "Graph":
+        for vertex in self.vertices + other.vertices:
+            disjoint_union.add_vertex(vertex)
+
+        for edge in self.edges + other.edges:
+            disjoint_union.add_edge(edge)
+
+        return disjoint_union
+
+    def __iadd__(self, other: Union['Graph', Vertex, Edge]) -> "Graph":
+        """Add a graph, vertex or edge to this graph with the += syntax.
+
+        :param other: The graph, vertex or edge to be added.
+        :return: In case of a graph: this method returns a new graph instance being the disjoint union of the two
+                 graphs. Otherwise this method modifies this graph object and returns it.
         """
-        Add either an `Edge` or `Vertex` with the += syntax.
-        :param other: The object to be added
-        :return: The modified graph
-        """
+
+        if isinstance(other, Graph):
+            return self + other
+
         if isinstance(other, Vertex):
             self.add_vertex(other)
 
