@@ -99,7 +99,7 @@ class DoubleLinkedList(object):
         """
         Inserts a node (new_node) after another node
 
-        :param after: node after which the new node must be added
+        :param node: node after which the new node must be added
         :param new_node: node to add to the list
         """
         new_node = Node(val)
@@ -117,7 +117,7 @@ class DoubleLinkedList(object):
         """
         Inserts a node (new_node) before another node
 
-        :param before: node before which the new node must be added
+        :param node: node before which the new node must be added
         :param new_node: node to add to the list
         """
         new_node = Node(val)

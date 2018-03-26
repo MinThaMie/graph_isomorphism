@@ -111,7 +111,7 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
     """
     Returns whether the two graphs are isomorphic
 
-    The algorithm of `get_number_isomorphisms` with count set to `False` is used to determine the number of
+    Uses the algorithm of `get_number_isomorphisms` with count set to `False` is used to determine the number of
     isomorphisms. When the number of isomorphisms is 0, graphs are not isomorphic. Otherwise, the graphs are isomorphic.
     :param g: graph to compare for isomorphism
     :param h: graph to compare for isomorphism

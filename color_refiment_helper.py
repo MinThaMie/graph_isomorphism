@@ -11,13 +11,12 @@ def debug(*args):
     Prints debug statements when DEBUG is set to `True`
 
     :param args: argument to be printed
-    :return:
     """
     if DEBUG:
         print(*args)
 
 
-def compare(s: "List", t: "List", my_key=None)-> bool:
+def compare(s: List, t: List, my_key=None)-> bool:
     """
     Compares if two lists are equal
 
@@ -31,12 +30,13 @@ def compare(s: "List", t: "List", my_key=None)-> bool:
 
 def create_partition(coloring: Coloring, vertex1: Vertex, vertex2: Vertex) -> Coloring:
     """
-    Returns a new coloring where both vertices have the same new color and are removed from the one they belonged to
+    Returns a new coloring where both vertices have the same new color class and are removed from the one they belonged
+    to
 
     :param coloring: current coloring
     :param vertex1: vertex to be in the separate color
     :param vertex2: vertex to be in the separate color
-    :return: a new coloring with vertex1 and vertex2 as a separate color
+    :return: a new coloring with vertex1 and vertex2 together as a new color class
     """
     new_coloring = coloring.copy()
     new_color = new_coloring.next_color()
