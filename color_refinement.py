@@ -7,8 +7,8 @@ import time
 from graph_io import *
 from dll import *
 
-PATH = './graphs/treepaths/'
-GRAPH = 'threepaths160.gr'
+PATH = './graphs/colorref/'
+GRAPH = 'example.grl'
 
 def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=True) -> int:
     """
@@ -81,43 +81,63 @@ def color_refine(coloring: "Coloring") -> "Coloring":
 
 def fast_color_refine(graph: "Graph"):
     # takes initial coloring
-    qlist = DoubleLinkedList()
+    queue = DoubleLinkedList()
     color_map = {}
     #TODO: Replace this with better things, because it's now just used to get the amount of colors
     # because I did not figure out how to do this with the Coloring class yet
+    # Create color_map from already colored vertices (eg. initialize_coloring)
     for v in graph.vertices:
         if v.colornum not in color_map.keys():
             color_map[v.colornum] = []
         color_map[v.colornum].append(v)
     first_color = sorted(list(color_map.keys()))[0]
-    qlist.append(Node(first_color))
-    #TODO: Create a loop with the queue
-    class_list = {}
-    for v in graph.vertices:
-        count = 0
-        if v.colornum is not qlist._first_node:
-            for x in v.neighbours:
-                if x.colornum is qlist._first_node:
-                    count += 1
-        if v.colornum not in class_list.keys():
-            class_list[v.colornum] = []
-        class_list[v.colornum].append((v, count))
-    for c in class_list.keys():
-        to_split = {}
-        for x, (y, w) in enumerate(class_list[c]):
-            for a,(b, d) in enumerate(class_list[c]):
-                if y is not b and w is not d:
-                    if w not in to_split.keys():
-                        to_split[w] = set()
-                    to_split[w].add(y)
-        new_colour = len(color_map.keys())
-        for key in to_split.keys():
-            if key > 0:
-                for v in to_split[key]:
-                    v.colornum = new_colour
-                    qlist.append(new_colour)
-            new_colour += 1
-    qlist.remove(qlist._first_node)
+    queue.append(first_color)
+    while len(queue) > 0:
+        print("start: ", queue)
+        class_list = {}
+        # Count neighbours of 'first color' for each vertex
+        for v in graph.vertices:
+            count = 0
+            if v.colornum is not queue._head.value:
+                for x in v.neighbours:
+                    if x.colornum is queue._head.value:
+                        count += 1
+            if v.colornum not in class_list.keys():
+                class_list[v.colornum] = []
+            class_list[v.colornum].append((v, count))
+        for c in class_list.keys():
+            to_split = {}
+            # Partitions class 'c' into cells according to #neighbours of 'first color'
+            if len(class_list[c]) > 1:  # Cells with only one vertex can't be split
+                for x, (y, w) in enumerate(class_list[c]):  # y: Vertex, w: # neighbours of color 'first color'
+                    for a,(b, d) in enumerate(class_list[c]):  # b: Vertex, d: # neighbours of color 'first color'
+                        if y is not b and w is not d:  # if y != b and amount of neighbours different -> split
+                            if w not in to_split.keys():
+                                to_split[w] = set()
+                            to_split[w].add(y)
+            new_colour = len(color_map.keys()) + 1  # Coloring.next_color
+            # Does the actual splitting
+            to_append = {}
+            lengt_append = []
+            for key in to_split.keys():
+                if key > 0:  # only recolor vertices with >0 neighbours of 'first color'
+                    for v in to_split[key]:
+                        color_map[v.colornum].remove(v)
+                        v.colornum = new_colour
+                        if v.colornum not in color_map.keys():
+                            color_map[v.colornum] = []
+                        color_map[v.colornum].append(v)
+                        print("color node ", v.label, ": ",  v.colornum)
+                        to_append[len(to_split[key])] = new_colour
+                        lengt_append.append(len(to_split[key]))
+                new_colour = len(color_map.keys()) + 1
+            if len(lengt_append) > 0:
+                if queue.find(to_append.get(min(lengt_append))) is None: # inQueue boolean
+                    queue.append(to_append.get(min(lengt_append)))
+        queue.pop_left()
+        print("end", queue)
+    with open('mygraph.dot', 'w') as f:
+        write_dot(graph, f)
 
 
 def my_test(g):
