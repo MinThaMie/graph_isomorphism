@@ -4,6 +4,7 @@ version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
 from color_refiment_helper import *
 import time
+import preprocessing
 from graph_io import *
 
 PATH = './graphs/treepaths/'
@@ -184,12 +185,9 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     :param count: whether the number of isomorphisms
     :return: The number of isomorphisms of graph g and h
     """
-    if g.order != h.order:
+    if not preprocessing.checks(g, h):
         return 0
-    if g.size != h.size:
-        return 0
-    added_graph = g + h
-    coloring = initialize_coloring(added_graph)
+    coloring = initialize_coloring(preprocessing.remove_loners(g + h))
     return count_isomorphism(g, h, coloring, count)
 
 
