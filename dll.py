@@ -176,7 +176,7 @@ class DoubleLinkedList(object):
 
     def remove(self, value: T):
         """
-        Removes a node with the given value from the list
+        Removes the first occurrence of a node with the given value from the list
 
         Removes the first occurrence of the given value from the list. If no node with the value can be found, no node
         is removed.
@@ -223,11 +223,11 @@ class DoubleLinkedList(object):
 
     def find(self, value: T) -> Node:
         """
-        Returns the node with the given value
+        Returns the first occurrence of a node with the given value
 
         Returns the first occurrence of the given value. If no node with the value is found, `None` is returned.
         :param value: value to find in the list
-        :return: the node with the given value
+        :return: the node with the given value, `None` if the value could not be found
         """
         node = self._head
         while node is not None:
