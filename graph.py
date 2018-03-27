@@ -16,6 +16,7 @@ class GraphError(Exception):
 
         :param str message: The error message.
         """
+
         super(GraphError, self).__init__(message)
 
 
@@ -41,6 +42,7 @@ class Vertex(object):
 
         :return: The string to approximate the constructor arguments of the `Vertex'
         """
+
         return 'Vertex(label={}, #incident={})'.format(self.label, len(self._incidence))
 
     def __str__(self) -> str:
@@ -48,6 +50,7 @@ class Vertex(object):
 
         :return: The string representation of the label.
         """
+
         return str(self._label)
 
     def is_adjacent(self, other: "Vertex") -> bool:
@@ -55,6 +58,7 @@ class Vertex(object):
 
         :param Vertex other: The other vertex
         """
+
         return other in self._incidence
 
     def _add_incidence(self, edge: "Edge"):
@@ -91,6 +95,7 @@ class Vertex(object):
 
         :return: List of graphs this vertex belongs to.
         """
+
         return self._graphs
 
     @property
@@ -116,6 +121,7 @@ class Vertex(object):
     @property
     def degree(self) -> int:
         """Get the degree of the vertex."""
+
         return sum(map(len, self._incidence.values()))
 
     @property
@@ -151,6 +157,7 @@ class Edge(object):
 
         :return: The string to approximate the constructor arguments of this edge.
         """
+
         return 'Edge(head={}, tail={}, weight={})'.format(self.head.label, self.tail.label, self.weight)
 
     def __str__(self) -> str:
@@ -158,6 +165,7 @@ class Edge(object):
 
         :return: A user friendly representation of this edge.
         """
+
         return '({}, {})'.format(str(self.tail), str(self.head))
 
     @property
@@ -166,6 +174,7 @@ class Edge(object):
 
         :return: The tail of this edge.
         """
+
         return self._tail
 
     @property
@@ -174,6 +183,7 @@ class Edge(object):
 
         :return: The head of this edge.
         """
+
         return self._head
 
     @property
@@ -182,6 +192,7 @@ class Edge(object):
 
         :return: The weight of this edge
         """
+
         return self._weight
 
     def other_end(self, vertex: Vertex) -> Vertex:
@@ -205,6 +216,7 @@ class Edge(object):
         :param Vertex vertex: The vertex.
         :return: Whether the vertex is incident with the edge.
         """
+
         return self.head == vertex or self.tail == vertex
 
 
@@ -235,6 +247,7 @@ class Graph(object):
 
         :return: The string to approximate the constructor arguments of this graph.
         """
+
         return 'Graph(directed={}, simple={}, #edges={n_edges}, #vertices={n_vertices})'.format(
             self._directed, self._simple, n_edges=len(self._e), n_vertices=len(self._v))
 
@@ -243,6 +256,7 @@ class Graph(object):
 
         :return: A textual representation of the vertices and edges of this graph.
         """
+
         return "G" + self._name + ':\nV=[' + ", ".join(map(str, self._v)) + ']\nE=[' + ", ".join(
             map(str, self._e)) + ']'
 
@@ -251,6 +265,7 @@ class Graph(object):
 
         :return: A unique label.
         """
+
         result = self._next_label_value
         self._next_label_value += 1
         return str(self._name) + '_' + str(result)
@@ -261,6 +276,7 @@ class Graph(object):
 
         :return: Name of the graph
         """
+
         return self._name
 
     @name.setter
@@ -273,6 +289,7 @@ class Graph(object):
 
         :return: Whether this graph is simple.
         """
+
         return self._simple
 
     @property
@@ -281,16 +298,19 @@ class Graph(object):
 
         :return: Whether the graph is directed.
         """
+
         return self._directed
 
     @property
     def vertices(self) -> List["Vertex"]:
         """:return: The `set` of vertices of this graph."""
+
         return list(self._v)
 
     @property
     def edges(self) -> List["Edge"]:
         """:return: The `set` of edges of this graph."""
+
         return list(self._e)
 
     @property
@@ -301,10 +321,12 @@ class Graph(object):
     @property
     def size(self) -> int:
         """The number of edges of this graph."""
+
         return len(self.edges)
 
     def __iter__(self):
         """:return: Returns an iterator for the vertices of the graph."""
+
         return iter(self._v)
 
     def add_vertex(self, vertex: "Vertex"):
@@ -433,6 +455,7 @@ class Graph(object):
         :param Vertex v: Another vertex.
         :return: Whether the vertices are adjacent.
         """
+
         return v in u.neighbours and (not self.directed or any(e.head == v for e in u.incidence))
 
     def del_edge(self, edge: "Edge"):
