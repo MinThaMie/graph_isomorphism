@@ -33,8 +33,8 @@ class Vertex(object):
             label = graph._next_label()
 
         self._graphs = [graph]
-        self.label = label
         self._incidence = {}
+        self._label = label
 
     def __repr__(self):
         """A programmer-friendly representation of this vertex.
@@ -48,7 +48,7 @@ class Vertex(object):
 
         :return: The string representation of the label.
         """
-        return str(self.label)
+        return str(self._label)
 
     def is_adjacent(self, other: "Vertex") -> bool:
         """Returns True iff this vertex is adjacent to the specified other vertex.
@@ -117,6 +117,14 @@ class Vertex(object):
     def degree(self) -> int:
         """Get the degree of the vertex."""
         return sum(map(len, self._incidence.values()))
+
+    @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, label):
+        self._label = label
 
 
 class Edge(object):
