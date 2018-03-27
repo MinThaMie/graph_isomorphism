@@ -38,7 +38,6 @@ def set_up_test_graphs():
     #     0 - 1   3
     #          \ /
     #           4
-    # N.b.: labels probably have different numbers due to unique label generation by tools.unique_integer()
     non_trivial_graph = Graph(directed=False, n=5)
     vertices = non_trivial_graph.vertices
     non_trivial_graph.add_edge(Edge(vertices[0], vertices[1]))
