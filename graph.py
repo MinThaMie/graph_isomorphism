@@ -483,3 +483,31 @@ class Graph(object):
 
         v.graphs.remove(self)
         self._v.remove(v)
+
+    def complement(self) -> 'Graph':
+        """Instantiate this graph's complement.
+
+        :return A new graph instance being this graph's complement. It has new vertex instances and, by definition, new
+                edges.
+        """
+
+        complement = Graph(directed=self.directed, simple=self.simple, name='complement of ' + self.name)
+
+        # Map current vertices to copies for complement
+        current_complement_vertices = {vertex: Vertex(graph=complement, label=vertex.label) for vertex in list(self._v)}
+
+        while len(current_complement_vertices) > 0:
+            current_vertex, complement_vertex = current_complement_vertices.popitem()
+
+            complement.add_vertex(complement_vertex)
+
+            complement_neighbours = {
+                complement_neighbour
+                for current_neighbour, complement_neighbour in current_complement_vertices.items()
+                if not current_vertex.is_adjacent(current_neighbour)
+            }
+
+            for complement_neighbour in complement_neighbours:
+                complement.add_edge(Edge(tail=complement_vertex, head=complement_neighbour))
+
+        return complement

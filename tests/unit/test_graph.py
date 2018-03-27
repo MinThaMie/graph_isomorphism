@@ -1,7 +1,9 @@
 import unittest
+from typing import Iterable, Any, Callable
 
 import tests
-from graph import Graph
+from color_refiment_helper import compare
+from graph import Graph, Vertex, Edge
 
 
 class GraphTests(unittest.TestCase):
@@ -93,6 +95,67 @@ class GraphTests(unittest.TestCase):
         self.assertFalse((simple + non_simple).simple)
         self.assertFalse((non_simple + simple).simple)
         self.assertFalse((non_simple + non_simple).simple)
+
+    def test_complement(self):
+        vertex_label = Vertex.label.__get__
+        vertex_degree = Vertex.degree.__get__
+
+        def edge_tail_label(edge: Edge): return edge.tail.label
+
+        def edge_head_label(edge: Edge): return edge.head.label
+
+        Hobbit = Any
+        Hobbits = Iterable[Hobbit]
+        Wizard = Callable[[Hobbit], Any]
+
+        def _compare_hobbits_by_wizard(bagginses: Hobbits, gamgees: Hobbits, gandalf: Wizard) -> bool:
+            """
+            Compare objects by function.
+
+            :param Iterable bagginses: One iterable.
+            :param Iterable gamgees: Another iterable.
+            :param Callable gandalf: Callable that maps the specified iterables to whatever being compared.
+            :return: `True` if the iterables compare equal based on the mapping made by the callable; `False` otherwise.
+            """
+
+            frodo = map(gandalf, bagginses)
+            samwise = map(gandalf, gamgees)
+            return compare(frodo, samwise)
+
+        # Assert that the complement of the empty graph is the empty graph
+        complement = tests.empty_graph.complement()
+        self.assertEqual([], complement.vertices)
+        self.assertEqual([], complement.edges)
+
+        # Assert that the complement of the singly connected graph of order 2 is the disconnected graph of order 2
+        graph = tests.connected_graph_order_2
+        complement = graph.complement()
+
+        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_label))
+
+        self.assertEqual([], complement.edges)
+
+        # Assert that the complement of the complement of a graph is the graph itself
+        complement = complement.complement()
+
+        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_label))
+        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_degree))
+
+        self.assertTrue(_compare_hobbits_by_wizard(graph.edges, complement.edges, edge_tail_label))
+        self.assertTrue(_compare_hobbits_by_wizard(graph.edges, complement.edges, edge_head_label))
+
+        # Assert that the complement of a non-trivial graph is correctly constructed
+        graph = tests.non_trivial_graph
+        complement = graph.complement()
+        expected = tests.non_trivial_graph_complement
+
+        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_label))
+        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_degree))
+        self.assertTrue(_compare_hobbits_by_wizard(expected.vertices, complement.vertices, vertex_label))
+        self.assertTrue(_compare_hobbits_by_wizard(expected.vertices, complement.vertices, vertex_degree))
+
+        self.assertTrue(_compare_hobbits_by_wizard(expected.edges, complement.edges, edge_tail_label))
+        self.assertTrue(_compare_hobbits_by_wizard(expected.edges, complement.edges, edge_head_label))
 
 
 if __name__ == '__main__':
