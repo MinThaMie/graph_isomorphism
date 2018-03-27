@@ -248,8 +248,13 @@ class Graph(object):
         :return: The string to approximate the constructor arguments of this graph.
         """
 
-        return 'Graph(directed={}, simple={}, #edges={n_edges}, #vertices={n_vertices})'.format(
-            self._directed, self._simple, n_edges=len(self._e), n_vertices=len(self._v))
+        return 'Graph(' \
+               f'name={self.name}, ' \
+               f'directed={self._directed}, ' \
+               f'simple={self._simple}, ' \
+               f'#edges={len(self._e)}, ' \
+               f'#vertices={len(self._v)}' \
+               ')'
 
     def __str__(self) -> str:
         """A user-friendly representation of this graph.
@@ -257,8 +262,9 @@ class Graph(object):
         :return: A textual representation of the vertices and edges of this graph.
         """
 
-        return "G" + self._name + ':\nV=[' + ", ".join(map(str, self._v)) + ']\nE=[' + ", ".join(
-            map(str, self._e)) + ']'
+        return self._name + ':\n' \
+                            'V=[' + ", ".join(map(str, self._v)) + ']\n' \
+                                                                   'E=[' + ", ".join(map(str, self._e)) + ']'
 
     def _next_label(self) -> str:
         """Generate a unique label for vertices in the graph.
