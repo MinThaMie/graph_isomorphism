@@ -5,7 +5,6 @@ from color_refiment_helper import *
 
 class TestCRHelper(unittest.TestCase):
 
-    @staticmethod
     def create_graph_helper(self, edges: List[List["Integer"]]):
         g = Graph(False)
         vertices = {}
