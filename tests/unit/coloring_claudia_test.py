@@ -42,7 +42,7 @@ class TestPr2(unittest.TestCase):
         # v_g2 = Vertex(g)
         # v_g3 = Vertex(g)
         # coloring = {0: [v_g1, v_g2, v_g3]}
-        new_coloring = create_partition(coloring, v_g1, v_g2)
+        new_coloring = create_new_color_class(coloring, v_g1, v_g2)
         self.assertEqual(2, new_coloring.num_colors)  # __len__())
         self.assertListEqual([v_g1, v_g2], new_coloring.get(1))
         self.assertListEqual([v_g3], new_coloring.get(0))
