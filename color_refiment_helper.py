@@ -28,7 +28,7 @@ def compare(s: List, t: List, my_key=None) -> bool:
     return sorted(s, key=my_key) == sorted(t, key=my_key)
 
 
-def create_partition(coloring: Coloring, vertex1: Vertex, vertex2: Vertex) -> Coloring:
+def create_new_color_class(coloring: Coloring, vertex1: Vertex, vertex2: Vertex) -> Coloring:
     """
     Returns a new coloring where both vertices have the same new color class and are removed from the one they belonged
     to

@@ -92,8 +92,8 @@ class DoubleLinkedList(object):
         Removes and returns the tail of the list
 
         If the list has more than one node, the tail is removed and the previous node of the tail is set as the new
-        tail. This new tail now has no next node. If the list has one element, the tail is set to `None`. And if the
-        list is empty, the list is not adapted and `None` is returned.
+        tail. This new tail now has no next node. If the list has one element, the head and tail are set to `None`. And
+        if the list is empty, the list is not adapted and `None` is returned.
         Finally, the size of the list is decreased by one.
         :return: the value of the tail of the list
         """
@@ -113,8 +113,8 @@ class DoubleLinkedList(object):
         Removes and returns the head of the list
 
         If the list has more than one node, the head is removed and the next node of the head is set as the new head.
-        This new head now has no previous node. If the list has one element, the head is set to `None`. And if the list
-        is empty, the list is not adapted and `None` is returned.
+        This new head now has no previous node. If the list has one element, the head and tail are set to `None`. And
+        if the list is empty, the list is not adapted and `None` is returned.
         Finally, the size of the list is decreased by one.
         :return: the value of the head of the list
         """
@@ -178,7 +178,8 @@ class DoubleLinkedList(object):
         """
         Removes a node with the given value from the list
 
-        Removes the first occurrence of the given value from the list.
+        Removes the first occurrence of the given value from the list. If no node with the value can be found, no node
+        is removed.
         :param value: the value to remove from the list
         """
         node = self._head
@@ -198,8 +199,9 @@ class DoubleLinkedList(object):
         If the deleted node is the head, the head is set to the next node of the deleted node.
         If the deleted node is the tail, the tail is set to the previous node of the deleted node.
         Afterwards, the size of the list is decreased by one.
+        If the node cannot be found, the list is not changed.
         :param node: node to delete
-        :return: the value of the deleted node
+        :return: the value of the deleted node, `None` if the node could not be found
         """
         if node.value not in self:
             return None
@@ -255,14 +257,18 @@ class DoubleLinkedList(object):
         return txt
 
     def __iter__(self):
-        """Allows forward looping like 'for i in dll'"""
+        """
+        Returns an iterator for the values of the nodes in the list
+        """
         node = self._head
         while node:
             yield node.value
             node = node.next
 
     def __reversed__(self):
-        """Allows reversed looping"""
+        """
+        Returns a reversed iterator for the values of the nodes in the list
+        """
         node = self._tail
         while node:
             yield node.value

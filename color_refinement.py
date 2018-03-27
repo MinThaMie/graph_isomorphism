@@ -37,7 +37,7 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True
     vertices_in_h = [v for v in vertices if v.in_graph(h)]
     number_isomorphisms = 0
     for second_vertex in vertices_in_h:
-        adapted_coloring = create_partition(new_coloring, first_vertex, second_vertex)
+        adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
         number_isomorphisms = number_isomorphisms + count_isomorphism(g, h, adapted_coloring, count)
         # for if you want to know if isomorphic and not number
         if not count and number_isomorphisms > 0:

@@ -54,7 +54,7 @@ class Coloring(object):
 
     def recolor(self, vertex: Vertex, new_color: int, color: int=None):
         """
-        Puts the vertex from the color class color to a new color class (new_color)
+        Moves the vertex from the color class color to a new color class (new_color)
 
         :param vertex: the vertex to put in another color class
         :param new_color: the color class to put the vertex in
@@ -120,12 +120,12 @@ class Coloring(object):
         for color in self.colors:
             vertices = self.get(color)
             if len(vertices) % 2 == 1:
-                return "Unbalanced"  # corresponds to is_unbalanced() method
+                return "Unbalanced"
             else:
                 vertices_in_g = [v for v in vertices if v.in_graph(g)]
                 vertices_in_h = [v for v in vertices if v.in_graph(h)]
                 if len(vertices_in_g) != len(vertices_in_h):
-                    return "Unbalanced"  # In my opinion also unbalanced if not exactly half the vertices are from G
+                    return "Unbalanced"
                 else:
                     if len(vertices) != 2:
                         maybe = True
@@ -133,7 +133,7 @@ class Coloring(object):
         if maybe:
             return None
         else:
-            return "Bijection"  # responds to is_bijection method
+            return "Bijection"
 
     def copy(self) -> "Coloring":
         """
