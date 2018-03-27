@@ -56,4 +56,5 @@ def refine(g: "Graph", h: "Graph") -> Tuple["Graph", "Graph"]:
         return g, h
     g_new = g.deepcopy()
     h_new = h.deepcopy()
+    # TODO do stuff with deepcopied graphs
 
