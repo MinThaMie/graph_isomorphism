@@ -43,6 +43,14 @@ class GraphTests(unittest.TestCase):
         self.assertEqual(expected_vertices, disjoint_union.vertices)
         self.assertEqual(expected_edges, disjoint_union.edges)
 
+        # Assert that the disjoint union of a graph itself is twice that graph
+        graph = tests.non_trivial_graph
+        disjoint_union = graph + graph
+        expected_vertices = graph.vertices + graph.vertices
+        expected_edges = graph.edges + graph.edges
+        self.assertEqual(expected_vertices, disjoint_union.vertices)
+        self.assertEqual(expected_edges, disjoint_union.edges)
+
         # Assert the same, but use the inline addition operator
         tests.non_trivial_graph += tests.connected_graph_order_2
         self.assertEqual(expected_vertices, tests.non_trivial_graph.vertices)
