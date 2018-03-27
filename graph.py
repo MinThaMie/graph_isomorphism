@@ -285,13 +285,19 @@ class Graph(object):
         """:return: The `set` of edges of this graph."""
         return list(self._e)
 
+    @property
+    def order(self) -> int:
+        """The number of vertices of this graph."""
+        return len(self.vertices)
+
+    @property
+    def size(self) -> int:
+        """The number of edges of this graph."""
+        return len(self.edges)
+
     def __iter__(self):
         """:return: Returns an iterator for the vertices of the graph."""
         return iter(self._v)
-
-    def __len__(self) -> int:
-        """:return: The number of vertices of this graph, a.k.a. order."""
-        return len(self._v)
 
     def add_vertex(self, vertex: "Vertex"):
         """Add a vertex to this graph.

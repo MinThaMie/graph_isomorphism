@@ -15,6 +15,16 @@ class GraphTests(unittest.TestCase):
         graph.name = 'spam'
         self.assertEqual('spam', graph.name)
 
+    def test_order(self):
+        self.assertEqual(0, tests.empty_graph.order)
+        self.assertEqual(2, tests.connected_graph_order_2.order)
+        self.assertEqual(5, tests.non_trivial_graph.order)
+
+    def test_size(self):
+        self.assertEqual(0, tests.empty_graph.size)
+        self.assertEqual(1, tests.connected_graph_order_2.size)
+        self.assertEqual(5, tests.non_trivial_graph.size)
+
     def test_add(self):
         # Assert that the empty graph added to itself is itself
         should_be_empty = tests.empty_graph + tests.empty_graph
