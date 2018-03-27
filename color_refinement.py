@@ -6,8 +6,8 @@ from color_refiment_helper import *
 import time
 from graph_io import *
 
-PATH = './graphs/colorref/'
-GRAPH = 'colorref_largeexample_4_1026.grl'
+PATH = './graphs/branching/'
+GRAPH = 'trees36.grl'
 
 def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=True) -> int:
     """
@@ -91,10 +91,9 @@ def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
 
         for v in graph.vertices:
             count = 0
-            if v.colornum is not current_color:
-                for x in v.neighbours:
-                    if x.colornum is current_color:
-                        count += 1
+            for x in v.neighbours:
+                if x.colornum is current_color:
+                    count += 1
             if v.colornum not in counter.keys():
                 counter[v.colornum] = {}
             counter[v.colornum].update({v: count})
@@ -185,7 +184,7 @@ if __name__ == "__main__":
         L = load_graph(f,read_list=True)
 
     graphs = L[0]
-
+    print("Graph: ", GRAPH)
     for i in range(len(graphs)):
         for j in range(len(graphs)):
             if j == i:
