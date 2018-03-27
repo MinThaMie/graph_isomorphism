@@ -145,7 +145,7 @@ class Edge(object):
         :param weight: Optional weight of the vertex, which can be any type, but usually is a number.
         """
 
-        if set(tail.graphs) != set(head.graphs):
+        if len(set(tail.graphs).intersection(set(head.graphs))) == 0:
             raise GraphError("Can only add edges between vertices of the same graph(s)")
 
         self._tail = tail
