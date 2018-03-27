@@ -23,7 +23,7 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=
     :return: the number of isomorphisms of graph g and h for a given coloring
     """
     # TODO: make sure initial coloring is done
-    new_coloring = fast_color_refine(coloring)
+    new_coloring = fast_color_refine(g+h, coloring)
     coloring_status = new_coloring.status(g, h)
     if coloring_status == "Unbalanced":
         return 0
@@ -78,7 +78,7 @@ def color_refine(coloring: "Coloring") -> "Coloring":
     return coloring
 
 
-def fast_color_refine(coloring: "Coloring") -> "Coloring":
+def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
     # Start with first color
     qlist = DoubleLinkedList()
     qlist.append(sorted(coloring.colors)[0])
@@ -88,13 +88,16 @@ def fast_color_refine(coloring: "Coloring") -> "Coloring":
         # Count neighbours of 'first color' for each vertex, mapped per color_class
         current_color = qlist.pop_left()
         counter = {}
-        for c in coloring.colors:
-            dict = {}
-            for v in coloring.get(c):
-                # Get number of neighbours with current_color
-                n_neighbours = len([u for u in v.neighbours if coloring.color(u) == current_color])
-                dict[v] = n_neighbours
-            counter[c] = dict
+
+        for v in graph.vertices:
+            count = 0
+            if v.colornum is not current_color:
+                for x in v.neighbours:
+                    if x.colornum is current_color:
+                        count += 1
+            if v.colornum not in counter.keys():
+                counter[v.colornum] = {}
+            counter[v.colornum].update({v: count})
 
         for color_class in counter.keys():
             debug('Splitting',color_class)
@@ -136,8 +139,8 @@ def fast_color_refine(coloring: "Coloring") -> "Coloring":
     return coloring
 
 
-def my_test(g):
-    fast_color_refine(g)
+def my_test(g, cg):
+    fast_color_refine(g, cg)
 
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
@@ -183,9 +186,6 @@ if __name__ == "__main__":
 
     graphs = L[0]
 
-    # my_test(initialize_coloring(graphs[0]))
-    # with open('mygraph.dot', 'w') as f:
-    #     write_dot(graphs[0], f)
     for i in range(len(graphs)):
         for j in range(len(graphs)):
             if j == i:
