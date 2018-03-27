@@ -4,10 +4,27 @@ version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
 from color_refiment_helper import *
 import time
+import preprocessing
 from graph_io import *
 
 PATH = './graphs/treepaths/'
 GRAPH = 'threepaths160.gr'
+
+
+def preprocess_graphs(g: "Graph", h: "Graph") -> bool:
+    """
+    Pre-processing:
+        - Remove loners
+        - Check for equal vertices
+
+    :param g: first graph to compare
+    :param h: second graph to compare
+    :return: True if graph is eligible for color_refinement and isomorphism(s) detection
+    """
+    preprocessing.remove_loners(g)
+    preprocessing.remove_loners(h)
+    return preprocessing.checks(g, h)
+
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -103,6 +120,8 @@ def get_number_isomorphisms(g: Graph, h: Graph, count: bool) -> int:
     if len(g.edges) != len(h.edges):
         return 0
     added_graph = g + h
+    preprocessing.remove_loners(added_graph)
+    preprocessing.checks(g, h)
     coloring = initialize_coloring(added_graph)
     return count_isomorphism(g, h, coloring, count)
 
