@@ -64,7 +64,6 @@ class TestCRHelper(unittest.TestCase):
                 v.colornum = c
 
         n_neighbors_of_color1 = group_by(vertices, lambda v: len([w for w in v.neighbours if w.colornum == 1]))
-        print(n_neighbors_of_color1)
         expected = {0 : [vertices[0], vertices[2], vertices[3], vertices[4], vertices[5], vertices[6]],
                     1: [vertices[7]],
                     2: [vertices[1]]}
