@@ -171,7 +171,6 @@ class ColoringCase(unittest.TestCase):
         self.coloring.add(g.vertices[7:])
 
         copy = self.coloring.copy()
-        print(type(self.coloring.items()))
         for c,v in self.coloring.items():
             self.assertEqual(list(v), list(copy.get(c)))
 
