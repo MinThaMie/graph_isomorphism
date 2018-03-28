@@ -38,23 +38,33 @@ class GraphTests(unittest.TestCase):
 
         # Assert that all vertices and edges of two individual non-empty graphs are in their disjoint union
         disjoint_union = tests.non_trivial_graph + tests.connected_graph_order_2
+
         expected_vertices = tests.non_trivial_graph.vertices + tests.connected_graph_order_2.vertices
-        expected_edges = tests.non_trivial_graph.edges + tests.connected_graph_order_2.edges
         self.assertEqual(expected_vertices, disjoint_union.vertices)
+
+        expected_edges = tests.non_trivial_graph.edges + tests.connected_graph_order_2.edges
         self.assertEqual(expected_edges, disjoint_union.edges)
+
+        # Assert that the inline addition operator form a correct disjoint union
+        graph = tests.non_trivial_graph.deepcopy()
+        expected_vertices = graph.vertices
+        expected_edges = graph.edges
+
+        graph += tests.connected_graph_order_2
+        expected_vertices += tests.connected_graph_order_2.vertices
+        expected_edges += tests.connected_graph_order_2.edges
+
+        self.assertEqual(expected_vertices, graph.vertices)
+        self.assertEqual(expected_edges, graph.edges)
 
         # Assert that the disjoint union of a graph itself is twice that graph
         graph = tests.non_trivial_graph
         disjoint_union = graph + graph
         expected_vertices = graph.vertices + graph.vertices
         expected_edges = graph.edges + graph.edges
+
         self.assertEqual(expected_vertices, disjoint_union.vertices)
         self.assertEqual(expected_edges, disjoint_union.edges)
-
-        # Assert the same, but use the inline addition operator
-        tests.non_trivial_graph += tests.connected_graph_order_2
-        self.assertEqual(expected_vertices, tests.non_trivial_graph.vertices)
-        self.assertEqual(expected_edges, tests.non_trivial_graph.edges)
 
         # Assert that the graph name is correctly formed by the disjoint union
         g = Graph(directed=False)
