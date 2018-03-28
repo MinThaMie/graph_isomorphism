@@ -40,6 +40,23 @@ class Coloring(object):
         """
         return list(self._dict[color])
 
+    def add(self, vertices: List[Vertex], color=None, old_color=None):
+        """
+        Add multipe colors
+        :param vertices: vertices to add
+        :param color: color for vertices, pick new color if None
+        :param old_color: None if vertices are new to the coloring, otherwise its there old color
+        :return:
+        """
+        if color is None:
+            color = self.next_color()
+
+        for v in vertices:
+            if old_color is not None:
+                self.recolor(v,color, old_color)
+            else:
+                self.set(color,v)
+
     def color(self, vertex: Vertex) -> int:
         """
         Returns the number (or color) of the color class to which the given vertex belongs
@@ -67,6 +84,17 @@ class Coloring(object):
             self.set(new_color, vertex)
         else:
             raise KeyError('Vertex ' + str(vertex) + ' not found in coloring')
+
+    def reset(self, vertices: List[Vertex]):
+        """
+        Reset coloring using v.colornum
+
+        :param vertices: vertices to re-add to the coloring
+        """
+        self._dict = {}
+        for v in vertices:
+            self.set(v.colornum,v)
+
 
     @property
     def colors(self) -> List[int]:
@@ -145,10 +173,10 @@ class Coloring(object):
         """
         Returns a copy of the coloring
 
+        Note that the copy uses the same vertices
         :return: a copy of the coloring
         """
         new_coloring = Coloring()
-        for color in self._dict.keys():
-            for v in self._dict[color]:
-                new_coloring.set(color, v)
+        for c, v in self.items():
+            new_coloring.add(v,color=c)
         return new_coloring

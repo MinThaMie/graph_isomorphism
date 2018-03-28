@@ -63,6 +63,25 @@ class ColoringCase(unittest.TestCase):
         self.assertEqual(True, self.v1 in vertices)
         self.assertEqual(True, self.v2 in vertices)
 
+    def test_add(self):
+        # Adds new vertices
+        self.coloring.add([self.v1,self.v2], 4)
+        vertices = self.coloring.get(4)
+        self.assertEqual(2, len(vertices))
+        self.assertEqual(True, self.v1 in vertices)
+        self.assertEqual(True, self.v2 in vertices)
+
+        # Recolors old vertices when old color is given
+        v3 = Vertex(self.graph)
+        self.coloring.set(4, v3)
+        self.coloring.add([self.v1, self.v2], 0, 4)
+        vertices = self.coloring.get(0)
+        self.assertEqual(2, len(vertices))
+        self.assertEqual(True, self.v1 in vertices)
+        self.assertEqual(True, self.v2 in vertices)
+        self.assertEqual(False, v3 in vertices)
+        self.assertEqual(1, len(self.coloring.get(4)))
+
     def test_color(self):
         self.coloring.set(3, self.v1)
         self.coloring.set(4, self.v2)
@@ -80,10 +99,10 @@ class ColoringCase(unittest.TestCase):
         self.assertEqual(True, self.v1 in self.coloring.get(2))
 
         # Cannot recolor vertex that is not in the coloring
-        try:
+        with self.assertRaises(KeyError) as e:
             self.coloring.recolor(self.v2, 2)
-        except KeyError as e:
-            self.assertEqual("\'Vertex " + str(self.v2) + " not found in coloring\'", str(e))
+
+        self.assertEqual("\'Vertex " + str(self.v2) + " not found in coloring\'", str(e.exception))
 
     def test_colors(self):
         self.coloring.set(0, self.v1)
@@ -102,7 +121,6 @@ class ColoringCase(unittest.TestCase):
             self.coloring.set(i, Vertex(self.graph))
 
     def test_items(self):
-        print('test')
         self.coloring.set(0, self.v1)
         self.coloring.set(1, self.v2)
         self.coloring.set(2, Vertex(self.graph))
@@ -144,10 +162,35 @@ class ColoringCase(unittest.TestCase):
         self.assertEqual(None, coloring0.status(G0,G0copy))
 
         # TODO add more?
-        # TODO test copy
 
+    def test_copy(self):
+        g = Graph(False, n= 10)
+        self.coloring.add(g.vertices[0:2])
+        self.coloring.add(g.vertices[2:3])
+        self.coloring.add(g.vertices[3:7])
+        self.coloring.add(g.vertices[7:])
 
+        copy = self.coloring.copy()
+        print(type(self.coloring.items()))
+        for c,v in self.coloring.items():
+            self.assertEqual(list(v), list(copy.get(c)))
 
+        # Test that changing the copy does not change to old coloring
+        # But that it does change the colornum of those vertices
+        v0 = g.vertices[0]
+        copy.recolor(v0,2,0) #recolor v0
+        self.assertEqual(2, v0.colornum)
+        self.assertEqual(2, copy.color(v0))
+        self.assertEqual(0, self.coloring.color(v0)) #not recolored in old coloring
+
+    def test_reset(self):
+        g = Graph(False, n=10)
+        for idx, v in enumerate(g.vertices):
+            v.colornum = idx
+
+        self.coloring.reset(g.vertices)
+        for i in range(10):
+            self.assertEqual(i, self.coloring.color(g.vertices[i]))
 
 
 if __name__ == '__main__':
