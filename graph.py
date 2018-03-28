@@ -499,7 +499,8 @@ class Graph(object):
         while len(current_complement_vertices) > 0:
             current_vertex, complement_vertex = current_complement_vertices.popitem()
 
-            complement.add_vertex(complement_vertex)
+            if complement_vertex not in complement.vertices:
+                complement.add_vertex(complement_vertex)
 
             complement_neighbours = {
                 complement_neighbour
