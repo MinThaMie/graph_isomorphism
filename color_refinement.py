@@ -26,7 +26,6 @@ def preprocess_graphs(g: "Graph", h: "Graph") -> bool:
     return preprocessing.checks(g, h)
 
 
-
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
     """
     Returns the number of isomorphisms of `Graph` g and h for a given coloring

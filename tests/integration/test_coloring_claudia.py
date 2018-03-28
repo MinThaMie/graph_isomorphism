@@ -3,6 +3,7 @@ import unittest
 from color_refinement import *
 from tests import *
 
+
 class TestPr2(unittest.TestCase):
 
     def test_count_isomorphism_unbalanced(self):
