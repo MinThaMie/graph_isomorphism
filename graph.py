@@ -336,14 +336,13 @@ class Graph(object):
         return iter(self._v)
 
     def add_vertex(self, vertex: "Vertex"):
-        """Add a vertex to this graph. The vertex is not added if it already exists in the graph.
+        """Add a vertex to this graph.
 
         :param Vertex vertex: The vertex to be added.
         """
 
-        if vertex not in self._v:
-            vertex.graphs.append(self)
-            self._v.append(vertex)
+        vertex.graphs.append(self)
+        self._v.append(vertex)
 
     def add_edge(self, edge: "Edge"):
         """Add an edge to this graph and, if necessary, also the vertices of the edge. This includes some checks
