@@ -7,7 +7,7 @@ import unittest
 from color_refinement import is_isomorphisms
 from graph_io import *
 
-PATH = 'graphs/colorref'
+PATH = 'graphs/colorref'# to run locally from PyCharm: PATH = '../../graphs/colorref'
 EXPECTED = dict()
 EXPECTED['colorref_smallexample_2_49.grl'] = {'G0G1': True}
 EXPECTED['colorref_smallexample_4_7.grl'] = {'G1G3': True, 'G0G2': True}
@@ -55,7 +55,7 @@ class ColorRefineCase(unittest.TestCase):
             results = testfile(file)
             for result in results:
                 self.assertEqual(result[0], result[1], result[2])
-                # print(result[2], 'got', result[1])
+                print(result[2], 'got', result[1])
 
 
 if __name__ == '__main__':
