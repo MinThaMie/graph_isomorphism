@@ -10,7 +10,7 @@ def checks(g, h) -> bool:
     :param h: Graph
     :return: Boolean: True if everything checks out
     """
-    return check_degrees(g, h) or check_graph_size(g, h) or check_graph_order(g, h)
+    return check_degrees(g, h) and check_graph_size(g, h) and check_graph_order(g, h)
 
 
 def check_graph_order(g: Graph, h: Graph):
@@ -50,7 +50,7 @@ def check_degrees(g: Graph, h: Graph):
 
 def remove_loners(g: Graph):
     """
-        Method removes\
+        Method removes
         - Vertices with degree 0.
         - corrollas & knots (vertices that have one or more loops and no non-loop edges)
 
@@ -58,7 +58,6 @@ def remove_loners(g: Graph):
     :return: processed Graph g
     """
     for vertex in g.vertices:
-        # TODO maybe not necessary to add loop check
         if vertex.degree is 0 or (all(neigh == vertex for neigh in vertex.neighbours)):
             g.del_vertex(vertex)
     return g

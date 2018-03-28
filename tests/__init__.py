@@ -87,3 +87,30 @@ def graph_vertex5edge4() -> Graph:
     v4e4.add_edge(e_h3)
     v4e4.add_edge(e_h4)
     return v4e4
+
+
+def graph_vertex5edge4loop() -> Graph:
+    """
+        Create a graph with structure:
+
+        1 - 2 - 3   4
+                |
+                5
+
+    :return: The created graph
+    """
+    v5e4loop = Graph(False)
+    v_h1 = Vertex(v5e4loop)
+    v_h2 = Vertex(v5e4loop)
+    v_h3 = Vertex(v5e4loop)
+    v_h4 = Vertex(v5e4loop)
+    v_h5 = Vertex(v5e4loop)
+    e_h1 = Edge(v_h1, v_h2)
+    e_h2 = Edge(v_h2, v_h3)
+    e_h3 = Edge(v_h4, v_h4)
+    e_h4 = Edge(v_h3, v_h5)
+    v5e4loop.add_edge(e_h1)
+    v5e4loop.add_edge(e_h2)
+    v5e4loop.add_edge(e_h3)
+    v5e4loop.add_edge(e_h4)
+    return v5e4loop
