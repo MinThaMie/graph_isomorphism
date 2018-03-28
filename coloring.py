@@ -66,7 +66,7 @@ class Coloring(object):
             self._dict[color].remove(vertex)
             self.set(new_color, vertex)
         else:
-            print(vertex, 'not found')
+            raise KeyError('Vertex ' + str(vertex) + ' not found in coloring')
 
     @property
     def colors(self) -> List[int]:
@@ -77,14 +77,20 @@ class Coloring(object):
         """
         return self._dict.keys()
 
-    @property
-    def num_colors(self) -> int:
+    def __len__(self) -> int:
         """
         Returns the number of color classes in the coloring
 
         :return: the number of color classes in the coloring
         """
         return len(self._dict.keys())
+
+    def items(self):
+        """
+        Return a copy of a set of the (color,List[Vertex]) pairs in the Coloring
+        :return: set of (color,DoubleLinkedList()) pairs
+        """
+        return self._dict.items()
 
     def next_color(self) -> int:
         """

@@ -43,20 +43,20 @@ class TestPr2(unittest.TestCase):
         # v_g3 = Vertex(g)
         # coloring = {0: [v_g1, v_g2, v_g3]}
         new_coloring = create_new_color_class(coloring, v_g1, v_g2)
-        self.assertEqual(2, new_coloring.num_colors)  # __len__())
+        self.assertEqual(2, len(new_coloring))  # __len__())
         self.assertListEqual([v_g1, v_g2], new_coloring.get(1))
         self.assertListEqual([v_g3], new_coloring.get(0))
 
     def test_initialize_coloring(self):
         # empty graph
         g, v, coloring = self.helper(0)
-        self.assertEqual(0, coloring.num_colors)
+        self.assertEqual(0, len(coloring))
 
         # 1 - 2 - 3
         g = self.create_graph_helper([[1, 2], [2, 3]])
         v_g1, v_g2, v_g3 = g.vertices
         coloring = initialize_coloring(g)
-        self.assertEqual(2, coloring.num_colors)
+        self.assertEqual(2, len(coloring))
         self.assertListEqual([v_g1, v_g3], coloring.get(1))
         self.assertListEqual([v_g2], coloring.get(2))
         # 1 - 2 - 3
