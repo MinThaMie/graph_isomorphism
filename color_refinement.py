@@ -24,6 +24,7 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=
     """
     # TODO: make sure initial coloring is done
     new_coloring = fast_color_refine(g+h, coloring)
+    # new_coloring = color_refine(coloring)
     coloring_status = new_coloring.status(g, h)
     if coloring_status == "Unbalanced":
         return 0
@@ -40,6 +41,7 @@ def count_isomorphism(g: "Graph", h: "Graph", coloring: "Coloring", count: bool=
         # for if you want to know if isomorphic and not number
         if not count and number_isomorphisms > 0:
             return number_isomorphisms
+
     return number_isomorphisms
 
 
@@ -78,6 +80,19 @@ def color_refine(coloring: "Coloring") -> "Coloring":
     return coloring
 
 
+def generate_neighbour_count_with_color(graph, current_color):
+    counter = {}
+    for v in graph.vertices:
+        count = 0
+        for x in v.neighbours:
+            if x.colornum is current_color:
+                count += 1
+        if v.colornum not in counter.keys():
+            counter[v.colornum] = {}
+        counter[v.colornum].update({v: count})
+    return counter
+
+
 def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
     # Start with first color
     qlist = DoubleLinkedList()
@@ -87,17 +102,8 @@ def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
     while(len(qlist) > 0):
         # Count neighbours of 'first color' for each vertex, mapped per color_class
         current_color = qlist.pop_left()
-        counter = {}
-
-        for v in graph.vertices:
-            count = 0
-            for x in v.neighbours:
-                if x.colornum is current_color:
-                    count += 1
-            if v.colornum not in counter.keys():
-                counter[v.colornum] = {}
-            counter[v.colornum].update({v: count})
-
+        counter = generate_neighbour_count_with_color(graph, current_color)
+        # print(counter)
         for color_class in counter.keys():
             debug('Splitting',color_class)
             neighbour_map = counter[color_class]
