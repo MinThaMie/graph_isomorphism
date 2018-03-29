@@ -96,7 +96,8 @@ def generate_neighbour_count_with_color(graph, current_color):
 def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
     # Start with first color
     qlist = DoubleLinkedList()
-    qlist.append(sorted(coloring.colors)[0])
+    for c in sorted(coloring.colors):
+        qlist.append(c)
     debug('Queue', qlist)
 
     while(len(qlist) > 0):
