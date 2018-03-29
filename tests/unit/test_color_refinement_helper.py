@@ -5,7 +5,15 @@ from color_refiment_helper import *
 
 class TestCRHelper(unittest.TestCase):
 
-    def create_graph_helper(self, edges: List[List["Integer"]]):
+    @classmethod
+    def create_graph_helper(self, edges: List[List[int]]) -> Graph:
+        """
+        Create a graph from the given list of edges,
+        each edge is represented by a list of 2 integers which represent the vertex labels.
+
+        :param edges: Representation of the edges the graph should get
+        :return: Graph
+        """
         g = Graph(False)
         vertices = {}
         for edge in edges:
