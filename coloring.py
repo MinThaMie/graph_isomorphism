@@ -181,3 +181,8 @@ class Coloring(object):
         for c, v in self.items():
             new_coloring.add(v,color=c)
         return new_coloring
+
+    def set_colornums(self):
+        """Sets the 'colornum' attribute of the vertices in the coloring"""
+        for v,color in self._vertex_dict:
+            v.colornum = color
