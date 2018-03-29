@@ -80,19 +80,6 @@ def color_refine(coloring: "Coloring") -> "Coloring":
     return coloring
 
 
-def generate_neighbour_count_with_color(graph, current_color):
-    counter = {}
-    for v in graph.vertices:
-        count = 0
-        for x in v.neighbours:
-            if x.colornum is current_color:
-                count += 1
-        if v.colornum not in counter.keys():
-            counter[v.colornum] = {}
-        counter[v.colornum].update({v: count})
-    return counter
-
-
 def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
     # Start with first color
     qlist = DoubleLinkedList()
