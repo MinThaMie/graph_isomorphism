@@ -80,7 +80,7 @@ def color_refine(coloring: Coloring) -> Coloring:
                 return new_coloring
 
         debug('New coloring ', new_coloring)
-        has_changed = (coloring.num_colors != new_coloring.num_colors)
+        has_changed = (len(coloring) != len(new_coloring))
         coloring = new_coloring
     debug('No changes found')
     return coloring
