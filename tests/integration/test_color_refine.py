@@ -8,7 +8,7 @@ from color_refinement import color_refine
 from color_refiment_helper import *
 from graph_io import *
 
-PATH = '../../graphs/colorref'
+PATH = 'graphs/colorref'
 EXPECTED = dict()
 EXPECTED['colorref_smallexample_2_49.grl'] = {'G0G1': "Bijection"}
 EXPECTED['colorref_smallexample_4_7.grl'] = {'G1G3': "Bijection", 'G0G2': None}
@@ -39,15 +39,13 @@ def testfile(filename):
     for i in range(len(graphs)):
         for j in range(len(graphs)):
             if j > i:
-                coloring = initialize_coloring(graphs[i]+graphs[j])
+                coloring = initialize_coloring(graphs[i] + graphs[j])
                 coloring = color_refine(coloring)
-                status = coloring.status(graphs[i],graphs[j])
-                print(status)
+                status = coloring.status(graphs[i], graphs[j])
                 expected = get_expected_result(filename, graphs[i].name, graphs[j].name)
                 message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[
                     j].name + " in " + filename
-                print(message)
-                results.append([expected, status , message])
+                results.append([expected, status, message])
     return results
 
 
