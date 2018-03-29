@@ -113,7 +113,7 @@ def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
             debug('Vertices of color', color_class, vertices_of_c)
             debug('Neighbours', neighbour_map)
             split_count = 0
-            new_color_classes = {}
+            new_color_classes = []
 
             while len(vertices_of_c) > 0:
                 u = vertices_of_c.pop()
@@ -131,14 +131,19 @@ def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
                         vertices_of_c.remove(v)
                 split_count += 1
 
-                new_color_classes[len(coloring.get(new_color))]= new_color
-
-            # Decide which color to add to queue
-            debug('Splitted classes:')
-            for length,color in new_color_classes.items():
-                debug('color:', color, 'len:', length, 'vertices:', coloring.get(color))
+                new_color_classes.append(new_color)
+            smallest_color = new_color_classes[0]
             if split_count > 1:
-                qlist.append(new_color_classes[min(new_color_classes.keys())])
+                debug('Splitted classes:')
+                if qlist.find(smallest_color) is not None:
+                    for color in new_color_classes:
+                        if qlist.find(color) is None:
+                            qlist.append(color)
+                else:
+                    for color in new_color_classes:
+                        if len(coloring.get(smallest_color)) > len(coloring.get(color)):
+                            smallest_color = color
+                    qlist.append(smallest_color)
             debug('Queue',qlist)
 
         debug('Queue',qlist)
