@@ -5,7 +5,7 @@ import unittest
 from graph_io import *
 from color_refinement import generate_neighbour_count_with_color
 from color_refiment_helper import initialize_coloring
-PATH = '../../graphs/'
+PATH = 'graphs/'
 class CounterCase(unittest.TestCase):
 
     def test_counter_arrow(self):

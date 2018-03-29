@@ -9,7 +9,7 @@ from color_refiment_helper import *
 from graph_io import *
 from tools import dot_to_pdf
 
-PATH = '../../graphs/colorref'
+PATH = 'graphs/colorref'
 EXPECTED = dict()
 EXPECTED['colorref_smallexample_2_49.grl'] = {'G0G1': "Bijection"}
 EXPECTED['colorref_smallexample_4_7.grl'] = {'G1G3': "Bijection", 'G0G2': None}
