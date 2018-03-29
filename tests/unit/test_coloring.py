@@ -148,6 +148,21 @@ class ColoringCase(unittest.TestCase):
 
     def test_status(self):
         # For different graphs
+        # G0: 0 -- 1 -- 2 -- 3
+        #                \  /
+        #                 4 -- 5 -- 6
+        #
+        # G1: 10 -- 12 -- 13
+        #            |   /
+        #             14 -- 11 -- 15 -- 16
+        #
+        # G2: 21 -- 23 -- 25 -- 20 -- 26 -- 22
+        #                   \  /
+        #                    24
+        #
+        # G3: 30 -- 32 -- 34 -- 35 -- 36
+        #                         \  /
+        #                          31 -- 33
         G0 = self.create_graph_helper(edges=[[0, 1], [1, 2], [2, 3], [3, 4], [2, 4], [4, 5], [5, 6]])
         G1 = self.create_graph_helper(edges = [[10,12],[12,13],[12,14],[13,14],[11,14],[11,15],[15,16]])
         G2 = self.create_graph_helper(edges=[[21, 23], [23, 25], [20, 25], [20, 24], [24, 25], [20, 26], [22, 26]])
@@ -159,12 +174,12 @@ class ColoringCase(unittest.TestCase):
                 {0: [0,6,21,22], 1:[1,5,23,26], 2:[3,24], 3:[2,4,20,25]})
         coloring01 = self.create_coloring_helper(G0.vertices + G1.vertices,
                 {0: [0,6], 1: [1,5], 2:[2,4], 3:[3],4:[10],5:[11],6:[12],7:[13],8:[14],9:[15],10:[16]})
-        coloring = self.create_coloring_helper(G0.vertices+G1.vertices, {0:[0,1], 1:[10,11]})
+        unbalanced_coloring = self.create_coloring_helper(G0.vertices+G1.vertices, {0:[0,1], 1:[10,11]})
 
         self.assertEqual("Bijection", coloring13.status(G1,G3))
         self.assertEqual(None, coloring02.status(G1, G3))
         self.assertEqual("Unbalanced", coloring01.status(G1, G3))
-        self.assertEqual("Unbalanced", coloring.status(G1, G3))
+        self.assertEqual("Unbalanced", unbalanced_coloring.status(G0, G1))
 
         # Automorphism
         G0copy = G0.deepcopy()
@@ -174,8 +189,6 @@ class ColoringCase(unittest.TestCase):
         coloring0.add([G0copy.vertices[2], G0copy.vertices[4]], 2)
         coloring0.set(G0copy.vertices[3], 3)
         self.assertEqual(None, coloring0.status(G0,G0copy))
-
-        # TODO add more?
 
     def test_copy(self):
         g = Graph(False, n= 10)
