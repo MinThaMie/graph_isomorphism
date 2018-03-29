@@ -16,8 +16,9 @@ class Coloring(object):
         a number (the color) and the value is a list of vertices belonging to that color.
         """
         self._dict = {}
+        self._vertex_dict = {}
 
-    def set(self, color: int, vertex: Vertex):
+    def set(self, vertex: Vertex, color: int):
         """
         Adds the given vertex to the given color class
 
@@ -25,11 +26,15 @@ class Coloring(object):
         which the vertex is added.
         :param color: the name of the color class
         :param vertex: the `Vertex` to add to the color class
+        :raises KeyError when vertex already belongs to the coloring
         """
-        if color not in self._dict.keys():
+        if color not in self._dict:
             self._dict[color] = DoubleLinkedList()
+        if vertex in self._vertex_dict:
+            raise KeyError('Vertex {} already in coloring, color: {}'.format(str(vertex), str(self.color(vertex))))
+
         self._dict[color].append(vertex)
-        vertex.colornum = color
+        self._vertex_dict[vertex] = color
 
     def get(self, color) -> DoubleLinkedList:
         """
@@ -40,61 +45,48 @@ class Coloring(object):
         """
         return list(self._dict[color])
 
-    def add(self, vertices: List[Vertex], color=None, old_color=None):
+    def add(self, vertices: List[Vertex], color=None):
         """
-        Add multipe colors
-        :param vertices: vertices to add
+        Add multiple colors, recolors vertices already in the coloring
+
+        :param vertices: vertices to add/recolor
         :param color: color for vertices, pick new color if None
-        :param old_color: None if vertices are new to the coloring, otherwise its there old color
         :return:
         """
         if color is None:
             color = self.next_color()
 
         for v in vertices:
-            if old_color is not None:
-                self.recolor(v,color, old_color)
+            if v in self._vertex_dict:
+                self.recolor(v,color)
             else:
-                self.set(color,v)
+                self.set(v, color)
 
     def color(self, vertex: Vertex) -> int:
         """
         Returns the number (or color) of the color class to which the given vertex belongs
 
         :param vertex: the vertex for which the color class is searched
-        :return: the number (or color) of the color class of the vertex
+        :return: the number (or color) of the color class of the vertex or None if not found
         """
-        for color in self._dict.keys():
-            if vertex in self._dict[color]:
-                return color
-        return None
+        return self._vertex_dict.get(vertex)
 
-    def recolor(self, vertex: Vertex, new_color: int, color: int=None):
+    def recolor(self, vertex: Vertex, new_color: int):
         """
-        Moves the vertex from the color class color to a new color class (new_color)
+        Moves the vertex from the old color class color to a new color class (new_color)
 
         :param vertex: the vertex to put in another color class
         :param new_color: the color class to put the vertex in
         :param color: the color class to remove the vertex from
+        :raises KeyError when vertex is not found in the coloring
         """
-        if color is None:
-            color = self.color(vertex)
-        if color is not None:
-            self._dict[color].remove(vertex)
-            self.set(new_color, vertex)
-        else:
+        old_color = self.color(vertex)
+        if old_color is None:
             raise KeyError('Vertex ' + str(vertex) + ' not found in coloring')
-
-    def reset(self, vertices: List[Vertex]):
-        """
-        Reset coloring using v.colornum
-
-        :param vertices: vertices to re-add to the coloring
-        """
-        self._dict = {}
-        for v in vertices:
-            self.set(v.colornum,v)
-
+        else:
+            self._dict[old_color].remove(vertex)
+            self._vertex_dict.pop(vertex)
+            self.set(vertex, new_color)
 
     @property
     def colors(self) -> List[int]:
@@ -103,7 +95,16 @@ class Coloring(object):
 
         :return: a list of colors of the coloring
         """
-        return self._dict.keys()
+        return list(self._dict.keys())
+
+    @property
+    def vertices(self) -> List[Vertex]:
+        """
+        Returns the vertices in the coloring
+
+        :return: list of vertices in the coloring
+        """
+        return list(self._vertex_dict.keys())
 
     def __len__(self) -> int:
         """

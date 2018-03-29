@@ -12,14 +12,16 @@ class ColoringCase(unittest.TestCase):
     v1 = None
     v2 = None
 
+    @classmethod
     def create_coloring_helper(self, vertices: List[int], map: dict):
         coloring = Coloring()
-        for key in map:
-            for value in map[key]:
+        for color in map:
+            for value in map[color]:
                 vertex = [v for v in vertices if v.label == value][0]
-                coloring.set(key, vertex)
+                coloring.set(vertex, color)
         return coloring
 
+    @classmethod
     def create_graph_helper(self, edges: List[List[int]]):
         g = Graph(False)
         vertices = {}
@@ -40,24 +42,28 @@ class ColoringCase(unittest.TestCase):
         self.v1, self.v2 = Vertex(self.graph), Vertex(self.graph)
 
     def test_init(self):
-        # Has no colors
+        # Has no colors or vertices
         self.assertEqual(0, len(self.coloring))
+        self.assertEqual(0, len(self.coloring.vertices))
 
     def test_set(self):
         # Adds a new color if not existing
-        self.coloring.set(4, self.v1)
+        self.coloring.set(self.v1, 4)
         self.assertEqual(1, len(self.coloring))
         self.assertEqual(4, list(self.coloring.colors)[0])
-        self.assertEqual(4, self.v1.colornum)
 
         # Adds no new color if already existing
-        self.coloring.set(4, self.v2)
+        self.coloring.set(self.v2, 4)
         self.assertEqual(1, len(self.coloring))
-        self.assertEqual(4, self.v2.colornum)
+
+        # Cannot set a vertex that is already in the coloring (have to recolor it)
+        with self.assertRaises(KeyError) as e:
+            self.coloring.set(self.v1, 0)
+        self.assertEqual('\'Vertex {} already in coloring, color: 4\''.format(str(self.v1)), str(e.exception))
 
     def test_get(self):
-        self.coloring.set(4, self.v1)
-        self.coloring.set(4, self.v2)
+        self.coloring.set(self.v1, 4)
+        self.coloring.set(self.v2, 4)
         vertices = self.coloring.get(4)
         self.assertEqual(2, len(vertices))
         self.assertEqual(True, self.v1 in vertices)
@@ -71,27 +77,27 @@ class ColoringCase(unittest.TestCase):
         self.assertEqual(True, self.v1 in vertices)
         self.assertEqual(True, self.v2 in vertices)
 
-        # Recolors old vertices when old color is given
-        v3 = Vertex(self.graph)
-        self.coloring.set(4, v3)
-        self.coloring.add([self.v1, self.v2], 0, 4)
+        # Recolors old vertices
+        v3, v4 = Vertex(self.graph), Vertex(self.graph)
+        self.coloring.set(v3, 4)
+        self.coloring.add([self.v1, self.v2, v4], 0)
         vertices = self.coloring.get(0)
-        self.assertEqual(2, len(vertices))
+        self.assertEqual(3, len(vertices))
         self.assertEqual(True, self.v1 in vertices)
         self.assertEqual(True, self.v2 in vertices)
+        self.assertEqual(True, v4 in vertices)
         self.assertEqual(False, v3 in vertices)
         self.assertEqual(1, len(self.coloring.get(4)))
 
     def test_color(self):
-        self.coloring.set(3, self.v1)
-        self.coloring.set(4, self.v2)
+        self.coloring.set(self.v1, 3)
+        self.coloring.set(self.v2, 4)
         self.assertEqual(3, self.coloring.color(self.v1))
         self.assertEqual(4, self.coloring.color(self.v2))
 
     def test_recolor(self):
-        self.coloring.set(1, self.v1)
+        self.coloring.set(self.v1, 1)
         self.assertEqual(1, self.coloring.color(self.v1))
-        self.assertEqual(1, self.v1.colornum)
 
         self.coloring.recolor(self.v1, 2)
         self.assertEqual(2, len(self.coloring))
@@ -102,28 +108,39 @@ class ColoringCase(unittest.TestCase):
         with self.assertRaises(KeyError) as e:
             self.coloring.recolor(self.v2, 2)
 
-        self.assertEqual("\'Vertex " + str(self.v2) + " not found in coloring\'", str(e.exception))
+        self.assertEqual("\'Vertex {} not found in coloring\'".format(str(self.v2)), str(e.exception))
 
     def test_colors(self):
-        self.coloring.set(0, self.v1)
-        self.coloring.set(1, self.v2)
-        self.coloring.set(2, Vertex(self.graph))
+        self.coloring.set(self.v1, 0)
+        self.coloring.set(self.v2, 1)
+        self.coloring.set(Vertex(self.graph), 2)
 
         self.assertEqual(3, len(self.coloring))
         self.assertIn(0, self.coloring.colors)
         self.assertIn(1, self.coloring.colors)
         self.assertIn(2, self.coloring.colors)
 
+    def test_vertices(self):
+        v3 = Vertex(self.graph)
+        self.coloring.set(self.v1, 0)
+        self.coloring.set(self.v2, 1)
+        self.coloring.set(v3, 1)
+
+        self.assertEqual(3, len(self.coloring.vertices))
+        self.assertIn(self.v1, self.coloring.vertices)
+        self.assertIn(self.v2, self.coloring.vertices)
+        self.assertIn(v3, self.coloring.vertices)
+
     def test_next_color(self):
         for i in range(10):
             self.assertEqual(i, len(self.coloring))
             self.assertEqual(i, self.coloring.next_color())
-            self.coloring.set(i, Vertex(self.graph))
+            self.coloring.set(Vertex(self.graph), i)
 
     def test_items(self):
-        self.coloring.set(0, self.v1)
-        self.coloring.set(1, self.v2)
-        self.coloring.set(2, Vertex(self.graph))
+        self.coloring.set(self.v1, 0)
+        self.coloring.set(self.v2, 1)
+        self.coloring.set(Vertex(self.graph), 2)
 
         for c, v in self.coloring.items():
             self.assertIn(c, self.coloring.colors)
@@ -152,13 +169,10 @@ class ColoringCase(unittest.TestCase):
         # Automorphism
         G0copy = G0.deepcopy()
         coloring0 = self.create_coloring_helper(G0.vertices, {0: [0,6], 1: [1,5], 2:[2,4], 3:[3]})
-        coloring0.set(0, G0copy.vertices[0])
-        coloring0.set(0, G0copy.vertices[6])
-        coloring0.set(1, G0copy.vertices[1])
-        coloring0.set(1, G0copy.vertices[5])
-        coloring0.set(2, G0copy.vertices[2])
-        coloring0.set(2, G0copy.vertices[4])
-        coloring0.set(3, G0copy.vertices[3])
+        coloring0.add([G0copy.vertices[0],G0copy.vertices[6]], 0)
+        coloring0.add([G0copy.vertices[1], G0copy.vertices[5]], 1)
+        coloring0.add([G0copy.vertices[2], G0copy.vertices[4]], 2)
+        coloring0.set(G0copy.vertices[3], 3)
         self.assertEqual(None, coloring0.status(G0,G0copy))
 
         # TODO add more?
@@ -175,22 +189,12 @@ class ColoringCase(unittest.TestCase):
             self.assertEqual(list(v), list(copy.get(c)))
 
         # Test that changing the copy does not change to old coloring
-        # But that it does change the colornum of those vertices
         v0 = g.vertices[0]
-        copy.recolor(v0,2,0) #recolor v0
-        self.assertEqual(2, v0.colornum)
+        copy.recolor(v0,2) #recolor v0
         self.assertEqual(2, copy.color(v0))
         self.assertEqual(0, self.coloring.color(v0)) #not recolored in old coloring
-
-    def test_reset(self):
-        g = Graph(False, n=10)
-        for idx, v in enumerate(g.vertices):
-            v.colornum = idx
-
-        self.coloring.reset(g.vertices)
-        for i in range(10):
-            self.assertEqual(i, self.coloring.color(g.vertices[i]))
-
+        self.assertEqual(False, v0 in self.coloring.get(2))
+        self.assertEqual(0, self.coloring.color(v0))
 
 if __name__ == '__main__':
     unittest.main()

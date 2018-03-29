@@ -66,10 +66,10 @@ def color_refine(coloring: Coloring) -> Coloring:
                 new_color = new_coloring.next_color()
                 unbalanced = True
                 u = vertices.pop()
-                new_coloring.set(new_color, u)
+                new_coloring.set(u, new_color)
                 for v in list(vertices):
                     if has_same_color_neighbours(u, v, coloring):
-                        new_coloring.set(new_color, v)
+                        new_coloring.set(v, new_color)
                         vertices.remove(v)
                         unbalanced = not unbalanced
             # Check if coloring is unbalanced, then we must stop
