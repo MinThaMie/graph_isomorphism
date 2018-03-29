@@ -29,8 +29,8 @@ class TestCRHelper(unittest.TestCase):
 
     def test_group_by(self):
         # group_by(List[int]) groups by number
-        a = [1,2,3,2,3]
-        expected = {1: [1], 2: [2,2], 3: [3,3]}
+        a = [1, 2, 3, 2, 3]
+        expected = {1: [1], 2: [2, 2], 3: [3, 3]}
         self.assertEqual(expected, group_by(a))
 
         # group_by(List[Vertex], key=Vertex.degree)
@@ -40,8 +40,8 @@ class TestCRHelper(unittest.TestCase):
         #             6 - 5
         #             \   /
         #               3
-        g = self.create_graph_helper([[0,1],[1,2],[4,7],[3,5],[3,6],[5,7],[6,7],[5,6]])
-        vertices = sorted(g.vertices, key = lambda vertex: vertex.label)
+        g = self.create_graph_helper([[0, 1], [1, 2], [4, 7], [3, 5], [3, 6], [5, 7], [6, 7], [5, 6]])
+        vertices = sorted(g.vertices, key=lambda vertex: vertex.label)
         expected = {1: [vertices[0], vertices[2], vertices[4]],
                     2: [vertices[1], vertices[3]],
                     3: [vertices[5], vertices[6], vertices[7]]}
@@ -53,9 +53,9 @@ class TestCRHelper(unittest.TestCase):
 
         # group_by(dict{List}, key = lambda x: len(x)) groups by length of the lists
         degrees = {1: [vertices[0], vertices[2], vertices[4]],
-                    2: [vertices[1], vertices[3]],
-                    3: [vertices[5], vertices[6], vertices[7]]}
-        expected = {2: [2], 3: [1,3]}
+                   2: [vertices[1], vertices[3]],
+                   3: [vertices[5], vertices[6], vertices[7]]}
+        expected = {2: [2], 3: [1, 3]}
         self.assertEqual(expected, group_by(degrees, lambda k: len(degrees[k])))
 
         # group by amount of neighbours with a given color
@@ -72,11 +72,11 @@ class TestCRHelper(unittest.TestCase):
                 v.colornum = c
 
         n_neighbors_of_color1 = group_by(vertices, lambda v: len([w for w in v.neighbours if w.colornum == 1]))
-        expected = {0 : [vertices[0], vertices[2], vertices[3], vertices[4], vertices[5], vertices[6]],
+        expected = {0: [vertices[0], vertices[2], vertices[3], vertices[4], vertices[5], vertices[6]],
                     1: [vertices[7]],
                     2: [vertices[1]]}
 
-        self.assertEqual(expected.keys(), n_neighbors_of_color1 .keys())
+        self.assertEqual(expected.keys(), n_neighbors_of_color1.keys())
         for key in expected.keys():
             self.assertEqual(len(expected[key]), len(n_neighbors_of_color1[key]),
                              "Expect key " + str(key) + ' to have ' + str(len(expected[key])) + ' vertices')
@@ -84,4 +84,4 @@ class TestCRHelper(unittest.TestCase):
 
 
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()
