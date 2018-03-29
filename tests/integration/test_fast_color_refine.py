@@ -9,7 +9,7 @@ from color_refiment_helper import *
 from graph_io import *
 from tools import dot_to_pdf
 
-PATH = 'graphs/colorref'
+PATH = 'graphs/colorref'# to run locally from PyCharm: PATH = '../../graphs/colorref'
 EXPECTED = dict()
 EXPECTED['colorref_smallexample_2_49.grl'] = {'G0G1': "Bijection"}
 EXPECTED['colorref_smallexample_4_7.grl'] = {'G1G3': "Bijection", 'G0G2': None}
@@ -57,7 +57,7 @@ class FastColorRefineCase(unittest.TestCase):
             results = testfile(file)
             for result in results:
                 self.assertEqual(result[0], result[1], result[2])
-                # print(result[2], 'got', result[1])
+                print(result[2], 'got', result[1])
 
 if __name__ == '__main__':
     unittest.main()
