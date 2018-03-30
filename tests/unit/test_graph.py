@@ -104,23 +104,18 @@ class GraphTests(unittest.TestCase):
 
         def edge_head_label(edge: Edge): return edge.head.label
 
-        Hobbit = Any
-        Hobbits = Iterable[Hobbit]
-        Wizard = Callable[[Hobbit], Any]
-
-        def _compare_hobbits_by_wizard(bagginses: Hobbits, gamgees: Hobbits, gandalf: Wizard) -> bool:
+        def _compare_iterables_by_function(thingies: Iterable[Any], stuffs: Iterable[Any],
+                                           fun: Callable[[Any], Any]) -> bool:
             """
             Compare objects by function.
 
-            :param Iterable bagginses: One iterable.
-            :param Iterable gamgees: Another iterable.
-            :param Callable gandalf: Callable that maps the specified iterables to whatever being compared.
+            :param Iterable thingies: One iterable.
+            :param Iterable stuffs: Another iterable.
+            :param Callable fun: Callable that maps the specified iterables to whatever being compared.
             :return: `True` if the iterables compare equal based on the mapping made by the callable; `False` otherwise.
             """
 
-            frodo = map(gandalf, bagginses)
-            samwise = map(gandalf, gamgees)
-            return compare(frodo, samwise)
+            return compare(map(fun, thingies), map(fun, stuffs))
 
         # Assert that the complement of the empty graph is the empty graph
         complement = tests.empty_graph.complement()
@@ -131,31 +126,31 @@ class GraphTests(unittest.TestCase):
         graph = tests.connected_graph_order_2
         complement = graph.complement()
 
-        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_label))
+        self.assertTrue(_compare_iterables_by_function(graph.vertices, complement.vertices, vertex_label))
 
         self.assertEqual([], complement.edges)
 
         # Assert that the complement of the complement of a graph is the graph itself
         complement = complement.complement()
 
-        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_label))
-        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_degree))
+        self.assertTrue(_compare_iterables_by_function(graph.vertices, complement.vertices, vertex_label))
+        self.assertTrue(_compare_iterables_by_function(graph.vertices, complement.vertices, vertex_degree))
 
-        self.assertTrue(_compare_hobbits_by_wizard(graph.edges, complement.edges, edge_tail_label))
-        self.assertTrue(_compare_hobbits_by_wizard(graph.edges, complement.edges, edge_head_label))
+        self.assertTrue(_compare_iterables_by_function(graph.edges, complement.edges, edge_tail_label))
+        self.assertTrue(_compare_iterables_by_function(graph.edges, complement.edges, edge_head_label))
 
         # Assert that the complement of a non-trivial graph is correctly constructed
         graph = tests.non_trivial_graph
         complement = graph.complement()
         expected = tests.non_trivial_graph_complement
 
-        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_label))
-        self.assertTrue(_compare_hobbits_by_wizard(graph.vertices, complement.vertices, vertex_degree))
-        self.assertTrue(_compare_hobbits_by_wizard(expected.vertices, complement.vertices, vertex_label))
-        self.assertTrue(_compare_hobbits_by_wizard(expected.vertices, complement.vertices, vertex_degree))
+        self.assertTrue(_compare_iterables_by_function(graph.vertices, complement.vertices, vertex_label))
+        self.assertTrue(_compare_iterables_by_function(graph.vertices, complement.vertices, vertex_degree))
+        self.assertTrue(_compare_iterables_by_function(expected.vertices, complement.vertices, vertex_label))
+        self.assertTrue(_compare_iterables_by_function(expected.vertices, complement.vertices, vertex_degree))
 
-        self.assertTrue(_compare_hobbits_by_wizard(expected.edges, complement.edges, edge_tail_label))
-        self.assertTrue(_compare_hobbits_by_wizard(expected.edges, complement.edges, edge_head_label))
+        self.assertTrue(_compare_iterables_by_function(expected.edges, complement.edges, edge_tail_label))
+        self.assertTrue(_compare_iterables_by_function(expected.edges, complement.edges, edge_head_label))
 
 
 if __name__ == '__main__':
