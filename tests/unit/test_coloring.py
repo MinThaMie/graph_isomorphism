@@ -3,7 +3,7 @@ Test file for Coloring class
 """
 import unittest
 from coloring import *
-from graph_io import load_graph
+from tests import *
 
 
 class ColoringCase(unittest.TestCase):
@@ -11,30 +11,6 @@ class ColoringCase(unittest.TestCase):
     graph = None
     v1 = None
     v2 = None
-
-    @classmethod
-    def create_coloring_helper(self, vertices: List[int], map: dict):
-        coloring = Coloring()
-        for color in map:
-            for value in map[color]:
-                vertex = [v for v in vertices if v.label == value][0]
-                coloring.set(vertex, color)
-        return coloring
-
-    @classmethod
-    def create_graph_helper(self, edges: List[List[int]]):
-        g = Graph(False)
-        vertices = {}
-        for edge in edges:
-            head, tail = edge
-            if head not in vertices:
-                vertices[head] = Vertex(g, label=head)
-                g.add_vertex(vertices[head])
-            if tail not in vertices:
-                vertices[tail] = Vertex(g, label=tail)
-                g.add_vertex(vertices[tail])
-            g.add_edge(Edge(vertices[head], vertices[tail]))
-        return g
 
     def setUp(self):
         self.coloring = Coloring()
@@ -163,18 +139,18 @@ class ColoringCase(unittest.TestCase):
         # G3: 30 -- 32 -- 34 -- 35 -- 36
         #                         \  /
         #                          31 -- 33
-        G0 = self.create_graph_helper(edges=[[0, 1], [1, 2], [2, 3], [3, 4], [2, 4], [4, 5], [5, 6]])
-        G1 = self.create_graph_helper(edges = [[10,12],[12,13],[12,14],[13,14],[11,14],[11,15],[15,16]])
-        G2 = self.create_graph_helper(edges=[[21, 23], [23, 25], [20, 25], [20, 24], [24, 25], [20, 26], [22, 26]])
-        G3 = self.create_graph_helper(edges = [[30,32],[32,34],[34,35],[35,36],[31,35],[31,36],[31,33]])
+        G0 = create_graph_helper(edges=[[0, 1], [1, 2], [2, 3], [3, 4], [2, 4], [4, 5], [5, 6]])
+        G1 = create_graph_helper(edges = [[10,12],[12,13],[12,14],[13,14],[11,14],[11,15],[15,16]])
+        G2 = create_graph_helper(edges=[[21, 23], [23, 25], [20, 25], [20, 24], [24, 25], [20, 26], [22, 26]])
+        G3 = create_graph_helper(edges = [[30,32],[32,34],[34,35],[35,36],[31,35],[31,36],[31,33]])
 
-        coloring13 = self.create_coloring_helper(G1.vertices + G3.vertices,
+        coloring13 = create_coloring_helper(G1.vertices + G3.vertices,
                 {0:[10,33], 1:[16,30],2:[11,34], 3:[13,36], 4:[15,32], 5:[12,31],6:[14,35]})
-        coloring02 = self.create_coloring_helper(G0.vertices + G2.vertices,
+        coloring02 = create_coloring_helper(G0.vertices + G2.vertices,
                 {0: [0,6,21,22], 1:[1,5,23,26], 2:[3,24], 3:[2,4,20,25]})
-        coloring01 = self.create_coloring_helper(G0.vertices + G1.vertices,
+        coloring01 = create_coloring_helper(G0.vertices + G1.vertices,
                 {0: [0,6], 1: [1,5], 2:[2,4], 3:[3],4:[10],5:[11],6:[12],7:[13],8:[14],9:[15],10:[16]})
-        unbalanced_coloring = self.create_coloring_helper(G0.vertices+G1.vertices, {0:[0,1], 1:[10,11]})
+        unbalanced_coloring = create_coloring_helper(G0.vertices+G1.vertices, {0:[0,1], 1:[10,11]})
 
         self.assertEqual("Bijection", coloring13.status(G1,G3))
         self.assertEqual(None, coloring02.status(G1, G3))
@@ -183,7 +159,7 @@ class ColoringCase(unittest.TestCase):
 
         # Automorphism
         G0copy = G0.deepcopy()
-        coloring0 = self.create_coloring_helper(G0.vertices, {0: [0,6], 1: [1,5], 2:[2,4], 3:[3]})
+        coloring0 = create_coloring_helper(G0.vertices, {0: [0,6], 1: [1,5], 2:[2,4], 3:[3]})
         coloring0.add([G0copy.vertices[0],G0copy.vertices[6]], 0)
         coloring0.add([G0copy.vertices[1], G0copy.vertices[5]], 1)
         coloring0.add([G0copy.vertices[2], G0copy.vertices[4]], 2)

@@ -2,6 +2,8 @@ from typing import Tuple
 
 import tests
 from graph import *
+from coloring import *
+from graph import *
 
 # Declare module variables
 empty_graph: Graph
@@ -63,7 +65,14 @@ def create_graph_helper(edges: List[Tuple[object, object]] = list()):
 
     return graph
 
-from graph import *
+
+def create_coloring_helper(vertices: List[int], map: dict):
+        coloring = Coloring()
+        for color in map:
+            for value in map[color]:
+                vertex = [v for v in vertices if v.label == value][0]
+                coloring.set(vertex, color)
+        return coloring
 
 
 def graph_vertex2edge1() -> Graph:
