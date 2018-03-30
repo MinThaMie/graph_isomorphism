@@ -6,6 +6,7 @@ from color_refiment_helper import *
 import time
 import preprocessing
 from graph_io import *
+from basicpermutationgroup import *
 
 PATH = './graphs/treepaths/'
 GRAPH = 'threepaths160.gr'
@@ -217,20 +218,9 @@ def get_number_automorphisms(g: Graph) -> int:
     return count_automorphisms(g, g.deepcopy(), coloring)
 
 
-def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, X=None) -> int:
+def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, permutations: set() = None) -> int:
     """
-    Returns the number of isomorphisms of `Graph` g and h for a given coloring
-
-    If the coloring is unbalanced, it will return 0.
-    If the coloring defines a bijection, it will return 1.
-    If neither applies, a color class is chosen from which a vertex of graph g is mapped to all possible vertices of
-    graph h in the same color class. For each mapping, the number of isomorphisms is calculated and summed.
-    :param g: first graph to compare
-    :param h: second graph to compare
-    :param coloring: coloring of `Graph` g and h
-    :param count: if `True` the number of isomorphisms is returned, if `False` 0 is returned if no isomorphisms is found
-    and 1 is returned when the first isomorphism is found
-    :return: the number of isomorphisms of graph g and h for a given coloring
+    Returns the number of automorphisms of `Graph` g and h for a given coloring
     """
     # Do colorrefinement -> returns stable or unbalanced coloring
     new_coloring = color_refine(coloring)
@@ -239,10 +229,13 @@ def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, X=None) -> int:
         return 0
     # Is there a unique coloring?
     if coloring_status == "Bijection":
+        el = coloring
+        orbit, transversal = Orbit(permutations, el, returntransversal=True)
+
         # is this coloring already in the set of colorings?
-        if member_of(coloring, X):
+        if member_of(coloring, permutations):
             # put f in the set and return to last visited node
-            X := X union {f}
+            permutations.add(f)
             return to last visited trivial ancestor node
     # choose branching vertex x and cell C
     vertices = choose_color(new_coloring)
@@ -251,11 +244,15 @@ def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, X=None) -> int:
     number_automorphisms = 0
     for second_vertex in vertices_in_h:
         adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
-        number_automorphisms = number_automorphisms + count_automorphisms(g, h, adapted_coloring, X)
+        number_automorphisms = number_automorphisms + count_automorphisms(g, h, adapted_coloring, permutations)
     return number_automorphisms
 
 
-def member_of():
+def member_of(orbit, transversal: [], cycle: permutation, permutations: set(permutation)) -> bool:
+    # cycle = (Vertex, Vertex)
+    from_Vertex, to_Vertex = cycle
+    perm = transversal[to_Vertex].__mul__(permutation)
+    return perm is in Stabilizer(permutations, cycle)
 
 
 

@@ -4,6 +4,7 @@ Module with helper methods for the Color Refinement Algorithm
 from typing import Iterable
 
 from coloring import *
+from permv2 import permutation
 
 DEBUG = False
 
@@ -207,3 +208,12 @@ def group_by(obj, group_rule=None) -> dict:
             key = group_rule(elem)
             d.setdefault(key, []).append(elem)
     return d
+
+
+def coloring_to_permutation(coloring: Coloring) -> permutation:
+    cycles = list()
+    for color_class in coloring.colors:
+        if len(coloring.get(color_class)) == 2:
+            v1, v2 = coloring.get(color_class)
+            cycles.append([v1, v2])
+    return permutation(n=len(cycles), mapping=cycles)
