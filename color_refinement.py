@@ -109,7 +109,7 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
         qlist.append(c)
     debug('Queue', qlist)
 
-    while(len(qlist) > 0):
+    while (len(qlist) > 0):
         # Start refining with the first color from the queue.
         current_color = qlist.pop_left()
         counter = generate_neighbour_count_with_color(coloring, current_color)
@@ -163,9 +163,9 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
                         if len(coloring.get(smallest_color)) > len(coloring.get(color)):
                             smallest_color = color
                     qlist.append(smallest_color)
-            debug('Queue',qlist)
+            debug('Queue', qlist)
 
-        debug('Queue',qlist)
+        debug('Queue', qlist)
     return coloring
 
 
@@ -231,9 +231,9 @@ if __name__ == "__main__":
             if j > i:
                 start = time.time()
                 isomorph = is_isomorphisms(graphs[i], graphs[j])
-                print(graphs[i].name,'and',graphs[j].name,'isomorphic?',isomorph)
+                print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorph)
                 if isomorph:
-                    coloring = initialize_coloring(graphs[i]+graphs[j])
-                    num = count_isomorphism(graphs[i], graphs[j],coloring)
-                    print('There are',num,'isomorphisms')
-                    print('Took',time.time()-start,'seconds\n')
+                    coloring = initialize_coloring(graphs[i] + graphs[j])
+                    num = count_isomorphism(graphs[i], graphs[j], coloring)
+                    print('There are', num, 'isomorphisms')
+                    print('Took', time.time() - start, 'seconds\n')
