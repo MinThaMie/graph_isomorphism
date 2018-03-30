@@ -83,7 +83,7 @@ class Coloring(object):
         """
         old_color = self.color(vertex)
         if old_color is None:
-            raise KeyError('Vertex ' + str(vertex) + ' not found in coloring')
+            raise KeyError('Vertex ' + str(vertex) + ' not found in coloring, use set() instead')
         else:
             self._dict[old_color].remove(vertex)
             self._vertex_dict.pop(vertex)

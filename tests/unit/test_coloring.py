@@ -108,7 +108,7 @@ class ColoringCase(unittest.TestCase):
         with self.assertRaises(KeyError) as e:
             self.coloring.recolor(self.v2, 2)
 
-        self.assertEqual("\'Vertex {} not found in coloring\'".format(str(self.v2)), str(e.exception))
+        self.assertEqual("\'Vertex {} not found in coloring, use set() instead\'".format(str(self.v2)), str(e.exception))
 
     def test_colors(self):
         self.coloring.set(self.v1, 0)
