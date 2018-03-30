@@ -89,6 +89,14 @@ def color_refine(coloring: Coloring) -> Coloring:
 
 
 def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
+    """
+    Fast color refine takes a graph to create a fast mapping of colors to their vertices and from the vertices to
+    their amount of neighbours with a certain color
+    It takes a coloring to find the next color for the vertices and recolor them
+    :param graph:
+    :param coloring:
+    :return: The new coloring of a graph
+    """
     # Start with first color
     qlist = DoubleLinkedList()
     for c in sorted(coloring.colors):
@@ -96,18 +104,22 @@ def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
     debug('Queue', qlist)
 
     while(len(qlist) > 0):
-        # Count neighbours of 'first color' for each vertex, mapped per color_class
+        # Start refining with the first color from the queue.
         current_color = qlist.pop_left()
         counter = generate_neighbour_count_with_color(graph, current_color)
-        # print(counter)
+
         for color_class in counter.keys():
-            debug('Splitting',color_class)
+            # Will loop over all the colors in the graph and refine them.
+            debug('Refining the following color:', color_class)
             neighbour_map = counter[color_class]
-            # Partitions class 'c' into cells according to #neighbours of 'first color'
+            # Partitions class 'c' into cells according to #neighbours of current_color
             vertices_of_c = list(neighbour_map.keys())
             debug('Vertices of color', color_class, vertices_of_c)
             debug('Neighbours', neighbour_map)
+            # Keep split_count so the first vertices you encounter are not recolored
             split_count = 0
+            # Keep a list of the color_classes from this loop so we can count them after the loop and see which one
+            # is the smallest and should be added to the queue
             new_color_classes = []
 
             while len(vertices_of_c) > 0:
@@ -120,20 +132,26 @@ def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
                 for v in list(vertices_of_c):
                     n_neighbours_u = neighbour_map[u]
                     n_neighbours_v = neighbour_map[v]
+                    # Compare the amount of neighbours of u with the amount of neighbours of v
+                    # If they are equal u and v are in the same cell
+                    # If the split count is larger then zero they should both be colored with the same color
                     if n_neighbours_u == n_neighbours_v:
                         if split_count > 0:
                             coloring.recolor(v, new_color, v.colornum)
                         vertices_of_c.remove(v)
                 split_count += 1
-
+                # Each color_class is added to the list
                 new_color_classes.append(new_color)
+            # The smallest_color here is the first color added to the list, which is the original color
             smallest_color = new_color_classes[0]
             if split_count > 1:
-                debug('Splitted classes:')
+                debug('New color classes:', new_color_classes)
+                # If the original color is in the queue, all the other colors should be added to the queue
                 if qlist.find(smallest_color) is not None:
                     for color in new_color_classes:
                         if qlist.find(color) is None:
                             qlist.append(color)
+                # Otherwise the color with the least amount over vertices should be added to the queue
                 else:
                     for color in new_color_classes:
                         if len(coloring.get(smallest_color)) > len(coloring.get(color)):
