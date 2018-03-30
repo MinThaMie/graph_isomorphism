@@ -184,9 +184,9 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     :param count: whether the number of isomorphisms
     :return: The number of isomorphisms of graph g and h
     """
-    if len(g) != len(h):
+    if g.order != h.order:
         return 0
-    if len(g.edges) != len(h.edges):
+    if g.size != h.size:
         return 0
     added_graph = g + h
     coloring = initialize_coloring(added_graph)

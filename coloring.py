@@ -52,7 +52,7 @@ class Coloring(object):
                 return color
         return None
 
-    def recolor(self, vertex: Vertex, new_color: int, color: int=None):
+    def recolor(self, vertex: Vertex, new_color: int, color: int = None):
         """
         Moves the vertex from the color class color to a new color class (new_color)
 
