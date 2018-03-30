@@ -17,7 +17,7 @@ class TestPr2(unittest.TestCase):
         h.add_edge(e_h2)
         G = g + h
         coloring = initialize_coloring(G)
-
+        coloring = color_refine(coloring)
         self.assertEqual(0, count_isomorphism(g, h, coloring))
 
     def test_count_isomorphism_bijection(self):

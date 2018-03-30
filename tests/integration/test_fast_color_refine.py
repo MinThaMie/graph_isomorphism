@@ -43,8 +43,6 @@ def testfile(filename):
                 expected = get_expected_result(filename, graphs[i].name, graphs[j].name)
                 message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[
                     j].name + " in " + filename
-                print(message)
-                print("Status:", status)
                 results.append([expected, status, message])
     return results
 
@@ -57,7 +55,7 @@ class FastColorRefineCase(unittest.TestCase):
             results = testfile(file)
             for result in results:
                 self.assertEqual(result[0], result[1], result[2])
-                print(result[2], 'got', result[1])
+                debug(result[2], 'got', result[1])
 
 if __name__ == '__main__':
     unittest.main()
