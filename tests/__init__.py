@@ -38,6 +38,13 @@ def set_up_test_graphs():
     #           4
     non_trivial_graph = create_graph_helper([(0, 1), (1, 2), (1, 4), (2, 3), (3, 4)])
 
+    # Instantiate the non-trivial graph's complement
+    # non_trivial_graph_complement =
+    #               2
+    #              / \
+    #     1 - 3 - 0 - 4
+    non_trivial_graph_complement = create_graph_helper([(2, 0), (3, 0), (4, 0), (3, 1), (4, 2)])
+
 
 def create_graph_helper(edges: List[Tuple[object, object]] = list()):
     """
