@@ -212,7 +212,51 @@ def get_number_automorphisms(g: Graph) -> int:
     :param g: graph for which to determine the number of automorphisms
     :return: The number of automorphisms of graph g
     """
-    return get_number_isomorphisms(g, g.deepcopy(), True)
+    added_graph = g + g
+    coloring = initialize_coloring(added_graph)
+    return count_automorphisms(g, g.deepcopy(), coloring)
+
+
+def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, X=None) -> int:
+    """
+    Returns the number of isomorphisms of `Graph` g and h for a given coloring
+
+    If the coloring is unbalanced, it will return 0.
+    If the coloring defines a bijection, it will return 1.
+    If neither applies, a color class is chosen from which a vertex of graph g is mapped to all possible vertices of
+    graph h in the same color class. For each mapping, the number of isomorphisms is calculated and summed.
+    :param g: first graph to compare
+    :param h: second graph to compare
+    :param coloring: coloring of `Graph` g and h
+    :param count: if `True` the number of isomorphisms is returned, if `False` 0 is returned if no isomorphisms is found
+    and 1 is returned when the first isomorphism is found
+    :return: the number of isomorphisms of graph g and h for a given coloring
+    """
+    # Do colorrefinement -> returns stable or unbalanced coloring
+    new_coloring = color_refine(coloring)
+    coloring_status = new_coloring.status(g, h)
+    if coloring_status == "Unbalanced":
+        return 0
+    # Is there a unique coloring?
+    if coloring_status == "Bijection":
+        # is this coloring already in the set of colorings?
+        if member_of(coloring, X):
+            # put f in the set and return to last visited node
+            X := X union {f}
+            return to last visited trivial ancestor node
+    # choose branching vertex x and cell C
+    vertices = choose_color(new_coloring)
+    first_vertex = choose_vertex(vertices, g)
+    vertices_in_h = [v for v in vertices if v.in_graph(h)] # TODO: try to get vertex label of first_vertex first
+    number_automorphisms = 0
+    for second_vertex in vertices_in_h:
+        adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
+        number_automorphisms = number_automorphisms + count_automorphisms(g, h, adapted_coloring, X)
+    return number_automorphisms
+
+
+def member_of():
+
 
 
 if __name__ == "__main__":
