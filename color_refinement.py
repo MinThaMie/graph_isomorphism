@@ -26,6 +26,7 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True
     :return: the number of isomorphisms of graph g and h for a given coloring
     """
     # TODO: make sure initial coloring is done
+    # You can choose your color refining algorithm below by commenting either of the two lines
     new_coloring = fast_color_refine(g+h, coloring)
     # new_coloring = color_refine(coloring)
     coloring_status = new_coloring.status(g, h)
@@ -88,7 +89,7 @@ def color_refine(coloring: Coloring) -> Coloring:
     return coloring
 
 
-def fast_color_refine(graph, coloring: "Coloring") -> "Coloring":
+def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
     """
     Fast color refine takes a graph to create a fast mapping of colors to their vertices and from the vertices to
     their amount of neighbours with a certain color

@@ -8,6 +8,10 @@ PATH = 'graphs/'
 class CounterCase(unittest.TestCase):
 
     def test_counter_arrow(self):
+        # Takes color 1 (smallest degree)
+        # 0,2 and 4 don't have neighbours with degree 1
+        # 3 has one neighbour with degree 1
+        # 1 has two neighbours with degree 1
         #    1
         #  / | \
         # 0  3  2
@@ -27,6 +31,9 @@ class CounterCase(unittest.TestCase):
             self.assertEqual(num_neigh, 2)
 
     def test_counter_domino(self):
+        # Takes color 2 (smallest degree)
+        # 4 and 5 have each other as neighbours with that color, and 0 and 1 the same
+        # 2 and 3 have 0 and 4, 5 and 1 as neighbours with color 2
         #   4 ----- 5
         #   |       |
         #   2 ----- 3
