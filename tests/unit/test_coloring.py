@@ -59,7 +59,7 @@ class ColoringCase(unittest.TestCase):
         # Cannot set a vertex that is already in the coloring (have to recolor it)
         with self.assertRaises(KeyError) as e:
             self.coloring.set(self.v1, 0)
-        self.assertEqual('\'Vertex {} already in coloring, color: 4\''.format(str(self.v1)), str(e.exception))
+        self.assertEqual('\'Vertex {} already in coloring, color: 4. Use recolor instead\''.format(str(self.v1)), str(e.exception))
 
     def test_get(self):
         self.coloring.set(self.v1, 4)

@@ -31,7 +31,7 @@ class Coloring(object):
         if color not in self._dict:
             self._dict[color] = DoubleLinkedList()
         if vertex in self._vertex_dict:
-            raise KeyError('Vertex {} already in coloring, color: {}'.format(str(vertex), str(self.color(vertex))))
+            raise KeyError('Vertex {} already in coloring, color: {}. Use recolor instead'.format(str(vertex), str(self.color(vertex))))
 
         self._dict[color].append(vertex)
         self._vertex_dict[vertex] = color
