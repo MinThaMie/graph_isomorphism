@@ -10,12 +10,12 @@ def checks(g, h) -> bool:
     :param h: Graph
     :return: Boolean: True if everything checks out
     """
-    return check_degrees(g, h) and check_graph_size(g, h) and check_graph_order(g, h)
+    return check_graph_size(g, h) and check_graph_order(g, h) and check_degrees(g, h)
 
 
 def check_graph_order(g: Graph, h: Graph):
     """
-    This method checks the orders (amount of vertices) of the graphs are the same
+    This method checks if the order (amount of vertices) of the graphs are equal
 
     :param g: Graph
     :param h: Graph
@@ -26,7 +26,7 @@ def check_graph_order(g: Graph, h: Graph):
 
 def check_graph_size(g: Graph, h: Graph):
     """
-    This method checks if the sizes (the amount of edges) of the graphs are the same
+    This method checks if the number of edges of the graphs are equal
 
     :param g: Graph
     :param h: Graph
