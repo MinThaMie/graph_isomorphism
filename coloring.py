@@ -35,6 +35,7 @@ class Coloring(object):
 
         self._dict[color].append(vertex)
         self._vertex_dict[vertex] = color
+        vertex.colornum = color
 
     def get(self, color) -> DoubleLinkedList:
         """
