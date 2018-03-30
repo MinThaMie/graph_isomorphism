@@ -1,6 +1,8 @@
 """
 Module with helper methods for the Color Refinement Algorithm
 """
+from typing import Iterable
+
 from coloring import *
 
 DEBUG = False
@@ -16,16 +18,15 @@ def debug(*args):
         print(*args)
 
 
-def compare(s: List, t: List, my_key=None) -> bool:
-    """
-    Compares if two lists are equal
+def compare(s: Iterable, t: Iterable, key=None) -> bool:
+    """Compare 2 iterables and will do so on the sorted list.
 
-    :param s: List to compare
-    :param t: List to compare
-    :return: Returns `True` if list have the same length and contain the same elements. Elements do not need to have the
-    same order. Returns `False` otherwise.
+    :param Iterable s: One iterable to compare
+    :param Iterable t: Another iterable to compare
+    :param key: Key on which to compare the iterables' contents on, e.g. Vertex.label or a lambda function.
+    :return: `True` if the iterables' contents are the same; `False` otherwise.
     """
-    return sorted(s, key=my_key) == sorted(t, key=my_key)
+    return sorted(s, key=key) == sorted(t, key=key)
 
 
 def create_new_color_class(coloring: Coloring, vertex1: Vertex, vertex2: Vertex) -> Coloring:
