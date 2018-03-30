@@ -165,14 +165,13 @@ def get_unit_coloring(g: Graph) -> Coloring:
     return coloring
 
 
-def generate_neighbour_count_with_color(graph: Graph, current_color: "Integer") -> {}:
+def generate_neighbour_count_with_color(graph: Graph, current_color: int) -> {}:
     """
-    This methode creates a mapping from a vertex to the amount of neighbours with a color.
-    The current_color is the color we are using to refine the coloring right now
-    :param graph:
-    :param current_color:
-    :return: Mapping of colors to their corresponding vertices
-                and from the vertices to the amount of neighbours with current_color
+    This methode creates a mapping from a vertex to the amount of neighbours with current_color.
+    :param graph: graph which is used for the counting of the neighbours
+    :param current_color: the color which is used to refine the graph
+    :return: mapping of colors to a vertex-neighbour_count mapping, the vertex-neighbour_count mapping
+                is a dictionary which maps vertices to the amount of neighbours with current_color
     """
     counter = {}
     for v in graph.vertices:

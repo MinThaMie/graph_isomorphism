@@ -25,7 +25,6 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True
     and 1 is returned when the first isomorphism is found
     :return: the number of isomorphisms of graph g and h for a given coloring
     """
-    # TODO: make sure initial coloring is done
     # You can choose your color refining algorithm below by commenting either of the two lines
     new_coloring = fast_color_refine(g+h, coloring)
     # new_coloring = color_refine(coloring)
@@ -91,12 +90,17 @@ def color_refine(coloring: Coloring) -> Coloring:
 
 def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
     """
-    Fast color refine takes a graph to create a fast mapping of colors to their vertices and from the vertices to
-    their amount of neighbours with a certain color
-    It takes a coloring to find the next color for the vertices and recolor them
-    :param graph:
-    :param coloring:
-    :return: The new coloring of a graph
+    The fast color refine algorithm refines a given coloring by looking at the amount of neighbours of a given color.
+    A queue is used to keep track of colors for which we still have to check if they lead to refinements.
+    Whenever a refining operations splits a color class C_i into new classes one of them keeps color i
+    and the others receive a new unused color i_l. One or more of the new classes are then added to the queue.
+    For this the following rule is used:
+    1. if color 'i' is already in the queue, add all new color classes i_l to the queue as well.
+    2. if color 'i' is not in the queue, add the smallest 'new' (i or one of the i_l) color class to the queue.
+    The algorithm stops when the queue is empty (and starts with all current colors of the given coloring in the queue).
+    : param graph: Graph to which the coloring belongs. Used to determine the number of neighbours with a certain color.
+    : param coloring: Given coloring which needs refinement
+    : return: The refined coloring of the graph
     """
     # Start with first color
     qlist = DoubleLinkedList()
