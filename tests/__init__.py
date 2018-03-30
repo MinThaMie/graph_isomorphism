@@ -28,7 +28,7 @@ def set_up_test_graphs():
     connected_graph_order_2 = Graph(directed=False, n=2)
     vertices = connected_graph_order_2.vertices
     connected_graph_order_2.add_edge(Edge(tail=vertices[0], head=vertices[1]))
-    for (vertex, label) in zip(connected_graph_order_2.vertices, vertex_labels):
+    for (vertex, label) in zip(vertices, vertex_labels):
         vertex.label = label
 
     # Instantiate a non-trivial graph
