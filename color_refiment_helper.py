@@ -166,6 +166,27 @@ def get_unit_coloring(g: Graph) -> Coloring:
     return coloring
 
 
+
+def generate_neighbour_count_with_color(graph: Graph, current_color: int) -> {}:
+    """
+    This methode creates a mapping from a vertex to the amount of neighbours with current_color.
+    :param graph: graph which is used for the counting of the neighbours
+    :param current_color: the color which is used to refine the graph
+    :return: mapping of colors to a vertex-neighbour_count mapping, the vertex-neighbour_count mapping
+                is a dictionary which maps vertices to the amount of neighbours with current_color
+    """
+    counter = {}
+    for v in graph.vertices:
+        count = 0
+        for x in v.neighbours:
+            if x.colornum is current_color:
+                count += 1
+        if v.colornum not in counter.keys():
+            counter[v.colornum] = {}
+        counter[v.colornum].update({v: count})
+    return counter
+
+  
 def group_by(obj, group_rule=None) -> dict:
     """
     Group the given object according to the given key.
