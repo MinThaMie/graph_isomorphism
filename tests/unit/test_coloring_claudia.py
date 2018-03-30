@@ -1,6 +1,7 @@
 import unittest
 
 from color_refiment_helper import *
+from tests import create_graph_helper
 
 
 class TestPr2(unittest.TestCase):
@@ -12,20 +13,6 @@ class TestPr2(unittest.TestCase):
         for v in vertices:
             coloring.set(color, v)
         return g, vertices, coloring
-
-    def create_graph_helper(self, edges: List[List["Integer"]]):
-        g = Graph(False)
-        vertices = {}
-        for edge in edges:
-            head, tail = edge
-            if head not in vertices:
-                vertices[head] = Vertex(g, label=head)
-                g.add_vertex(vertices[head])
-            if tail not in vertices:
-                vertices[tail] = Vertex(g, label=tail)
-                g.add_vertex(vertices[tail])
-            g.add_edge(Edge(vertices[head], vertices[tail]))
-        return g
 
     def create_coloring_helper(self, graph: "Graph", map: "dict"):
         coloring = Coloring()
@@ -53,7 +40,7 @@ class TestPr2(unittest.TestCase):
         self.assertEqual(0, coloring.num_colors)
 
         # 1 - 2 - 3
-        g = self.create_graph_helper([[1, 2], [2, 3]])
+        g = create_graph_helper([(1, 2), (2, 3)])
         v_g1, v_g2, v_g3 = g.vertices
         coloring = initialize_coloring(g)
         self.assertEqual(2, coloring.num_colors)
@@ -64,7 +51,7 @@ class TestPr2(unittest.TestCase):
         #     4 - 6 - 7
         #     |
         #     5
-        g = self.create_graph_helper([[1, 2], [2, 3], [2, 4], [4, 5], [4, 6], [6, 7]])
+        g = create_graph_helper([(1, 2), (2, 3), (2, 4), (4, 5), (4, 6), (6, 7)])
         v_g1, v_g2, v_g3, v_g4, v_g5, v_g6, v_g7 = g.vertices
         coloring = initialize_coloring(g)
         self.assertListEqual([v_g1, v_g3, v_g5, v_g7], coloring.get(1))
@@ -84,7 +71,7 @@ class TestPr2(unittest.TestCase):
         self.assertListEqual([v_g2, v_g4], coloring.get(3))
 
     def test_has_same_color_neighbours(self):
-        g = self.create_graph_helper([[1, 2], [2, 3], [3, 4], [3, 5]])
+        g = create_graph_helper([(1, 2), (2, 3), (3, 4), (3, 5)])
         v_g1, v_g2, v_g3, v_g4, v_g5 = g.vertices
         coloring = self.create_coloring_helper(g, {0: [1], 1: [4, 5], 2: [2], 3: [3]})
 
@@ -121,7 +108,7 @@ class TestPr2(unittest.TestCase):
     #     self.assertFalse(no_bijection2.status == "Bijection")
 
     def test_choose_color(self):
-        graph = self.create_graph_helper([[1, 2], [3, 4], [5, 6], [7, 8]])
+        graph = create_graph_helper([(1, 2), (3, 4), (5, 6), (7, 8)])
         vertices = sorted(graph.vertices, key=Vertex.__str__)
 
         coloring = self.create_coloring_helper(graph, {0: [1, 2, 3, 4]})
