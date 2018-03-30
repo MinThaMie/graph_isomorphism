@@ -213,7 +213,7 @@ def write_dot(graph: Graph, f: IO[str], directed=False):
         name[v] = next_name
         next_name += 1
         options = 'penwidth=3,'
-        if hasattr(v, 'label'):
+        if hasattr(v, '_label'):
             options += 'label="' + str(v.label) + '",'
         if hasattr(v, 'colortext'):
             options += 'color="' + v.colortext + '",'
