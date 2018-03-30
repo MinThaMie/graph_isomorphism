@@ -309,13 +309,13 @@ class Graph(object):
 
     @property
     def vertices(self) -> List["Vertex"]:
-        """:return: The `set` of vertices of this graph."""
+        """:return: The list of vertices of this graph."""
 
         return list(self._v)
 
     @property
     def edges(self) -> List["Edge"]:
-        """:return: The `set` of edges of this graph."""
+        """:return: The list of edges of this graph."""
 
         return list(self._e)
 
