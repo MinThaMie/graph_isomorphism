@@ -2,10 +2,12 @@
 This is a module for the color refinement algorithm
 version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
-from color_refinement_helper import *
 import time
+
 import preprocessing
+from color_refinement_helper import *
 from graph_io import *
+from tools import store_morphism
 
 PATH = './graphs/branching/'
 GRAPH = 'cubes5.grl'
@@ -221,19 +223,50 @@ if __name__ == "__main__":
 
     graphs = L[0]
     print("Graph: ", GRAPH)
-    for i in range(len(graphs)):
-        for j in range(len(graphs)):
+
+    graph_indices = range(len(graphs))
+
+    # Note: trivial automorphisms are never stored in the following collections
+    known_isomorphisms = {}.fromkeys(graph_indices, set())
+    known_anisomorphisms = dict(known_isomorphisms)
+
+    for i in graph_indices:
+        for j in graph_indices:
             if j == i:
                 start = time.time()
                 num = get_number_automorphisms(graphs[i])
-                print('There are', num, 'automorphisms')
-                print('Took', time.time() - start, 'seconds\n')
+                end = time.time()
+
+                print('There are', num, 'automorphisms of', graphs[i].name)
+                print('Took', end - start, 'seconds\n')
+
             if j > i:
-                start = time.time()
-                isomorph = is_isomorphisms(graphs[i], graphs[j])
-                print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorph)
-                if isomorph:
-                    coloring = initialize_coloring(graphs[i] + graphs[j])
-                    num = count_isomorphism(graphs[i], graphs[j], coloring)
-                    print('There are', num, 'isomorphisms')
-                    print('Took', time.time() - start, 'seconds\n')
+                if j not in known_isomorphisms[i] and j not in known_anisomorphisms[i]:
+                    start = time.time()
+                    isomorphism = is_isomorphisms(graphs[i], graphs[j])
+
+                    if isomorphism:
+                        coloring = initialize_coloring(graphs[i] + graphs[j])
+                        num = count_isomorphism(graphs[i], graphs[j], coloring)
+
+                    end = time.time()
+
+                    if isomorphism:
+                        store_morphism(i, j, known_isomorphisms)
+                    else:
+                        store_morphism(i, j, known_anisomorphisms)
+
+                    print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
+
+                    if isomorphism:
+                        print('There are', num, 'isomorphisms')
+
+                    print('Took', end - start, 'seconds\n')
+
+                else:
+                    isomorphism_status_string = 'isomorphic'
+                    if j in known_anisomorphisms[i]:
+                        isomorphism_status_string = 'an' + isomorphism_status_string
+
+                    print(graphs[i].name, 'and', graphs[j].name, 'are already known to be', isomorphism_status_string)
+                    print()

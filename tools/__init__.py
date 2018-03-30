@@ -1,4 +1,5 @@
 import os
+from typing import Dict, Set
 
 _last_integer = 0
 _generated_integers = set()
@@ -31,3 +32,23 @@ def unique_integer() -> int:
 
     _generated_integers.add(_last_integer)
     return _last_integer
+
+
+def store_morphism(i: int, j: int, dict_of_pairs: Dict[int, Set[int]]):
+    """
+    Store a known morphism between two indices in the specified mapping.
+
+    :param int i: Index of one known morphism pair member.
+    :param int j: Index of another known morphism pair member.
+    :param dict dict_of_pairs: Dictionary in which to store the set of known morphisms.
+    """
+
+    morphisms = set()
+
+    for index in (i, j):
+        morphisms |= dict_of_pairs[index]
+
+    morphisms |= {i, j}
+
+    for index in morphisms:
+        dict_of_pairs[index] = morphisms - {index}

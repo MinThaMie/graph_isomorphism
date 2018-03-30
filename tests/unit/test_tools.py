@@ -15,6 +15,30 @@ class ToolsTests(unittest.TestCase):
         self.assertEqual(2 * generated_max + 1, unique_integer())
         self.assertEqual(tools._last_integer + 1, unique_integer())
 
+    def test_store_morphism(self):
+        i = 0
+        j = 1
+        known_isomorphisms = {}.fromkeys({i, j}, set())
+
+        tools.store_morphism(i, j, known_isomorphisms)
+
+        self.assertEqual({j}, known_isomorphisms[i])
+        self.assertEqual({i}, known_isomorphisms[j])
+
+        tools.store_morphism(i, j, known_isomorphisms)
+
+        self.assertEqual({j}, known_isomorphisms[i])
+        self.assertEqual({i}, known_isomorphisms[j])
+
+        i = 2
+        known_isomorphisms[2] = set()
+
+        tools.store_morphism(i, j, known_isomorphisms)
+
+        self.assertEqual({1, 2}, known_isomorphisms[0])
+        self.assertEqual({0, 2}, known_isomorphisms[1])
+        self.assertEqual({0, 1}, known_isomorphisms[2])
+
 
 if __name__ == '__main__':
     unittest.main()
