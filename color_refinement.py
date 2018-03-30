@@ -7,8 +7,8 @@ import time
 import preprocessing
 from graph_io import *
 
-PATH = './graphs/treepaths/'
-GRAPH = 'threepaths160.gr'
+PATH = './graphs/branching/'
+GRAPH = 'trees36.grl'
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -221,18 +221,21 @@ if __name__ == "__main__":
 
     graphs = L[0]
     print("Graph: ", GRAPH)
+    automorphisms = {}
     for i in range(len(graphs)):
         for j in range(len(graphs)):
             if j == i:
                 start = time.time()
                 num = get_number_automorphisms(graphs[i])
-                print('There are', num, 'automorphisms')
+                automorphisms[graphs[i].name] = num
+                print('Graph', graphs[i].name, 'has', num, 'automorphisms')
                 print('Took', time.time() - start, 'seconds\n')
             if j > i:
                 start = time.time()
                 isomorph = is_isomorphisms(graphs[i], graphs[j])
-                print(graphs[i].name,'and',graphs[j].name,'isomorphic?',isomorph)
-                coloring = initialize_coloring(graphs[i]+graphs[j])
-                num = count_isomorphism(graphs[i], graphs[j],coloring)
-                print('There are',num,'isomorphisms')
-                print('Took',time.time()-start,'seconds\n')
+                if isomorph:
+                    print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorph)
+                    # coloring = initialize_coloring(graphs[i]+graphs[j])
+                    # num = count_isomorphism(graphs[i], graphs[j], coloring)
+                    print('There are', automorphisms.get(graphs[i].name), 'isomorphisms')
+                    print('Took', time.time()-start, 'seconds\n')
