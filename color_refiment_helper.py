@@ -147,7 +147,7 @@ def initialize_coloring(g: Graph) -> Coloring:
     """
     coloring = Coloring()
     for v in g.vertices:
-        coloring.set(v.degree, v)
+        coloring.set(v, v.degree)
     debug('Init coloring ', coloring)
     return coloring
 
@@ -161,7 +161,7 @@ def get_unit_coloring(g: Graph) -> Coloring:
     """
     coloring = Coloring()
     for v in g.vertices:
-        coloring.set(0, v)
+        coloring.set(v, 0)
     debug('Init coloring ', coloring)
     return coloring
 

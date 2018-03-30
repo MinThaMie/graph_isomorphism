@@ -69,10 +69,10 @@ def color_refine(coloring: Coloring) -> Coloring:
                 new_color = new_coloring.next_color()
                 unbalanced = True
                 u = vertices.pop()
-                new_coloring.set(new_color, u)
+                new_coloring.set(u, new_color)
                 for v in list(vertices):
                     if has_same_color_neighbours(u, v, coloring):
-                        new_coloring.set(new_color, v)
+                        new_coloring.set(v, new_color)
                         vertices.remove(v)
                         unbalanced = not unbalanced
             # Check if coloring is unbalanced, then we must stop
@@ -83,7 +83,7 @@ def color_refine(coloring: Coloring) -> Coloring:
                 return new_coloring
 
         debug('New coloring ', new_coloring)
-        has_changed = (coloring.num_colors != new_coloring.num_colors)
+        has_changed = (len(coloring) != len(new_coloring))
         coloring = new_coloring
     debug('No changes found')
     return coloring
@@ -133,7 +133,7 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
                 new_color = color_class
                 if split_count > 0:
                     new_color = coloring.next_color()
-                    coloring.recolor(u, new_color, u.colornum)
+                    coloring.recolor(u, new_color)
 
                 for v in list(vertices_of_c):
                     n_neighbours_u = neighbour_map[u]
@@ -143,7 +143,7 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
                     # If the split count is larger then zero they should both be colored with the same color
                     if n_neighbours_u == n_neighbours_v:
                         if split_count > 0:
-                            coloring.recolor(v, new_color, v.colornum)
+                            coloring.recolor(v, new_color)
                         vertices_of_c.remove(v)
                 split_count += 1
                 # Each color_class is added to the list
