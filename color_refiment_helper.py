@@ -164,3 +164,25 @@ def get_unit_coloring(g: Graph) -> Coloring:
         coloring.set(0, v)
     debug('Init coloring ', coloring)
     return coloring
+
+
+def group_by(obj, group_rule=None) -> dict:
+    """
+    Group the given object according to the given key.
+
+    Eg. group_by(List[int]) groups by number
+    Eg. group_by(List[Vertex], key=Vertex.degree) groups by vertex degree
+    Eg. group_by(dict{List}, key=lambda x:len(x)) groups by length of the lists
+    :param obj: Object over which one can iterate
+    :param group_rule: Rule to use for grouping, if not set `lambda x:x` is used
+    :return: A dict in which the elements of 'obj' are grouped by results of the 'group_rule'
+    """
+    d = {}
+    if not group_rule:
+        for elem in obj:
+            d.setdefault(elem, []).append(elem)
+    else:
+        for elem in obj:
+            key = group_rule(elem)
+            d.setdefault(key, []).append(elem)
+    return d
