@@ -112,9 +112,9 @@ def are_twins(u: Vertex, v: Vertex) -> bool:
     :param v: vertex
     :return: `True` if the vertices are twins, `False` otherwise
     """
-    N_u = [x for x in u.neighbours if x != v]
-    N_v = [x for x in v.neighbours if x != u]
-    return compare(N_u, N_v, lambda vertex: vertex.label)
+    n_u = [x for x in u.neighbours if x != v]
+    n_v = [x for x in v.neighbours if x != u]
+    return compare(n_u, n_v, lambda vertex: vertex.label)
 
 
 # TODO: get_modules
@@ -166,24 +166,23 @@ def get_unit_coloring(g: Graph) -> Coloring:
     return coloring
 
 
-
-def generate_neighbour_count_with_color(graph: Graph, current_color: int) -> {}:
+def generate_neighbour_count_with_color(coloring: Coloring, current_color: int) -> {}:
     """
     This methode creates a mapping from a vertex to the amount of neighbours with current_color.
-    :param graph: graph which is used for the counting of the neighbours
+    :param coloring: coloring used for the counting of the neighbours
     :param current_color: the color which is used to refine the graph
     :return: mapping of colors to a vertex-neighbour_count mapping, the vertex-neighbour_count mapping
                 is a dictionary which maps vertices to the amount of neighbours with current_color
     """
     counter = {}
-    for v in graph.vertices:
+    for v in coloring.vertices:
         count = 0
         for x in v.neighbours:
-            if x.colornum is current_color:
+            if coloring.color(x) is current_color:
                 count += 1
-        if v.colornum not in counter.keys():
-            counter[v.colornum] = {}
-        counter[v.colornum].update({v: count})
+        if coloring.color(v) not in counter.keys():
+            counter[coloring.color(v)] = {}
+        counter[coloring.color(v)].update({v: count})
     return counter
 
   
