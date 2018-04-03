@@ -112,9 +112,9 @@ def are_twins(u: Vertex, v: Vertex) -> bool:
     :param v: vertex
     :return: `True` if the vertices are twins, `False` otherwise
     """
-    N_u = [x for x in u.neighbours if x != v]
-    N_v = [x for x in v.neighbours if x != u]
-    return compare(N_u, N_v, lambda vertex: vertex.label)
+    n_u = [x for x in u.neighbours if x != v]
+    n_v = [x for x in v.neighbours if x != u]
+    return compare(n_u, n_v, lambda vertex: vertex.label)
 
 
 # TODO: get_modules
@@ -164,7 +164,6 @@ def get_unit_coloring(g: Graph) -> Coloring:
         coloring.set(v, 0)
     debug('Init coloring ', coloring)
     return coloring
-
 
 
 def generate_neighbour_count_with_color(coloring: Coloring, current_color: int) -> {}:

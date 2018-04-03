@@ -108,7 +108,7 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
         qlist.append(c)
     debug('Queue', qlist)
 
-    while (len(qlist) > 0):
+    while len(qlist) > 0:
         # Start refining with the first color from the queue.
         current_color = qlist.pop_left()
         counter = generate_neighbour_count_with_color(coloring, current_color)
@@ -168,8 +168,8 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
     return coloring
 
 
-def my_test(g, cg):
-    fast_color_refine(g, cg)
+def my_test(cg):
+    fast_color_refine(cg)
 
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
