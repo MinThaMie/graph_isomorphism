@@ -58,7 +58,6 @@ class ColorRefineCase(unittest.TestCase):
             results = testfile(file)
             for result in results:
                 self.assertEqual(result[0], result[1], result[2])
-                # print(result[2], 'got', result[1])
 
 
 if __name__ == '__main__':

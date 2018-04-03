@@ -51,8 +51,10 @@ class ColorRefineHelper(unittest.TestCase):
     """Tests for `color_refinement_helper.py`."""
 
     def test_compare(self):
+        # Test empty lists are equivalent
         list1 = []
         list2 = []
+        # Test lists with some numbers
         self.assertTrue(compare(list1, list2))
         list1.append(1)
         self.assertFalse(compare(list1, list2))
@@ -66,6 +68,12 @@ class ColorRefineHelper(unittest.TestCase):
         self.assertTrue(compare(list1, list2))
         list2 = [1, 2, 2]
         self.assertFalse(compare(list1, list2))
+
+        # Compare using a key
+        g = Graph(False)
+        list1 = [Vertex(g, label=str(i)) for i in range(5)]
+        list2 = [list1[i] for i in range(4,-1,-1)]
+        self.assertTrue(compare(list1, list2, my_key=lambda v: v.label))
 
     def test_create_new_color_class(self):
         g = Graph(False)
