@@ -13,7 +13,6 @@ PATH = './graphs/branching/'
 GRAPH = 'cubes5.grl'
 
 known_isomorphisms: Dict[int, Set[int]] = {}
-known_anisomorphisms: Dict[int, Set[int]] = {}
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -240,27 +239,13 @@ def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
         known_isomorphisms[index] = isomorphisms - {index}
 
 
-def store_anisomorphism(i: int, j: int, known_anisomorphisms: Dict[int, Set[int]]):
-    """
-    Store a known isomorphism between two indices in the specified mapping.
-
-    :param int i: Index of one known anisomorphism pair member.
-    :param int j: Index of another known anisomorphism pair member.
-    :param dict known_anisomorphisms: Dictionary in which to store the set of known anisomorphisms.
-    """
-
-    known_anisomorphisms[i] = known_anisomorphisms[i] | {j}
-    known_anisomorphisms[j] = known_anisomorphisms[j] | {i}
-
-
 def process(graphs: List[Graph]):
-    global known_isomorphisms, known_anisomorphisms
+    global known_isomorphisms
 
     graph_indices = range(len(graphs))
 
-    # Note: trivial automorphisms are never stored in the following collections
+    # Note: trivial automorphisms are never stored
     known_isomorphisms = {}.fromkeys(graph_indices, set())
-    known_anisomorphisms = dict(known_isomorphisms)
 
     for i in graph_indices:
         for j in graph_indices:
@@ -270,10 +255,13 @@ def process(graphs: List[Graph]):
                 end = time.time()
 
                 print('There are', num, 'automorphisms of', graphs[i].name)
-                print('Took', end - start, 'seconds\n')
+                print('Took', end - start, 'seconds')
 
             if j > i:
-                if j not in known_isomorphisms[i] and j not in known_anisomorphisms[i]:
+                if j in known_isomorphisms[i]:
+                    print(graphs[i].name, 'and', graphs[j].name, 'are already known to be isomorphic')
+
+                else:
                     start = time.time()
                     isomorphism = is_isomorphisms(graphs[i], graphs[j])
 
@@ -283,25 +271,14 @@ def process(graphs: List[Graph]):
 
                     end = time.time()
 
-                    if isomorphism:
-                        store_isomorphism(i, j, known_isomorphisms)
-                    else:
-                        store_anisomorphism(i, j, known_anisomorphisms)
-
                     print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
 
                     if isomorphism:
+                        store_isomorphism(i, j, known_isomorphisms)
                         print('There are', num, 'isomorphisms')
 
-                    print('Took', end - start, 'seconds\n')
-
-                else:
-                    isomorphism_status_string = 'isomorphic'
-                    if j in known_anisomorphisms[i]:
-                        isomorphism_status_string = 'an' + isomorphism_status_string
-
-                    print(graphs[i].name, 'and', graphs[j].name, 'are already known to be', isomorphism_status_string)
-                    print()
+                    print('Took', end - start, 'seconds')
+            print()
 
 
 if __name__ == "__main__":

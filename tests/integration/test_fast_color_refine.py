@@ -61,12 +61,11 @@ class FastColorRefineCase(unittest.TestCase):
                 color_refinement.debug(result[2], 'got', result[1])
 
     def test_storing_known_an_isomorphisms(self):
-        # Assert that initially there are no known (an)isomorphisms
+        # Assert that initially there are no known isomorphisms
         self.assertEqual({}, color_refinement.known_isomorphisms)
-        self.assertEqual({}, color_refinement.known_anisomorphisms)
 
         # Assert that, after processing a list of graphs containing some isomorphisms and anisomorphisms, the known
-        # (an)isomorphisms are correct
+        # isomorphisms are correct
         tests.set_up_test_graphs()
         graphs = tests.isomorphic_graphs + tests.anisomorphic_graphs
         color_refinement.process(graphs)
@@ -75,11 +74,6 @@ class FastColorRefineCase(unittest.TestCase):
         self.assertEqual({0}, color_refinement.known_isomorphisms[1])
         self.assertEqual(set(), color_refinement.known_isomorphisms[2])
         self.assertEqual(set(), color_refinement.known_isomorphisms[3])
-
-        self.assertEqual({2, 3}, color_refinement.known_anisomorphisms[0])
-        self.assertEqual({2, 3}, color_refinement.known_anisomorphisms[1])
-        self.assertEqual({0, 1, 3}, color_refinement.known_anisomorphisms[2])
-        self.assertEqual({0, 1, 2, }, color_refinement.known_anisomorphisms[3])
 
 
 if __name__ == '__main__':

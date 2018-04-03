@@ -41,30 +41,6 @@ class ToolsTests(unittest.TestCase):
         self.assertEqual({i, k}, known_isomorphisms[j])
         self.assertEqual({i, j}, known_isomorphisms[k])
 
-    def test_store_anisomorphism(self):
-        i = 0
-        j = 1
-        k = 2
-        known_anisomorphisms = {}.fromkeys([i, j, k], set())
-
-        # Assert that storing an anisomorphism results in a known mapping from i to j and from j to i
-        color_refinement.store_anisomorphism(i, j, known_anisomorphisms)
-        self.assertEqual({j}, known_anisomorphisms[i])
-        self.assertEqual({i}, known_anisomorphisms[j])
-        self.assertEqual(set(), known_anisomorphisms[k])
-
-        # Assert that storing the same anisomorphism twice changes nothing
-        color_refinement.store_anisomorphism(j, i, known_anisomorphisms)
-        self.assertEqual({j}, known_anisomorphisms[i])
-        self.assertEqual({i}, known_anisomorphisms[j])
-        self.assertEqual(set(), known_anisomorphisms[k])
-
-        # Assert that storing a new known anisomorphism only updates the indices involved, other indices are unchanged
-        color_refinement.store_anisomorphism(j, k, known_anisomorphisms)
-        self.assertEqual({j}, known_anisomorphisms[i])
-        self.assertEqual({i, k}, known_anisomorphisms[j])
-        self.assertEqual({j}, known_anisomorphisms[k])
-
 
 if __name__ == '__main__':
     unittest.main()
