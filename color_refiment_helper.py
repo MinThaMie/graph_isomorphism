@@ -1,6 +1,8 @@
 """
 Module with helper methods for the Color Refinement Algorithm
 """
+from typing import Iterable
+
 from coloring import *
 
 DEBUG = False
@@ -16,16 +18,15 @@ def debug(*args):
         print(*args)
 
 
-def compare(s: List, t: List, my_key=None) -> bool:
-    """
-    Compares if two lists are equal
+def compare(s: Iterable, t: Iterable, key=None) -> bool:
+    """Compare 2 iterables and will do so on the sorted list.
 
-    :param s: List to compare
-    :param t: List to compare
-    :return: Returns `True` if list have the same length and contain the same elements. Elements do not need to have the
-    same order. Returns `False` otherwise.
+    :param Iterable s: One iterable to compare
+    :param Iterable t: Another iterable to compare
+    :param key: Key on which to compare the iterables' contents on, e.g. Vertex.label or a lambda function.
+    :return: `True` if the iterables' contents are the same; `False` otherwise.
     """
-    return sorted(s, key=my_key) == sorted(t, key=my_key)
+    return sorted(s, key=key) == sorted(t, key=key)
 
 
 def create_new_color_class(coloring: Coloring, vertex1: Vertex, vertex2: Vertex) -> Coloring:
@@ -111,9 +112,9 @@ def are_twins(u: Vertex, v: Vertex) -> bool:
     :param v: vertex
     :return: `True` if the vertices are twins, `False` otherwise
     """
-    N_u = [x for x in u.neighbours if x != v]
-    N_v = [x for x in v.neighbours if x != u]
-    return compare(N_u, N_v, lambda vertex: vertex.label)
+    n_u = [x for x in u.neighbours if x != v]
+    n_v = [x for x in v.neighbours if x != u]
+    return compare(n_u, n_v, lambda vertex: vertex.label)
 
 
 # TODO: get_modules
@@ -146,7 +147,7 @@ def initialize_coloring(g: Graph) -> Coloring:
     """
     coloring = Coloring()
     for v in g.vertices:
-        coloring.set(v.degree, v)
+        coloring.set(v, v.degree)
     debug('Init coloring ', coloring)
     return coloring
 
@@ -160,6 +161,48 @@ def get_unit_coloring(g: Graph) -> Coloring:
     """
     coloring = Coloring()
     for v in g.vertices:
-        coloring.set(0, v)
+        coloring.set(v, 0)
     debug('Init coloring ', coloring)
     return coloring
+
+
+def generate_neighbour_count_with_color(coloring: Coloring, current_color: int) -> {}:
+    """
+    This methode creates a mapping from a vertex to the amount of neighbours with current_color.
+    :param coloring: coloring used for the counting of the neighbours
+    :param current_color: the color which is used to refine the graph
+    :return: mapping of colors to a vertex-neighbour_count mapping, the vertex-neighbour_count mapping
+                is a dictionary which maps vertices to the amount of neighbours with current_color
+    """
+    counter = {}
+    for v in coloring.vertices:
+        count = 0
+        for x in v.neighbours:
+            if coloring.color(x) is current_color:
+                count += 1
+        if coloring.color(v) not in counter.keys():
+            counter[coloring.color(v)] = {}
+        counter[coloring.color(v)].update({v: count})
+    return counter
+
+  
+def group_by(obj, group_rule=None) -> dict:
+    """
+    Group the given object according to the given key.
+
+    Eg. group_by(List[int]) groups by number
+    Eg. group_by(List[Vertex], key=Vertex.degree) groups by vertex degree
+    Eg. group_by(dict{List}, key=lambda x:len(x)) groups by length of the lists
+    :param obj: Object over which one can iterate
+    :param group_rule: Rule to use for grouping, if not set `lambda x:x` is used
+    :return: A dict in which the elements of 'obj' are grouped by results of the 'group_rule'
+    """
+    d = {}
+    if not group_rule:
+        for elem in obj:
+            d.setdefault(elem, []).append(elem)
+    else:
+        for elem in obj:
+            key = group_rule(elem)
+            d.setdefault(key, []).append(elem)
+    return d
