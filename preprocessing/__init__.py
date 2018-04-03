@@ -64,8 +64,8 @@ def remove_loners(g: Graph):
 
 
 def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
-    amount_of_vertices = len(g.vertices)
-    if len(g.edges) > (amount_of_vertices * (amount_of_vertices - 1))/4:
+    amount_of_vertices = g.order
+    if g.size > (amount_of_vertices * (amount_of_vertices - 1))/4:
         debug("Uses complements")
         return g.complement(), h.complement()
     else:
