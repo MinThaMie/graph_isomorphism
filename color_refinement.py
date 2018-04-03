@@ -12,6 +12,9 @@ from graph_io import *
 PATH = './graphs/branching/'
 GRAPH = 'cubes5.grl'
 
+known_isomorphisms: Dict[int, Set[int]] = {}
+known_anisomorphisms: Dict[int, Set[int]] = {}
+
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
     """
@@ -250,12 +253,8 @@ def store_anisomorphism(i: int, j: int, known_anisomorphisms: Dict[int, Set[int]
     known_anisomorphisms[j] = known_anisomorphisms[j] | {i}
 
 
-if __name__ == "__main__":
-    with open(PATH + GRAPH) as f:
-        L = load_graph(f, read_list=True)
-
-    graphs = L[0]
-    print("Graph: ", GRAPH)
+def process(graphs: List[Graph]):
+    global known_isomorphisms, known_anisomorphisms
 
     graph_indices = range(len(graphs))
 
@@ -303,3 +302,13 @@ if __name__ == "__main__":
 
                     print(graphs[i].name, 'and', graphs[j].name, 'are already known to be', isomorphism_status_string)
                     print()
+
+
+if __name__ == "__main__":
+    with open(PATH + GRAPH) as f:
+        L = load_graph(f, read_list=True)
+
+    graphs = L[0]
+    print("Graph: ", GRAPH)
+
+    process(graphs)
