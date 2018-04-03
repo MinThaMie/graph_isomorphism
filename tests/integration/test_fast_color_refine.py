@@ -70,10 +70,11 @@ class FastColorRefineCase(unittest.TestCase):
         graphs = tests.isomorphic_graphs + tests.anisomorphic_graphs
         color_refinement.process(graphs)
 
-        self.assertEqual({1}, color_refinement.known_isomorphisms[0])
-        self.assertEqual({0}, color_refinement.known_isomorphisms[1])
-        self.assertEqual(set(), color_refinement.known_isomorphisms[2])
+        self.assertEqual({1, 2}, color_refinement.known_isomorphisms[0])
+        self.assertEqual({0, 2}, color_refinement.known_isomorphisms[1])
+        self.assertEqual({0, 1}, color_refinement.known_isomorphisms[2])
         self.assertEqual(set(), color_refinement.known_isomorphisms[3])
+        self.assertEqual(set(), color_refinement.known_isomorphisms[4])
 
 
 if __name__ == '__main__':

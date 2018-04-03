@@ -50,26 +50,53 @@ def set_up_test_graphs():
     non_trivial_graph_complement.name = 'non_trivial_graph_complement'
 
     # Instantiate some isomorphic graphs
-    # non_trivial_graph_isomorphism =
-    #           4
-    #          / \
-    #     0 - 1   3
-    #          \ /
-    #           2
-    non_trivial_graph_isomorphism = create_graph_helper([(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)])
-    non_trivial_graph_isomorphism.name = 'non_trivial_graph_isomorphism'
-
-    isomorphic_graphs = [non_trivial_graph, non_trivial_graph_isomorphism]
+    # iso_0 =
+    #           - 0 -
+    #          /     \
+    #     3 - 4 - 1 - 5
+    #          \     /
+    #           - 2 -
+    # iso_1 =
+    #           - 2 -
+    #          /     \
+    #     3 - 4 - 0 - 5
+    #          \     /
+    #           - 1 -
+    # iso_2 =
+    #           - 1 -
+    #          /     \
+    #     3 - 4 - 2 - 5
+    #          \     /
+    #           - 0 -
+    changing_labels = [0, 1, 2]
+    isomorphic_graphs = []
+    for _ in range(len(changing_labels)):  # Because changing_labels changes, this can't simply be changing_labels
+        _0 = changing_labels[0]
+        _1 = changing_labels[1]
+        _2 = changing_labels[2]
+        isomorphism = create_graph_helper([(3, 4), (4, _0), (_0, 5), (4, _1), (_1, 5), (4, _2), (_2, 5)])
+        isomorphism.name = f'isomorphism_{_0}_{_1}_{_2}'
+        isomorphic_graphs.append(isomorphism)
+        changing_labels = [changing_labels.pop()] + changing_labels
 
     # Instantiate some anisomorphic graphs
-    # another_non_trivial_graph =
-    #  1 - 2 - 3 - 4
-    #       \ /
-    #        0
-    another_non_trivial_graph = create_graph_helper([(1, 2), (0, 2), (2, 3), (0, 3), (3, 4)])
-    another_non_trivial_graph.name = 'another_non_trivial_graph'
-
-    anisomorphic_graphs = [non_trivial_graph_complement, another_non_trivial_graph]
+    # anisomorphism_0 =
+    #           - 4 -
+    #          /  |  \
+    #     3 - 0   1   2
+    #          \  |  /
+    #           - 5 -
+    # anisomorphism_1 =
+    #           - 4 -
+    #          /  |  \
+    #     3 - 0 - 1   2
+    #          \     /
+    #           - 5 -
+    anisomorphism_0 = create_graph_helper([(3, 0), (0, 4), (4, 1), (4, 2), (0, 5), (1, 5), (2, 5)])
+    anisomorphism_0.name = 'anisomorphism_0'
+    anisomorphism_1 = create_graph_helper([(3, 0), (0, 4), (4, 1), (4, 2), (0, 5), (1, 0), (2, 5)])
+    anisomorphism_1.name = 'anisomorphism_1'
+    anisomorphic_graphs = [anisomorphism_0, anisomorphism_1]
 
 
 def create_graph_helper(edges: List[Tuple[object, object]] = list()):
