@@ -4,51 +4,7 @@ Test file for Color Refinement Helper
 
 import unittest
 from color_refiment_helper import *
-
-
-def create_graph_helper(edges: List[List[int]]) -> Graph:
-    """
-    Create a graph from the given list of edges,
-    each edge is represented by a list of 2 integers which represent the vertex labels.
-
-    :param edges: Representation of the edges the graph should get
-    :return: Graph
-    """
-    g = Graph(False)
-    vertices = {}
-    for edge in edges:
-        head, tail = edge
-        if head not in vertices:
-            vertices[head] = Vertex(g, label=head)
-            g.add_vertex(vertices[head])
-        if tail not in vertices:
-            vertices[tail] = Vertex(g, label=tail)
-            g.add_vertex(vertices[tail])
-        g.add_edge(Edge(vertices[head], vertices[tail]))
-    return g
-
-
-def create_coloring_helper_vertex(mapping: dict) -> Coloring:
-    """
-    Converts a dictionary to Coloring
-    """
-    coloring = Coloring()
-    for key in mapping:
-        for vertex in mapping[key]:
-            coloring.set(vertex=vertex, color=key)
-    return coloring
-
-
-def create_coloring_helper(graph: Graph, mapping: dict) -> Coloring:
-    """
-    Converts a dictionary with numbers of the vertices to a Coloring
-    """
-    coloring = Coloring()
-    for key in mapping:
-        for value in mapping[key]:
-            vertex = graph.find_vertex(value)
-            coloring.set(key, vertex)
-    return coloring
+from tests import *
 
 
 class ColorRefineHelper(unittest.TestCase):
@@ -76,7 +32,7 @@ class ColorRefineHelper(unittest.TestCase):
         # Compare using a key
         g = Graph(False)
         list1 = [Vertex(g, label=str(i)) for i in range(5)]
-        list2 = [list1[i] for i in range(4,-1,-1)]
+        list2 = [list1[i] for i in range(4, -1, -1)]
         self.assertTrue(compare(list1, list2, key=lambda v: v.label))
 
     def test_create_new_color_class(self):
@@ -90,7 +46,7 @@ class ColorRefineHelper(unittest.TestCase):
         coloring.set(v3, 0)
         new_coloring = create_new_color_class(coloring, v1, v2)
         self.assertEqual(2, len(new_coloring))
-        self.assertListEqual([v3],     new_coloring.get(0))
+        self.assertListEqual([v3], new_coloring.get(0))
         self.assertListEqual([v1, v2], new_coloring.get(1))
 
     def test_has_same_color_neighbours(self):
@@ -100,7 +56,7 @@ class ColorRefineHelper(unittest.TestCase):
         g = create_graph_helper([[1, 2], [2, 3], [3, 4], [3, 5]])
         v_g1, v_g2, v_g3, v_g4, v_g5 = g.vertices
         coloring = create_coloring_helper_vertex({0: [v_g1], 1: [v_g4, v_g5], 2: [v_g2], 3: [v_g3]})
-        self.assertTrue(has_same_color_neighbours(v_g4, v_g5,  coloring))
+        self.assertTrue(has_same_color_neighbours(v_g4, v_g5, coloring))
         self.assertFalse(has_same_color_neighbours(v_g1, v_g4, coloring))
 
     def test_choose_color(self):
@@ -137,9 +93,9 @@ class ColorRefineHelper(unittest.TestCase):
         h = Graph(False, 1)
         v_h1 = h.vertices[0]
         self.assertListEqual([v_g1, v_g2], get_vertices_of_graph([v_g1, v_g2, v_h1], g))
-        self.assertListEqual([v_h1],       get_vertices_of_graph([v_g1, v_g2, v_h1], h))
-        self.assertListEqual([],           get_vertices_of_graph([v_g1, v_g2], h))
-        self.assertListEqual([],           get_vertices_of_graph([], g))
+        self.assertListEqual([v_h1], get_vertices_of_graph([v_g1, v_g2, v_h1], h))
+        self.assertListEqual([], get_vertices_of_graph([v_g1, v_g2], h))
+        self.assertListEqual([], get_vertices_of_graph([], g))
 
     def test_are_twins(self):
         # 1 - 2
@@ -192,12 +148,12 @@ class ColorRefineHelper(unittest.TestCase):
         self.assertEqual(0, len(unit_coloring))
 
         # 1 - 2 - 3
-        g = create_graph_helper([[1, 2], [2, 3]])
+        g = create_graph_helper([(1, 2), (2, 3)])
         v_g1, v_g2, v_g3 = g.vertices
         init_coloring = initialize_coloring(g)
         self.assertEqual(2, len(init_coloring))
         self.assertListEqual([v_g1, v_g3], init_coloring.get(1))
-        self.assertListEqual([v_g2],       init_coloring.get(2))
+        self.assertListEqual([v_g2], init_coloring.get(2))
         unit_coloring = get_unit_coloring(g)
         self.assertEqual(1, len(unit_coloring))
         self.assertListEqual(g.vertices, unit_coloring.get(0))
@@ -206,13 +162,13 @@ class ColorRefineHelper(unittest.TestCase):
         #     4 - 6 - 7
         #     |
         #     5
-        g = create_graph_helper([[1, 2], [2, 3], [2, 4], [4, 5], [4, 6], [6, 7]])
+        g = create_graph_helper([(1, 2), (2, 3), (2, 4), (4, 5), (4, 6), (6, 7)])
         v_g1, v_g2, v_g3, v_g4, v_g5, v_g6, v_g7 = g.vertices
         init_coloring = initialize_coloring(g)
         self.assertEqual(3, len(init_coloring))
         self.assertListEqual([v_g1, v_g3, v_g5, v_g7], init_coloring.get(1))
-        self.assertListEqual([v_g6],                   init_coloring.get(2))
-        self.assertListEqual([v_g2, v_g4],             init_coloring.get(3))
+        self.assertListEqual([v_g6], init_coloring.get(2))
+        self.assertListEqual([v_g2, v_g4], init_coloring.get(3))
         unit_coloring = get_unit_coloring(g)
         self.assertEqual(1, len(unit_coloring))
         self.assertListEqual(g.vertices, unit_coloring.get(0))
@@ -225,10 +181,10 @@ class ColorRefineHelper(unittest.TestCase):
         g.add_vertex(v_g8)
         init_coloring = initialize_coloring(g)
         self.assertEqual(4, len(init_coloring))
-        self.assertListEqual([v_g8],                   init_coloring.get(0))
+        self.assertListEqual([v_g8], init_coloring.get(0))
         self.assertListEqual([v_g1, v_g3, v_g5, v_g7], init_coloring.get(1))
-        self.assertListEqual([v_g6],                   init_coloring.get(2))
-        self.assertListEqual([v_g2, v_g4],             init_coloring.get(3))
+        self.assertListEqual([v_g6], init_coloring.get(2))
+        self.assertListEqual([v_g2, v_g4], init_coloring.get(3))
         unit_coloring = get_unit_coloring(g)
         self.assertEqual(1, len(unit_coloring))
         self.assertListEqual(g.vertices, unit_coloring.get(0))
@@ -246,7 +202,7 @@ class ColorRefineHelper(unittest.TestCase):
         #             6 - 5
         #             \   /
         #               3
-        g = create_graph_helper([[0, 1], [1, 2], [4, 7], [3, 5], [3, 6], [5, 7], [6, 7], [5, 6]])
+        g = create_graph_helper([(0, 1), (1, 2), (4, 7), (3, 5), (3, 6), (5, 7), (6, 7), (5, 6)])
         vertices = sorted(g.vertices, key=lambda vertex: vertex.label)
         expected = {1: [vertices[0], vertices[2], vertices[4]],
                     2: [vertices[1], vertices[3]],
@@ -287,6 +243,7 @@ class ColorRefineHelper(unittest.TestCase):
             self.assertEqual(len(expected[key]), len(n_neighbors_of_color1[key]),
                              "Expect key " + str(key) + ' to have ' + str(len(expected[key])) + ' vertices')
             self.assertTrue(compare(expected[key], n_neighbors_of_color1[key], lambda v: v.label))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -73,13 +73,24 @@ def create_graph_helper(edges: List[Tuple[object, object]] = list()):
     return graph
 
 
+def create_coloring_helper_vertex(mapping: dict) -> Coloring:
+    """
+    Converts a dictionary to Coloring
+    """
+    coloring = Coloring()
+    for key in mapping:
+        for vertex in mapping[key]:
+            coloring.set(vertex=vertex, color=key)
+    return coloring
+
+
 def create_coloring_helper(vertices: List[int], map: dict):
-        coloring = Coloring()
-        for color in map:
-            for value in map[color]:
-                vertex = [v for v in vertices if v.label == value][0]
-                coloring.set(vertex, color)
-        return coloring
+    coloring = Coloring()
+    for color in map:
+        for value in map[color]:
+            vertex = [v for v in vertices if v.label == value][0]
+            coloring.set(vertex, color)
+    return coloring
 
 
 def graph_vertex2edge1() -> Graph:
@@ -195,4 +206,3 @@ def graph_vertex5edge4loop() -> Graph:
     v5e4loop.add_edge(e_h3)
     v5e4loop.add_edge(e_h4)
     return v5e4loop
-
