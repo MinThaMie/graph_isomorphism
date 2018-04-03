@@ -27,7 +27,7 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True
     :return: the number of isomorphisms of graph g and h for a given coloring
     """
     # You can choose your color refining algorithm below by commenting either of the two lines
-    new_coloring = fast_color_refine(g+h, coloring)
+    new_coloring = fast_color_refine(coloring)
     # new_coloring = color_refine(coloring)
     coloring_status = new_coloring.status(g, h)
     if coloring_status == "Unbalanced":
@@ -89,7 +89,7 @@ def color_refine(coloring: Coloring) -> Coloring:
     return coloring
 
 
-def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
+def fast_color_refine(coloring: Coloring) -> Coloring:
     """
     The fast color refine algorithm refines a given coloring by looking at the amount of neighbours of a given color.
     A queue is used to keep track of colors for which we still have to check if they lead to refinements.
@@ -109,10 +109,10 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
         qlist.append(c)
     debug('Queue', qlist)
 
-    while(len(qlist) > 0):
+    while len(qlist) > 0:
         # Start refining with the first color from the queue.
         current_color = qlist.pop_left()
-        counter = generate_neighbour_count_with_color(graph, current_color)
+        counter = generate_neighbour_count_with_color(coloring, current_color)
 
         for color_class in counter.keys():
             # Will loop over all the colors in the graph and refine them.
@@ -168,14 +168,14 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
                                 qlist.append(largest_color)
                             largest_color = color
 
-            debug('Queue',qlist)
+            debug('Queue', qlist)
 
-        debug('Queue',qlist)
+        debug('Queue', qlist)
     return coloring
 
 
-def my_test(g, cg):
-    fast_color_refine(g, cg)
+def my_test(cg):
+    fast_color_refine(cg)
 
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
@@ -192,7 +192,8 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     """
     if not preprocessing.checks(g, h):
         return 0
-    coloring = initialize_coloring(preprocessing.remove_loners(g + h))
+    g, h = preprocessing.check_complement(g, h)
+    coloring = initialize_coloring(g + h)
     return count_isomorphism(g, h, coloring, count)
 
 
