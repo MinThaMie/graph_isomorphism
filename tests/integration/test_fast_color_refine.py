@@ -60,7 +60,7 @@ class FastColorRefineCase(unittest.TestCase):
                 self.assertEqual(result[0], result[1], result[2])
                 color_refinement.debug(result[2], 'got', result[1])
 
-    def test_storing_known_an_isomorphisms(self):
+    def test_storing_known_isomorphisms(self):
         # Assert that initially there are no known isomorphisms
         self.assertEqual({}, color_refinement.known_isomorphisms)
 
