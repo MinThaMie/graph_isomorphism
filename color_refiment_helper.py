@@ -5,6 +5,7 @@ from typing import Iterable
 
 from coloring import *
 from permv2 import permutation
+from basicpermutationgroup import Orbit, Stabilizer
 
 DEBUG = False
 
@@ -219,3 +220,23 @@ def coloring_to_permutation(coloring: Coloring, g: Graph) -> permutation:
             dll.append(v)
         cycles.append(dll)
     return permutation(n=len(g.vertices), vertices=cycles)
+
+
+def member_of(f: permutation, H: [permutation]) -> bool:
+    alpha = 0
+    beta = f.P[alpha]
+    # compute orbit, transversal and stabalizer for given alpha
+    orbit, transversal = Orbit(H, alpha, returntransversal=True)
+    if beta not in orbit:
+        return False
+    stab_alpha = Stabilizer(H, alpha)
+
+    u = transversal[beta]
+    # p = permutation(n=len(u), cycles=u)
+    u_inverse = u.__neg__()
+    perm = u_inverse.__mul__(f)
+
+    if perm.P[alpha] == beta:
+        return True
+    else:
+        return member_of(perm, stab_alpha)

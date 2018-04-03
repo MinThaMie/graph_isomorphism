@@ -103,6 +103,40 @@ class TestCRHelper(unittest.TestCase):
         self.assertEqual(vg_6.label, perm.P[vg_5.label])
         self.assertEqual(vg_4.label, perm.P[vg_6.label])
 
+    def test_Orbit(self):
+        g = Graph(directed=False, n=6)
+        vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
+        coloring_p = Coloring()
+        coloring_p.add([vg_0, vg_1, vg_2])
+        coloring_p.add([vg_4, vg_5])
+        p = coloring_to_permutation(coloring_p, g)
+        coloring_q = Coloring()
+        coloring_q.add([vg_2, vg_3])
+        q = coloring_to_permutation(coloring_q, g)
+        H = list()
+        H.append(p)
+        H.append(q)
+        # test if (0,2) is in generating set (ex of slides)
+        coloring_f = Coloring()
+        coloring_f.add([vg_0, vg_2])
+        f = coloring_to_permutation(coloring_f, g)
+        self.assertTrue(member_of(f, H))
+        # test if (0,4) is in generating set
+        coloring_f = Coloring()
+        coloring_f.add([vg_0, vg_4])
+        f = coloring_to_permutation(coloring_f, g)
+        self.assertFalse(member_of(f, H))
+        # test if (0,1) is in generating set
+        coloring_f = Coloring()
+        coloring_f.add([vg_0, vg_1])
+        f = coloring_to_permutation(coloring_f, g)
+        self.assertTrue(member_of(f, H))
+        # test if (0,5) is in generating set
+        coloring_f = Coloring()
+        coloring_f.add([vg_0, vg_5])
+        f = coloring_to_permutation(coloring_f, g)
+        self.assertFalse(member_of(f, H))
 
+        
 if __name__ == '__main__':
     unittest.main()
