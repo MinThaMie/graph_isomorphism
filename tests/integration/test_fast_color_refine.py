@@ -38,7 +38,7 @@ def testfile(filename):
         for j in range(len(graphs)):
             if j > i:
                 coloring = initialize_coloring(graphs[i] + graphs[j])
-                coloring = fast_color_refine(graphs[i] + graphs[j], coloring)
+                coloring = fast_color_refine(coloring)
                 status = coloring.status(graphs[i], graphs[j])
                 expected = get_expected_result(filename, graphs[i].name, graphs[j].name)
                 message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[
