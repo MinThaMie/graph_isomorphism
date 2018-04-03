@@ -13,7 +13,7 @@ PATH = 'graphs/colorref'# to run locally from PyCharm: PATH = '../../graphs/colo
 EXPECTED = dict()
 EXPECTED['colorref_smallexample_2_49.grl'] = {'G0G1': "Bijection"}
 EXPECTED['colorref_smallexample_4_7.grl'] = {'G1G3': "Bijection", 'G0G2': None}
-EXPECTED['colorref_smallexample_6_15.grl'] = {'G0G1': "Bijection", 'G2G3': None, 'G4G5': None}
+EXPECTED['colorref_smallexample_6_15.grl'] = {'G0G1': "Bijection", 'G2G3': "Bijection", 'G4G5': None}
 
 def get_expected_result(filename, g_name, h_name):
     if filename in EXPECTED.keys():

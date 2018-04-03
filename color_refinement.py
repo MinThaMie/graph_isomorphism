@@ -8,7 +8,7 @@ import preprocessing
 from graph_io import *
 
 PATH = './graphs/branching/'
-GRAPH = 'trees36.grl'
+GRAPH = 'products72.grl'
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -149,20 +149,25 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
                 # Each color_class is added to the list
                 new_color_classes.append(new_color)
             # The smallest_color here is the first color added to the list, which is the original color
-            smallest_color = new_color_classes[0]
+            largest_color = new_color_classes[0]
             if split_count > 1:
                 debug('New color classes:', new_color_classes)
                 # If the original color is in the queue, all the other colors should be added to the queue
-                if qlist.find(smallest_color) is not None:
+                if qlist.find(largest_color) is not None:
                     for color in new_color_classes:
                         if qlist.find(color) is None:
                             qlist.append(color)
                 # Otherwise the color with the least amount over vertices should be added to the queue
                 else:
                     for color in new_color_classes:
-                        if len(coloring.get(smallest_color)) > len(coloring.get(color)):
-                            smallest_color = color
-                    qlist.append(smallest_color)
+                        if len(coloring.get(largest_color)) > len(coloring.get(color)):
+                            if qlist.find(color) is None:
+                                qlist.append(color)
+                        else:
+                            if qlist.find(largest_color) is None:
+                                qlist.append(largest_color)
+                            largest_color = color
+
             debug('Queue',qlist)
 
         debug('Queue',qlist)
