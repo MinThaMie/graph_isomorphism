@@ -3,7 +3,7 @@ Test file for Counter
 """
 import unittest
 from graph_io import *
-from color_refiment_helper import initialize_coloring, generate_neighbour_count_with_color
+from color_refinement_helper import initialize_coloring, generate_neighbour_count_with_color
 PATH = 'graphs/'
 class CounterCase(unittest.TestCase):
 
