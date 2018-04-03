@@ -148,7 +148,7 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
                 split_count += 1
                 # Each color_class is added to the list
                 new_color_classes.append(new_color)
-            # The smallest_color here is the first color added to the list, which is the original color
+            # The largest_color here is the first color added to the list, which is the original color
             largest_color = new_color_classes[0]
             if split_count > 1:
                 debug('New color classes:', new_color_classes)
@@ -157,7 +157,7 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
                     for color in new_color_classes:
                         if qlist.find(color) is None:
                             qlist.append(color)
-                # Otherwise the color with the least amount over vertices should be added to the queue
+                # Otherwise all the colors except the largest should be added to the queue
                 else:
                     for color in new_color_classes:
                         if len(coloring.get(largest_color)) > len(coloring.get(color)):
