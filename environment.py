@@ -8,7 +8,6 @@ from graph_io import load_graph
 PATH_BRANCHING = 'graphs/branching'
 PATH_COLORREF = 'graphs/colorref'
 PATH_TREEPATHS = 'graphs/treepaths'
-OUTPUT_FORMAT = '{:25} {:>15} {:>15} {:>15}'
 OUTPUT_PATH = 'export/result'
 TIME_ROUND = 5
 
@@ -75,31 +74,43 @@ def calculate_automorphs(isomorphs):
     return automorphs
 
 
-def create_titles(file, total_time):
-    title = '=========================================================================\n' \
-            + file.rsplit('/', 1)[1] + "                        TOTAL TIME: " + str(total_time) \
-            + '\n\n' \
-            + OUTPUT_FORMAT.format('isomorphs', 'isotime', 'automorphs', 'autotime') + '\n' \
-            + '-------------------------------------------------------------------------'
+def stringify_result(file, isomorphs, iso_time, automorphs, auto_time):
+    title_string = create_title_string(file)
+    data_string = create_data_string(isomorphs, automorphs)
+    footer_string = create_footer_string(iso_time, auto_time)
+    return title_string + '\n' + data_string + '\n' + footer_string + '\n'
+
+
+def create_title_string(file):
+    title = '{:_<41}'.format('') + '\n' \
+            + file.rsplit('/', 1)[1] + '\n'
     return title
 
 
-def stringify_result(file, isomorphs, iso_time, automorphs, auto_time):
-    total_time = round(iso_time + auto_time, TIME_ROUND)
-    result = create_titles(file, total_time)
+def create_data_string(isomorphs, automorphs):
+    output_format = '{:<20} {:>20}'
+    data_string = output_format.format('ISOMORPHS', 'AUTOMORPHS')
     for m in range(len(isomorphs)):
-        iso_string = str(len(isomorphs[m])) + ": ("
+        iso_string = str(len(isomorphs[m])) + ' ('
         for n in range(len(isomorphs[m])):
             iso_string += isomorphs[m][n].name
             if n + 1 < len(isomorphs[m]):
-                iso_string += ", "
-        iso_string += ")"
-        iso_time_string = str(round(iso_time, TIME_ROUND))
+                iso_string += ', '
+        iso_string += ')'
         auto_string = str(automorphs[m])
-        auto_time_string = str(round(auto_time, TIME_ROUND))
-        subresult = OUTPUT_FORMAT.format(iso_string, iso_time_string, auto_string, auto_time_string)
-        result += "\n" + subresult
-    return result + "\n"
+        subresult = output_format.format(iso_string, auto_string)
+        data_string += '\n' + subresult
+    return data_string + '\n'
+
+
+def create_footer_string(iso_time, auto_time):
+    output_format = '{:<20} {:>20.5f}'
+    total_time = iso_time + auto_time
+    footer = output_format.format('iso time', iso_time) + '\n' \
+             + output_format.format('auto time', auto_time) + '\n' \
+             + '{:30} {:-<10}'.format('', '') + '\n' \
+             + output_format.format('total time (s)', total_time)
+    return footer
 
 
 def print_result(result):
