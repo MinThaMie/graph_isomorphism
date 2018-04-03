@@ -7,8 +7,8 @@ import time
 import preprocessing
 from graph_io import *
 
-PATH = './graphs/treepaths/'
-GRAPH = 'threepaths160.gr'
+PATH = './graphs/branching/'
+GRAPH = 'cubes5.grl'
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -27,7 +27,7 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True
     :return: the number of isomorphisms of graph g and h for a given coloring
     """
     # You can choose your color refining algorithm below by commenting either of the two lines
-    new_coloring = fast_color_refine(g+h, coloring)
+    new_coloring = fast_color_refine(coloring)
     # new_coloring = color_refine(coloring)
     coloring_status = new_coloring.status(g, h)
     if coloring_status == "Unbalanced":
@@ -89,7 +89,7 @@ def color_refine(coloring: Coloring) -> Coloring:
     return coloring
 
 
-def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
+def fast_color_refine(coloring: Coloring) -> Coloring:
     """
     The fast color refine algorithm refines a given coloring by looking at the amount of neighbours of a given color.
     A queue is used to keep track of colors for which we still have to check if they lead to refinements.
@@ -99,7 +99,6 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
     1. if color 'i' is already in the queue, add all new color classes i_l to the queue as well.
     2. if color 'i' is not in the queue, add the smallest 'new' (i or one of the i_l) color class to the queue.
     The algorithm stops when the queue is empty (and starts with all current colors of the given coloring in the queue).
-    : param graph: Graph to which the coloring belongs. Used to determine the number of neighbours with a certain color.
     : param coloring: Given coloring which needs refinement
     : return: The refined coloring of the graph
     """
@@ -109,10 +108,10 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
         qlist.append(c)
     debug('Queue', qlist)
 
-    while(len(qlist) > 0):
+    while len(qlist) > 0:
         # Start refining with the first color from the queue.
         current_color = qlist.pop_left()
-        counter = generate_neighbour_count_with_color(graph, current_color)
+        counter = generate_neighbour_count_with_color(coloring, current_color)
 
         for color_class in counter.keys():
             # Will loop over all the colors in the graph and refine them.
@@ -163,14 +162,14 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
                         if len(coloring.get(smallest_color)) > len(coloring.get(color)):
                             smallest_color = color
                     qlist.append(smallest_color)
-            debug('Queue',qlist)
+            debug('Queue', qlist)
 
-        debug('Queue',qlist)
+        debug('Queue', qlist)
     return coloring
 
 
-def my_test(g, cg):
-    fast_color_refine(g, cg)
+def my_test(cg):
+    fast_color_refine(cg)
 
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
@@ -231,8 +230,9 @@ if __name__ == "__main__":
             if j > i:
                 start = time.time()
                 isomorph = is_isomorphisms(graphs[i], graphs[j])
-                print(graphs[i].name,'and',graphs[j].name,'isomorphic?',isomorph)
-                coloring = initialize_coloring(graphs[i]+graphs[j])
-                num = count_isomorphism(graphs[i], graphs[j],coloring)
-                print('There are',num,'isomorphisms')
-                print('Took',time.time()-start,'seconds\n')
+                print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorph)
+                if isomorph:
+                    coloring = initialize_coloring(graphs[i] + graphs[j])
+                    num = count_isomorphism(graphs[i], graphs[j], coloring)
+                    print('There are', num, 'isomorphisms')
+                    print('Took', time.time() - start, 'seconds\n')
