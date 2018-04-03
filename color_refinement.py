@@ -148,7 +148,7 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
                 split_count += 1
                 # Each color_class is added to the list
                 new_color_classes.append(new_color)
-            # The largest_color here is the first color added to the list, which is the original color
+            # Initialize 'largest_color' with the first color class, because this is the original color
             largest_color = new_color_classes[0]
             if split_count > 1:
                 debug('New color classes:', new_color_classes)
