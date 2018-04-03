@@ -233,8 +233,8 @@ if __name__ == "__main__":
             if j > i:
                 start = time.time()
                 isomorph = is_isomorphisms(graphs[i], graphs[j])
+                print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorph)
                 if isomorph:
-                    print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorph)
                     # coloring = initialize_coloring(graphs[i]+graphs[j])
                     # num = count_isomorphism(graphs[i], graphs[j], coloring)
                     print('There are', automorphisms.get(graphs[i].name), 'isomorphisms')
