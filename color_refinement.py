@@ -186,7 +186,8 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     """
     if not preprocessing.checks(g, h):
         return 0
-    coloring = initialize_coloring(preprocessing.remove_loners(g + h))
+    g, h = preprocessing.check_complement(g, h)
+    coloring = initialize_coloring(g + h)
     return count_isomorphism(g, h, coloring, count)
 
 
