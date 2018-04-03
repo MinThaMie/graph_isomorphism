@@ -8,13 +8,19 @@ from graph_io import load_graph
 PATH_BRANCHING = 'graphs/branching'
 PATH_COLORREF = 'graphs/colorref'
 PATH_TREEPATHS = 'graphs/treepaths'
-OUTPUT_FORMAT = '{:10} {:>15} {:>25} {:>15} {:>25} {:>25}'
+OUTPUT_FORMAT = '{:25} {:>15} {:>15} {:>15}'
 OUTPUT_PATH = 'export/result'
+TIME_ROUND = 5
+
+FILE = 'graphs/colorref/colorref_smallexample_4_16.grl'
 
 
 def main():
-    file_graphs = find_graphs()
-    process_data(file_graphs)
+    if FILE == '':
+        graph_files = find_graphs()
+    else:
+        graph_files = [FILE]
+    process_graph_files(graph_files)
 
 
 def find_graphs():
@@ -24,10 +30,10 @@ def find_graphs():
     return branching_graphs + colorref_graphs + treepath_graphs
 
 
-def process_data(file_graphs):
-    for file in file_graphs:
+def process_graph_files(graph_files):
+    for file in graph_files:
         graphs = get_graphs_from_file(file)
-        process_graphs(graphs)
+        process_graphs(file, graphs)
 
 
 def get_graphs_from_file(file):
@@ -36,53 +42,68 @@ def get_graphs_from_file(file):
     return L[0]
 
 
-def process_graphs(graphs):
-    groups = [[]]
-    groups[0] = [graphs.pop(0)]
+def process_graphs(file, graphs):
     iso_start = time.time()
+    isomorphs = calculate_isomorphs(graphs)
+    iso_time = time.time() - iso_start
+    auto_start = time.time()
+    automorphs = calculate_automorphs(isomorphs)
+    auto_time = time.time() - auto_start
+    result_string = stringify_result(file, isomorphs, iso_time, automorphs, auto_time)
+    print_result(result_string)
+
+
+def calculate_isomorphs(graphs):
+    isomorphs = [[]]
+    isomorphs[0] = [graphs.pop(0)]
     for i in range(len(graphs)):
         added = False
-        for j in range(len(groups)):
-            if is_isomorphisms(groups[j][0], graphs[i]):
-                groups[j].append(graphs[i])
+        for j in range(len(isomorphs)):
+            if is_isomorphisms(isomorphs[j][0], graphs[i]):
+                isomorphs[j].append(graphs[i])
                 added = True
                 break
         if not added:
-            groups.append([graphs[i]])
-    iso_time = time.time() - iso_start
+            isomorphs.append([graphs[i]])
+    return isomorphs
 
+
+def calculate_automorphs(isomorphs):
     automorphs = []
-    auto_start = time.time()
-    for k in range(len(groups)):
-        automorphs.append(get_number_automorphisms(groups[k][0]))
-    auto_time = time.time() - auto_start
-
-    for m in range(len(groups)):
-        string1 = "Group " + str(m) + " has " + str(len(groups[m])) + " isomorph(s) ("
-        for n in range(len(groups[m])):
-            string1 += groups[m][n].name
-            if n + 1 < len(groups[m]):
-                string1 += ", "
-        string1 += ") and " + str(automorphs[m]) + " automorph(s)"
-        print(string1)
-
-    total_time = auto_time + iso_time
-    string2 = "Calculation time: " + str(total_time)
-    print(string2)
-
-    # subresult = OUTPUT_FORMAT.format(graphs[i].name, isomorphs, iso_time, automorphs, auto_time, total_time)
-    # result += result + '\n' + subresult
-    # print(subresult)
-    # export_result(result)
+    for k in range(len(isomorphs)):
+        automorphs.append(get_number_automorphisms(isomorphs[k][0]))
+    return automorphs
 
 
-def create_titles(file):
-    title = '====================================\n' \
-            + file.rsplit('/', 1)[1] \
-            + '\n' + '====================================\n' \
-            + OUTPUT_FORMAT.format('graph', 'isomorphs', 'isotime', 'automorphs', 'autotime', 'totaltime') + '\n' \
-            + '--------------------------------------------------------------------\n'
+def create_titles(file, total_time):
+    title = '=========================================================================\n' \
+            + file.rsplit('/', 1)[1] + "                        TOTAL TIME: " + str(total_time) \
+            + '\n\n' \
+            + OUTPUT_FORMAT.format('isomorphs', 'isotime', 'automorphs', 'autotime') + '\n' \
+            + '-------------------------------------------------------------------------'
     return title
+
+
+def stringify_result(file, isomorphs, iso_time, automorphs, auto_time):
+    total_time = round(iso_time + auto_time, TIME_ROUND)
+    result = create_titles(file, total_time)
+    for m in range(len(isomorphs)):
+        iso_string = str(len(isomorphs[m])) + ": ("
+        for n in range(len(isomorphs[m])):
+            iso_string += isomorphs[m][n].name
+            if n + 1 < len(isomorphs[m]):
+                iso_string += ", "
+        iso_string += ")"
+        iso_time_string = str(round(iso_time, TIME_ROUND))
+        auto_string = str(automorphs[m])
+        auto_time_string = str(round(auto_time, TIME_ROUND))
+        subresult = OUTPUT_FORMAT.format(iso_string, iso_time_string, auto_string, auto_time_string)
+        result += "\n" + subresult
+    return result + "\n"
+
+
+def print_result(result):
+    print(result)
 
 
 def export_result(result):
