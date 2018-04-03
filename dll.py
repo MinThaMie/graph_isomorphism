@@ -262,7 +262,7 @@ class DoubleLinkedList(object):
         """
         node = self._head
         while node:
-            yield node.value
+            yield node
             node = node.next
 
     def __reversed__(self):

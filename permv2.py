@@ -6,6 +6,8 @@ Remark: composition / multiplication is reversed compared to the earlier version
 (ADS practicum 0): Now P*Q means apply Q first, then P.
 """
 
+from dll import DoubleLinkedList
+
 # permv2: based on permv2SOL / perm2
 # Paul Bonsma, 18-03-2015.
 
@@ -25,7 +27,7 @@ UseReadableOutput = True
 # repr(P) gives technical representation (following Python style conventions).
 
 class permutation():
-    def __init__(self, n, cycles=None, mapping=None):
+    def __init__(self, n, cycles=None, mapping=None, vertices=None):
         """
         A permutation P on n elements can be initialized in various ways:
 
@@ -59,12 +61,23 @@ class permutation():
                 self.P = mapping  # fast
         elif cycles != None:
             self.P = [i for i in range(n)]
+
             for cycle in cycles:
                 for i in range(len(cycle)):
                     assert self.P[cycle[i]] == cycle[i]
                     # if self.P[cycle[i]]!=cycle[i]:
                     #	raise permError
                     self.P[cycle[i]] = cycle[(i + 1) % len(cycle)]
+
+        elif vertices != None:
+            self.P = [i for i in range(n)]
+
+            for cycle in vertices: # cycle must be a DLL
+                for c in cycle:
+                    if c.next is None:
+                        self.P[c.value.value.label] = cycle._head.value.value.label # its ugly, but otherwise it is a Node. Now it realy is a Vertex=)
+                    else:
+                        self.P[c.value.value.label] = c.next.value.value.label #see two lines above
         else:
             self.P = [i for i in range(n)]
 

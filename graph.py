@@ -125,7 +125,7 @@ class Vertex(object):
         return sum(map(len, self._incidence.values()))
 
     @property
-    def label(self):
+    def label(self) -> int:
         return self._label
 
     @label.setter
@@ -263,7 +263,7 @@ class Graph(object):
                             'V=[' + ", ".join(map(str, self._v)) + ']\n' \
                                                                    'E=[' + ", ".join(map(str, self._e)) + ']'
 
-    def _next_label(self) -> str:
+    def _next_label(self) -> int:
         """Generate a unique label for vertices in the graph.
 
         :return: A unique label.
@@ -271,7 +271,7 @@ class Graph(object):
 
         result = self._next_label_value
         self._next_label_value += 1
-        return str(self._name) + '_' + str(result)
+        return result
 
     @property
     def name(self) -> str:

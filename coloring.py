@@ -44,7 +44,7 @@ class Coloring(object):
         :param color: the number (or color) of the color class
         :return: a list of vertices belonging to the color class
         """
-        return list(self._dict[color])
+        return self._dict[color]
 
     def add(self, vertices: List[Vertex], color=None):
         """

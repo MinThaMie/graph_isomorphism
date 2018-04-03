@@ -83,25 +83,25 @@ class TestCRHelper(unittest.TestCase):
             self.assertTrue(compare(expected[key], n_neighbors_of_color1[key], lambda v: v.label))
 
     def test_coloring_to_permutation(self):
-        g = Graph(directed=False, n=5, name='G')
-        h = Graph(directed=False, n=5, name='H')
-        vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
-        vh_1, vh_2, vh_3, vh_4, vh_5 = h.vertices
+        g = Graph(directed=False, n=6, name='G')
+        h = Graph(directed=False, n=6, name='H')
+        vg_1, vg_2, vg_3, vg_4, vg_5, vg_6 = g.vertices
+        vh_1, vh_2, vh_3, vh_4, vh_5, vh_6 = h.vertices
         coloring = Coloring()
         coloring.add([vg_1, vh_1])
-        coloring.add([vg_2, vh_2])
-        perm = coloring_to_permutation(coloring)
-        self.assertEqual(2, len(perm.P))
-        self.assertEqual([vg_1, vh_1], perm.P[0])
-        self.assertEqual([vg_2, vh_2], perm.P[1])
-        coloring.add([vg_3, vg_4, vh_3, vh_4])
-        perm = coloring_to_permutation(coloring)
-        self.assertEqual(2, len(perm.P))
-        self.assertEqual([vg_1, vh_1], perm.P[0])
-        self.assertEqual([vg_2, vh_2], perm.P[1])
-        coloring.add([vg_5, vh_5])
-        perm = coloring_to_permutation(coloring)
-        self.assertEqual(3, len(perm.P))
+        perm = coloring_to_permutation(coloring, g)
+        self.assertEqual(6, len(perm.P))
+        coloring.add([vg_2, vg_3, vh_2, vh_3])
+        perm = coloring_to_permutation(coloring, g)
+        self.assertEqual(6, len(perm.P))
+        self.assertEqual(vg_2.label, perm.P[vg_3.label])
+        self.assertEqual(vg_3.label, perm.P[vg_2.label])
+        coloring.add([vg_4, vh_4, vg_5, vh_5, vg_6, vh_6])
+        perm = coloring_to_permutation(coloring, g)
+        self.assertEqual(6, len(perm.P))
+        self.assertEqual(vg_5.label, perm.P[vg_4.label])
+        self.assertEqual(vg_6.label, perm.P[vg_5.label])
+        self.assertEqual(vg_4.label, perm.P[vg_6.label])
 
 
 if __name__ == '__main__':

@@ -101,7 +101,7 @@ def get_vertices_of_graph(color: List[Vertex], g: Graph) -> List[Vertex]:
     :return: a list of vertices belonging to graph g in the given color class. The list is empty if no vertices of graph
     g are found in the given color class
     """
-    return [v for v in color if g in v.graphs]
+    return [v for v in color if g in v.value.graphs]
 
 
 def are_twins(u: Vertex, v: Vertex) -> bool:
@@ -167,7 +167,6 @@ def get_unit_coloring(g: Graph) -> Coloring:
     return coloring
 
 
-
 def generate_neighbour_count_with_color(graph: Graph, current_color: int) -> {}:
     """
     This methode creates a mapping from a vertex to the amount of neighbours with current_color.
@@ -210,10 +209,13 @@ def group_by(obj, group_rule=None) -> dict:
     return d
 
 
-def coloring_to_permutation(coloring: Coloring) -> permutation:
+def coloring_to_permutation(coloring: Coloring, g: Graph) -> permutation:
     cycles = list()
     for color_class in coloring.colors:
-        if len(coloring.get(color_class)) == 2:
-            v1, v2 = coloring.get(color_class)
-            cycles.append([v1, v2])
-    return permutation(n=len(cycles), mapping=cycles)
+        vertices = coloring.get(color_class) # vertices = DLL
+        vertices_g = get_vertices_of_graph(vertices, g)
+        dll = DoubleLinkedList()
+        for v in list(vertices_g):
+            dll.append(v)
+        cycles.append(dll)
+    return permutation(n=len(g.vertices), vertices=cycles)
