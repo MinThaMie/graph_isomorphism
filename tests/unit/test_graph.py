@@ -2,7 +2,7 @@ import unittest
 from typing import Iterable, Any, Callable
 
 import tests
-from color_refiment_helper import compare
+from color_refinement_helper import compare
 from graph import Graph, Vertex, Edge
 
 
