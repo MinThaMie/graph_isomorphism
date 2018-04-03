@@ -3,11 +3,11 @@ This is a module for the color refinement algorithm
 version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
 import time
+from typing import Dict
 
 import preprocessing
 from color_refinement_helper import *
 from graph_io import *
-from tools import store_morphism
 
 PATH = './graphs/branching/'
 GRAPH = 'cubes5.grl'
@@ -217,6 +217,39 @@ def get_number_automorphisms(g: Graph) -> int:
     return get_number_isomorphisms(g, g.deepcopy(), True)
 
 
+def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
+    """
+    Store a known isomorphism between two indices in the specified mapping.
+
+    :param int i: Index of one known isomorphism pair member.
+    :param int j: Index of another known isomorphism pair member.
+    :param dict known_isomorphisms: Dictionary in which to store the set of known isomorphisms.
+    """
+
+    isomorphisms = set()
+
+    for index in (i, j):
+        isomorphisms |= known_isomorphisms[index]
+
+    isomorphisms |= {i, j}
+
+    for index in isomorphisms:
+        known_isomorphisms[index] = isomorphisms - {index}
+
+
+def store_anisomorphism(i: int, j: int, known_anisomorphisms: Dict[int, Set[int]]):
+    """
+    Store a known isomorphism between two indices in the specified mapping.
+
+    :param int i: Index of one known anisomorphism pair member.
+    :param int j: Index of another known anisomorphism pair member.
+    :param dict known_anisomorphisms: Dictionary in which to store the set of known anisomorphisms.
+    """
+
+    known_anisomorphisms[i] = known_anisomorphisms[i] | {j}
+    known_anisomorphisms[j] = known_anisomorphisms[j] | {i}
+
+
 if __name__ == "__main__":
     with open(PATH + GRAPH) as f:
         L = load_graph(f, read_list=True)
@@ -252,9 +285,9 @@ if __name__ == "__main__":
                     end = time.time()
 
                     if isomorphism:
-                        store_morphism(i, j, known_isomorphisms)
+                        store_isomorphism(i, j, known_isomorphisms)
                     else:
-                        store_morphism(i, j, known_anisomorphisms)
+                        store_anisomorphism(i, j, known_anisomorphisms)
 
                     print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
 

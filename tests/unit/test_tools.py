@@ -1,5 +1,6 @@
 import unittest
 
+import color_refinement
 import tools
 from tools import unique_integer
 
@@ -15,29 +16,54 @@ class ToolsTests(unittest.TestCase):
         self.assertEqual(2 * generated_max + 1, unique_integer())
         self.assertEqual(tools._last_integer + 1, unique_integer())
 
-    def test_store_morphism(self):
+    def test_store_isomorphism(self):
         i = 0
         j = 1
-        known_isomorphisms = {}.fromkeys({i, j}, set())
+        k = 2
+        known_isomorphisms = {}.fromkeys([i, j, k], set())
 
-        tools.store_morphism(i, j, known_isomorphisms)
+        # Assert that storing an isomorphism results in a known mapping from i to j and from j to i
+        color_refinement.store_isomorphism(i, j, known_isomorphisms)
+        self.assertEqual({j}, known_isomorphisms[i])
+        self.assertEqual({i}, known_isomorphisms[j])
+        self.assertEqual(set(), known_isomorphisms[k])
+
+        # Assert that storing the same isomorphism twice changes nothing
+        color_refinement.store_isomorphism(j, i, known_isomorphisms)
 
         self.assertEqual({j}, known_isomorphisms[i])
         self.assertEqual({i}, known_isomorphisms[j])
+        self.assertEqual(set(), known_isomorphisms[k])
 
-        tools.store_morphism(i, j, known_isomorphisms)
+        # Assert that storing a new known isomorphism updates all known isomorphism mappings
+        color_refinement.store_isomorphism(j, k, known_isomorphisms)
+        self.assertEqual({j, k}, known_isomorphisms[i])
+        self.assertEqual({i, k}, known_isomorphisms[j])
+        self.assertEqual({i, j}, known_isomorphisms[k])
 
-        self.assertEqual({j}, known_isomorphisms[i])
-        self.assertEqual({i}, known_isomorphisms[j])
+    def test_store_anisomorphism(self):
+        i = 0
+        j = 1
+        k = 2
+        known_anisomorphisms = {}.fromkeys([i, j, k], set())
 
-        i = 2
-        known_isomorphisms[2] = set()
+        # Assert that storing an anisomorphism results in a known mapping from i to j and from j to i
+        color_refinement.store_anisomorphism(i, j, known_anisomorphisms)
+        self.assertEqual({j}, known_anisomorphisms[i])
+        self.assertEqual({i}, known_anisomorphisms[j])
+        self.assertEqual(set(), known_anisomorphisms[k])
 
-        tools.store_morphism(i, j, known_isomorphisms)
+        # Assert that storing the same anisomorphism twice changes nothing
+        color_refinement.store_anisomorphism(j, i, known_anisomorphisms)
+        self.assertEqual({j}, known_anisomorphisms[i])
+        self.assertEqual({i}, known_anisomorphisms[j])
+        self.assertEqual(set(), known_anisomorphisms[k])
 
-        self.assertEqual({1, 2}, known_isomorphisms[0])
-        self.assertEqual({0, 2}, known_isomorphisms[1])
-        self.assertEqual({0, 1}, known_isomorphisms[2])
+        # Assert that storing a new known anisomorphism only updates the indices involved, other indices are unchanged
+        color_refinement.store_anisomorphism(j, k, known_anisomorphisms)
+        self.assertEqual({j}, known_anisomorphisms[i])
+        self.assertEqual({i, k}, known_anisomorphisms[j])
+        self.assertEqual({j}, known_anisomorphisms[k])
 
 
 if __name__ == '__main__':
