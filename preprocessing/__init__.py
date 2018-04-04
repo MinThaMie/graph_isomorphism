@@ -65,8 +65,33 @@ def remove_loners(g: Graph):
 
 def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
     amount_of_vertices = g.order
-    if g.size > (amount_of_vertices * (amount_of_vertices - 1))/4:
+    if g.size > (amount_of_vertices * (amount_of_vertices - 1)) / 4:
         debug("Uses complements")
         return g.complement(), h.complement()
     else:
         return g, h
+
+
+def is_tree(g: Graph):
+    visited = []
+
+    if len(g.vertices) is 0:
+        return True
+    vertex = g.vertices[0]
+    if vertex.label not in visited:
+        visited.append(vertex.label)
+
+    return is_cycle(g, vertex, vertex, visited)
+
+
+def is_cycle(g: Graph, vertex, predecessor, visited):
+    visited.append(vertex.label)
+
+    for v in vertex.neighbours:  # - Check neighbors, where G[u] is the adjacency list of u.
+        if visited[v.label] and v is not predecessor:
+            cyclic = True
+        elif not is_cycle(g, v, vertex, visited):
+            cyclic = False
+        else:
+            cyclic = True
+    return cyclic
