@@ -15,6 +15,7 @@ GRAPH = 'cubes5.grl'
 IsomorphismMapping = Dict[int, Set[int]]
 
 
+
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
     """
     Returns the number of isomorphisms of `Graph` g and h for a given coloring
@@ -251,6 +252,7 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
 
     # Note: trivial automorphisms are never stored
     isomorphism_index_mapping = {}.fromkeys(graph_indices, set())
+    automorphisms = {}
 
     for i in graph_indices:
         for j in graph_indices:
@@ -259,7 +261,9 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
                 num = get_number_automorphisms(graphs[i])
                 end = time.time()
 
-                print('There are', num, 'automorphisms of', graphs[i].name)
+                automorphisms[graphs[i]] = num
+
+                print('Graph', graphs[i].name, 'has', num, 'automorphisms')
                 print('Took', end - start, 'seconds')
 
             if j > i:
@@ -269,18 +273,13 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
                 else:
                     start = time.time()
                     isomorphism = is_isomorphisms(graphs[i], graphs[j])
-
-                    if isomorphism:
-                        coloring = initialize_coloring(graphs[i] + graphs[j])
-                        num = count_isomorphism(graphs[i], graphs[j], coloring)
-
                     end = time.time()
 
                     print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
 
                     if isomorphism:
                         store_isomorphism(i, j, isomorphism_index_mapping)
-                        print('There are', num, 'isomorphisms')
+                        print('There are', automorphisms.get(graphs[i]), 'isomorphisms')
 
                     print('Took', end - start, 'seconds')
             print()
