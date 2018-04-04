@@ -126,7 +126,8 @@ def create_graph_helper(edges: List[Tuple[object, object]] = list()):
 
 def create_coloring_helper_vertex(mapping: dict) -> Coloring:
     """
-    Converts a dictionary to Coloring
+    Converts a dictionary of (int,[Vertex]) pairs to a Coloring
+    :param mapping: dictionary of (int,[Vertex]) pairs
     """
     coloring = Coloring()
     for key in mapping:
@@ -136,6 +137,13 @@ def create_coloring_helper_vertex(mapping: dict) -> Coloring:
 
 
 def create_coloring_helper(vertices: List[int], map: dict):
+    """
+    Converts a dictionary of (int,[int]) pairs to a coloring,
+    assuming that the given values in [int] are the labels of the given vertices
+    :param vertices: list of vertex labels
+    :param map: dict of (int, [int]) pairs
+    :return:
+    """
     coloring = Coloring()
     for color in map:
         for value in map[color]:
