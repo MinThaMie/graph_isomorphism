@@ -99,7 +99,6 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
     1. if color 'i' is already in the queue, add all new color classes i_l to the queue as well.
     2. if color 'i' is not in the queue, add the smallest 'new' (i or one of the i_l) color class to the queue.
     The algorithm stops when the queue is empty (and starts with all current colors of the given coloring in the queue).
-    : param graph: Graph to which the coloring belongs. Used to determine the number of neighbours with a certain color.
     : param coloring: Given coloring which needs refinement
     : return: The refined coloring of the graph
     """
@@ -153,7 +152,7 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
             if split_count > 1:
                 debug('New color classes:', new_color_classes)
                 # If the original color is in the queue, all the other colors should be added to the queue
-                if qlist.find(largest_color) is not None:
+                if qlist.find(color_class) is not None:
                     for color in new_color_classes:
                         if qlist.find(color) is None:
                             qlist.append(color)
