@@ -183,15 +183,16 @@ def my_test(cg):
     fast_color_refine(cg)
 
 
-def choose_a_root(g: Graph):
+def choose_a_root(g: Graph) -> Vertex:
     # Choose a vertex to be the root (arbitrarily)
     arb_root = g.vertices[0]
     # Assign weights of the induced subgraphs
-    # Weight = weight(children) + 1
-    return True
+    set_weight(arb_root)
+    # Retrieve the root by shifting
+    return shift(arb_root, g.order)
 
 
-def get_weight(root: Vertex, parent: Vertex):
+def set_weight(root: Vertex, parent: Vertex = None):
     """
     Recursively assigns weights to the induced subgraphs starting with the root
     :param root: Vertex
@@ -204,7 +205,7 @@ def get_weight(root: Vertex, parent: Vertex):
     else:
         for n in root.neighbours:
             if n != parent:
-                root.weight += get_weight(n, root)
+                root.weight += set_weight(n, root)
         root.weight += 1
         return root.weight
 
@@ -224,6 +225,18 @@ def shift(vertex: Vertex, amount_verts: int) -> Vertex:
             n.weight = vertex.weight + n.weight
             result = shift(n, amount_verts)
     return result
+
+
+def assign_levels(root: Vertex, parent: Vertex = None, level: int = 0):
+    if root.level is None:
+        root.level = level
+    level += 1
+    for n in root.neighbours:
+        if n.level is None:
+            n.level = level
+        if n != parent:
+            assign_levels(n, root, level)
+
 
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
