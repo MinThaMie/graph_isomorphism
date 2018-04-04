@@ -2,13 +2,17 @@
 This is a module for the color refinement algorithm
 version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
-from color_refinement_helper import *
 import time
+from typing import Dict
+
 import preprocessing
+from color_refinement_helper import *
 from graph_io import *
 
-PATH = './graphs/branching/'
+PATH = 'graphs/branching/'
 GRAPH = 'cubes5.grl'
+
+IsomorphismMapping = Dict[int, Set[int]]
 
 
 
@@ -216,25 +220,78 @@ def get_number_automorphisms(g: Graph) -> int:
     return get_number_isomorphisms(g, g.deepcopy(), True)
 
 
+def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
+    """
+    Store a known isomorphism between two indices in the specified mapping.
+
+    :param int i: Index of one known isomorphism pair member.
+    :param int j: Index of another known isomorphism pair member.
+    :param dict known_isomorphisms: Dictionary in which to store the set of known isomorphisms.
+    """
+
+    isomorphisms = set()
+
+    for index in (i, j):
+        isomorphisms |= known_isomorphisms[index]
+
+    isomorphisms |= {i, j}
+
+    for index in isomorphisms:
+        known_isomorphisms[index] = isomorphisms - {index}
+
+
+def process(graphs: List[Graph]) -> IsomorphismMapping:
+    """
+    Process a list of graphs to find indices into that list of isomorphic graphs.
+
+    :param list graphs: The list of graphs to process.
+    :return: An `IsomorphismMapping`, which is a mapping of graph indices to sets of isomorphic graph indices.
+    """
+
+    graph_indices = range(len(graphs))
+
+    # Note: trivial automorphisms are never stored
+    isomorphism_index_mapping = {}.fromkeys(graph_indices, set())
+    automorphisms = {}
+
+    for i in graph_indices:
+        for j in graph_indices:
+            if j == i:
+                start = time.time()
+                num = get_number_automorphisms(graphs[i])
+                end = time.time()
+
+                automorphisms[graphs[i]] = num
+
+                print('Graph', graphs[i].name, 'has', num, 'automorphisms')
+                print('Took', end - start, 'seconds')
+
+            if j > i:
+                if j in isomorphism_index_mapping[i]:
+                    print(graphs[i].name, 'and', graphs[j].name, 'are already known to be isomorphic')
+
+                else:
+                    start = time.time()
+                    isomorphism = is_isomorphisms(graphs[i], graphs[j])
+                    end = time.time()
+
+                    print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
+
+                    if isomorphism:
+                        store_isomorphism(i, j, isomorphism_index_mapping)
+                        print('There are', automorphisms.get(graphs[i]), 'isomorphisms')
+
+                    print('Took', end - start, 'seconds')
+            print()
+
+    return isomorphism_index_mapping
+
+
 if __name__ == "__main__":
     with open(PATH + GRAPH) as f:
         L = load_graph(f, read_list=True)
 
     graphs = L[0]
     print("Graph: ", GRAPH)
-    automorphisms = {}
-    for i in range(len(graphs)):
-        for j in range(len(graphs)):
-            if j == i:
-                start = time.time()
-                num = get_number_automorphisms(graphs[i])
-                automorphisms[graphs[i]] = num
-                print('Graph', graphs[i].name, 'has', num, 'automorphisms')
-                print('Took', time.time() - start, 'seconds\n')
-            if j > i:
-                start = time.time()
-                isomorph = is_isomorphisms(graphs[i], graphs[j])
-                print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorph)
-                if isomorph:
-                    print('There are', automorphisms.get(graphs[i]), 'isomorphisms')
-                    print('Took', time.time()-start, 'seconds\n')
+
+    known_isomorphisms = process(graphs)
