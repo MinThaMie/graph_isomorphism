@@ -240,3 +240,9 @@ def member_of(f: permutation, H: [permutation]) -> bool:
         return True
     else:
         return member_of(perm, stab_alpha)
+
+# def member_of(orbit, transversal: [], cycle: permutation, permutations: set(permutation)) -> bool:
+#     # cycle = (Vertex, Vertex)
+#     from_Vertex, to_Vertex = cycle
+#     perm = transversal[to_Vertex].__mul__(permutation)
+#     return perm in Stabilizer(permutations, cycle)

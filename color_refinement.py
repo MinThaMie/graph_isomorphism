@@ -247,7 +247,7 @@ def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, permutations: se
         if member_of(coloring, permutations):
             # put f in the set and return to last visited node
             permutations.add(f)
-            return to last visited trivial ancestor node
+            return 0 #TODO to last visited trivial ancestor node
     # choose branching vertex x and cell C
     vertices = choose_color(new_coloring)
     first_vertex = choose_vertex(vertices, g)
@@ -257,14 +257,6 @@ def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, permutations: se
         adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
         number_automorphisms = number_automorphisms + count_automorphisms(g, h, adapted_coloring, permutations)
     return number_automorphisms
-
-
-def member_of(orbit, transversal: [], cycle: permutation, permutations: set(permutation)) -> bool:
-    # cycle = (Vertex, Vertex)
-    from_Vertex, to_Vertex = cycle
-    perm = transversal[to_Vertex].__mul__(permutation)
-    return perm is in Stabilizer(permutations, cycle)
-
 
 
 def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):

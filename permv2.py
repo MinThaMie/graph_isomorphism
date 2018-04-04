@@ -153,8 +153,8 @@ class permutation():
         Usage: simply type P*Q to obtain the composition of P and Q.
         (Q is applied first.)
         """
-        if self.n != other.n:
-            #raise permError
+        # if self.n != other.n:
+        #     raise permError()
         Q = [0] * self.n
         for i in range(self.n):
             Q[i] = self.P[other.P[i]]
