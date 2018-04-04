@@ -4,8 +4,8 @@ Test file for Fast Color Refinement Algorithm
 import os
 import unittest
 
-import color_refinement
 import tests
+from color_refinement import process, debug, fast_color_refine, initialize_coloring
 from graph_io import *
 
 PATH = 'graphs/colorref'
@@ -25,13 +25,13 @@ def get_expected_result(filename, g_name, h_name):
 
 
 def get_color_ref_files():
-    all_graphs = os.listdir(color_refinement.PATH)
+    all_graphs = os.listdir(PATH)
     return [x for x in all_graphs if x in EXPECTED.keys()]
 
 
 def testfile(filename):
     """Check if results for the given file are correct"""
-    with open(color_refinement.PATH + "/" + filename) as f:
+    with open(PATH + "/" + filename) as f:
         L = load_graph(f, read_list=True)
 
     graphs = L[0]
@@ -39,8 +39,8 @@ def testfile(filename):
     for i in range(len(graphs)):
         for j in range(len(graphs)):
             if j > i:
-                coloring = color_refinement.initialize_coloring(graphs[i] + graphs[j])
-                coloring = color_refinement.fast_color_refine(coloring)
+                coloring = initialize_coloring(graphs[i] + graphs[j])
+                coloring = fast_color_refine(coloring)
                 status = coloring.status(graphs[i], graphs[j])
                 expected = get_expected_result(filename, graphs[i].name, graphs[j].name)
                 message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[
@@ -58,23 +58,20 @@ class FastColorRefineCase(unittest.TestCase):
             results = testfile(file)
             for result in results:
                 self.assertEqual(result[0], result[1], result[2])
-                color_refinement.debug(result[2], 'got', result[1])
+                debug(result[2], 'got', result[1])
 
     def test_storing_known_isomorphisms(self):
-        # Assert that initially there are no known isomorphisms
-        self.assertEqual({}, color_refinement.known_isomorphisms)
-
         # Assert that, after processing a list of graphs containing some isomorphisms and anisomorphisms, the known
         # isomorphisms are correct
         tests.set_up_test_graphs()
         graphs = tests.isomorphic_graphs + tests.anisomorphic_graphs
-        color_refinement.process(graphs)
+        known_isomorphisms = process(graphs)
 
-        self.assertEqual({1, 2}, color_refinement.known_isomorphisms[0])
-        self.assertEqual({0, 2}, color_refinement.known_isomorphisms[1])
-        self.assertEqual({0, 1}, color_refinement.known_isomorphisms[2])
-        self.assertEqual(set(), color_refinement.known_isomorphisms[3])
-        self.assertEqual(set(), color_refinement.known_isomorphisms[4])
+        self.assertEqual({1, 2}, known_isomorphisms[0])
+        self.assertEqual({0, 2}, known_isomorphisms[1])
+        self.assertEqual({0, 1}, known_isomorphisms[2])
+        self.assertEqual(set(), known_isomorphisms[3])
+        self.assertEqual(set(), known_isomorphisms[4])
 
 
 if __name__ == '__main__':

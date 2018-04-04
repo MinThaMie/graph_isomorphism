@@ -9,10 +9,10 @@ import preprocessing
 from color_refinement_helper import *
 from graph_io import *
 
-PATH = './graphs/branching/'
+PATH = 'graphs/branching/'
 GRAPH = 'cubes5.grl'
 
-known_isomorphisms: Dict[int, Set[int]] = {}
+IsomorphismMapping = Dict[int, Set[int]]
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -239,13 +239,18 @@ def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
         known_isomorphisms[index] = isomorphisms - {index}
 
 
-def process(graphs: List[Graph]):
-    global known_isomorphisms
+def process(graphs: List[Graph]) -> IsomorphismMapping:
+    """
+    Process a list of graphs to find indices into that list of isomorphic graphs.
+
+    :param list graphs: The list of graphs to process.
+    :return: An `IsomorphismMapping`, which is a mapping of graph indices to sets of isomorphic graph indices.
+    """
 
     graph_indices = range(len(graphs))
 
     # Note: trivial automorphisms are never stored
-    known_isomorphisms = {}.fromkeys(graph_indices, set())
+    isomorphism_index_mapping = {}.fromkeys(graph_indices, set())
 
     for i in graph_indices:
         for j in graph_indices:
@@ -258,7 +263,7 @@ def process(graphs: List[Graph]):
                 print('Took', end - start, 'seconds')
 
             if j > i:
-                if j in known_isomorphisms[i]:
+                if j in isomorphism_index_mapping[i]:
                     print(graphs[i].name, 'and', graphs[j].name, 'are already known to be isomorphic')
 
                 else:
@@ -274,11 +279,13 @@ def process(graphs: List[Graph]):
                     print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
 
                     if isomorphism:
-                        store_isomorphism(i, j, known_isomorphisms)
+                        store_isomorphism(i, j, isomorphism_index_mapping)
                         print('There are', num, 'isomorphisms')
 
                     print('Took', end - start, 'seconds')
             print()
+
+    return isomorphism_index_mapping
 
 
 if __name__ == "__main__":
@@ -288,4 +295,4 @@ if __name__ == "__main__":
     graphs = L[0]
     print("Graph: ", GRAPH)
 
-    process(graphs)
+    known_isomorphisms = process(graphs)
