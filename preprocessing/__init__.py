@@ -1,5 +1,6 @@
 from graph import *
 from color_refinement_helper import compare, debug
+from preprocessing.tree_algorithm_helper import has_cycle
 
 
 def checks(g, h) -> bool:
@@ -72,8 +73,25 @@ def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
     :return: Graph g and h, complemented if necessary
     """
     amount_of_vertices = g.order
-    if g.size > (amount_of_vertices * (amount_of_vertices - 1))/4:
+    if g.size > (amount_of_vertices * (amount_of_vertices - 1)) / 4:
         debug("Uses complements")
         return g.complement(), h.complement()
     else:
         return g, h
+
+
+def is_tree(g: Graph):
+    """
+    This method checks whether graph g is a tree. First iteration.
+    Uses the is_cycle method from tree_algorithm_helper.py
+
+    :param g: Graph
+    :return: Boolean: True if the degrees are the same
+    """
+    if len(g.vertices) is 0:
+        return True
+    vertex = g.vertices[0]
+
+    if True in has_cycle(g, vertex, vertex, [], [False]):
+        return False
+    return True
