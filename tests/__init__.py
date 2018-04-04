@@ -18,14 +18,14 @@ anisomorphic_graphs: List[Graph]
 v4e4_connected: Graph
 v5e4loop_unconnected: Graph
 v5e7: Graph
-v2e2_connected: Graph
+v3e2_connected: Graph
 v5e4_connected: Graph
 
 
 def set_up_test_graphs():
     global empty_graph, connected_graph_order_2, disconnected_graph_order_2, non_trivial_graph, \
         non_trivial_graph_different_label, non_trivial_graph_different_weight, non_trivial_graph_complement, \
-        isomorphic_graphs, anisomorphic_graphs, v4e4_connected, v5e4loop_unconnected, v5e7, v2e2_connected, \
+        isomorphic_graphs, anisomorphic_graphs, v4e4_connected, v5e4loop_unconnected, v5e7, v3e2_connected, \
         v5e4_connected
 
     # Prepare some vertex labels for general use
@@ -124,7 +124,7 @@ def set_up_test_graphs():
     v5e4loop_unconnected.name = 'v5e4_loop4'
 
     # Create a graph where the complement should be taken during preprocessing :
-    # v4e4 =
+    # v5e7 =
     #               5 --
     #              / \  \
     #         1 - 2 - 3 |
@@ -134,10 +134,10 @@ def set_up_test_graphs():
     v5e7.name = 'v5e7'
 
     # Create a graph where the complement should be taken during preprocessing :
-    # v2e2_connected =
+    # v3e2_connected =
     #         1 - 2 - 3
-    v2e2_connected = create_graph_helper([(1, 2), (2, 3)])
-    v2e2_connected.name = 'v2e2_connected'
+    v3e2_connected = create_graph_helper([(1, 2), (2, 3)])
+    v3e2_connected.name = 'v2e2_connected'
 
     #         1 - 2 - 3 - 4
     #                 |
