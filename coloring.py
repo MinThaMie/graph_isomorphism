@@ -38,14 +38,14 @@ class Coloring(object):
         self._vertex_dict[vertex] = color
         vertex.colornum = color
 
-    def get(self, color) -> DoubleLinkedList:
+    def get(self, color) -> List[Vertex]:
         """
         Returns the vertices belonging to the given color class
 
         :param color: the number (or color) of the color class
         :return: a list of vertices belonging to the color class
         """
-        return self._dict[color]
+        return list(self._dict[color])
 
     def add(self, vertices: List[Vertex], color=None):
         """

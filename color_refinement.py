@@ -224,9 +224,9 @@ def get_number_automorphisms(g: Graph) -> int:
     :param g: graph for which to determine the number of automorphisms
     :return: The number of automorphisms of graph g
     """
-    added_graph = g + g
-    coloring = initialize_coloring(added_graph)
-    return count_automorphisms(g, g.deepcopy(), coloring)
+    # added_graph = g + g.deepcopy()
+    # coloring = initialize_coloring(added_graph)
+    return get_number_isomorphisms(g, g.deepcopy(), True)
 
 
 def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, permutations: set() = None) -> int:

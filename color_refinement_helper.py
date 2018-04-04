@@ -102,7 +102,7 @@ def get_vertices_of_graph(color: List[Vertex], g: Graph) -> List[Vertex]:
     :return: a list of vertices belonging to graph g in the given color class. The list is empty if no vertices of graph
     g are found in the given color class
     """
-    return [v for v in color if g in v.value.graphs]
+    return [v for v in color if g in v.graphs]
 
 
 def are_twins(u: Vertex, v: Vertex) -> bool:
