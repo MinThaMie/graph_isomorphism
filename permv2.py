@@ -233,6 +233,7 @@ class Permutation():
     def __len__(self):
         return len(self.P)
 
+
 if __name__ == "__main__":
     G0 = create_graph_helper(edges=[[0, 1], [1, 2], [2, 3], [3, 4], [2, 4], [4, 5], [5, 6]])
     coloring = create_coloring_helper(G0.vertices,

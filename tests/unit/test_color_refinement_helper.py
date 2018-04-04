@@ -112,7 +112,7 @@ class TestCRHelper(unittest.TestCase):
         self.assertEqual(vg_6.label, perm.P[vg_5.label])
         self.assertEqual(vg_4.label, perm.P[vg_6.label])
 
-    def test_Orbit(self):
+    def test_compute_orbit(self):
         g = Graph(directed=False, n=6)
         vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
         coloring_p = Coloring()

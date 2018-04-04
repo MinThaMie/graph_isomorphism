@@ -17,7 +17,6 @@ GRAPH = 'cubes5.grl'
 IsomorphismMapping = Dict[int, Set[int]]
 
 
-
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
     """
     Returns the number of isomorphisms of `Graph` g and h for a given coloring
@@ -241,7 +240,7 @@ def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, permutations: se
     # Is there a unique coloring?
     if coloring_status == "Bijection":
         el = coloring
-        orbit, transversal = Orbit(permutations, el, returntransversal=True)
+        orbit, transversal = compute_orbit(permutations, el, return_transversal=True)
 
         # is this coloring already in the set of colorings?
         if member_of(coloring, permutations):

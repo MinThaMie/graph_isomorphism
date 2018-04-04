@@ -5,7 +5,7 @@ from typing import Iterable
 
 from coloring import *
 from permv2 import Permutation
-from basicpermutationgroup import Orbit, Stabilizer
+from basicpermutationgroup import compute_orbit, stabilizer
 
 DEBUG = False
 
@@ -214,10 +214,10 @@ def member_of(f: Permutation, H: [Permutation]) -> bool:
     alpha = 0
     beta = f.P[alpha]
     # compute orbit, transversal and stabalizer for given alpha
-    orbit, transversal = Orbit(H, alpha, returntransversal=True)
-    if beta not in orbit:
+    orb, transversal = compute_orbit(H, alpha, return_transversal=True)
+    if beta not in orb:
         return False
-    stab_alpha = Stabilizer(H, alpha)
+    stab_alpha = stabilizer(H, alpha)
 
     u = transversal[beta]
     # p = permutation(n=len(u), cycles=u)
