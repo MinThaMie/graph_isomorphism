@@ -8,13 +8,13 @@ T = TypeVar('T')
 
 
 class Node(object):
-    def __init__(self, value: T, prev_node:"Node"= None, next_node:"Node"= None):
+    def __init__(self, value: T, prev_node: "Node" = None, next_node: "Node" = None):
         """
         Initializes a node
 
         Creates a node with the value as the node, and prev as the previous node and next as the next node in the list.
         If no previous and next node are given, these values are set to `None`
-        :param vertex: node to add
+        :param value: node to add
         :param prev_node: previous node
         :param next_node: next node
         """
@@ -281,7 +281,7 @@ class DoubleLinkedList(object):
         :param item: value to find in the list
         :return: `True` if a node with the given value is in the list, `False` otherwise
         """
-        return (self.find(item) is not None);
+        return self.find(item) is not None
 
 
 if __name__ == '__main__':
