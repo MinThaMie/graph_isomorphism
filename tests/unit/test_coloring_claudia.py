@@ -1,6 +1,6 @@
 import unittest
 
-from color_refiment_helper import *
+from color_refinement_helper import *
 from tests import create_graph_helper
 
 
