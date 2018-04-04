@@ -154,7 +154,7 @@ class permutation():
         (Q is applied first.)
         """
         if self.n != other.n:
-            raise permError
+            #raise permError
         Q = [0] * self.n
         for i in range(self.n):
             Q[i] = self.P[other.P[i]]

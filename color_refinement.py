@@ -2,14 +2,20 @@
 This is a module for the color refinement algorithm
 version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
-from color_refiment_helper import *
 import time
+from typing import Dict
+
 import preprocessing
+from color_refinement_helper import *
 from graph_io import *
 from basicpermutationgroup import *
 
-PATH = './graphs/treepaths/'
-GRAPH = 'threepaths160.gr'
+PATH = 'graphs/branching/'
+GRAPH = 'cubes5.grl'
+
+
+IsomorphismMapping = Dict[int, Set[int]]
+
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -28,7 +34,7 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True
     :return: the number of isomorphisms of graph g and h for a given coloring
     """
     # You can choose your color refining algorithm below by commenting either of the two lines
-    new_coloring = fast_color_refine(g+h, coloring)
+    new_coloring = fast_color_refine(coloring)
     # new_coloring = color_refine(coloring)
     coloring_status = new_coloring.status(g, h)
     if coloring_status == "Unbalanced":
@@ -90,7 +96,7 @@ def color_refine(coloring: Coloring) -> Coloring:
     return coloring
 
 
-def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
+def fast_color_refine(coloring: Coloring) -> Coloring:
     """
     The fast color refine algorithm refines a given coloring by looking at the amount of neighbours of a given color.
     A queue is used to keep track of colors for which we still have to check if they lead to refinements.
@@ -100,7 +106,6 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
     1. if color 'i' is already in the queue, add all new color classes i_l to the queue as well.
     2. if color 'i' is not in the queue, add the smallest 'new' (i or one of the i_l) color class to the queue.
     The algorithm stops when the queue is empty (and starts with all current colors of the given coloring in the queue).
-    : param graph: Graph to which the coloring belongs. Used to determine the number of neighbours with a certain color.
     : param coloring: Given coloring which needs refinement
     : return: The refined coloring of the graph
     """
@@ -110,10 +115,10 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
         qlist.append(c)
     debug('Queue', qlist)
 
-    while(len(qlist) > 0):
+    while len(qlist) > 0:
         # Start refining with the first color from the queue.
         current_color = qlist.pop_left()
-        counter = generate_neighbour_count_with_color(graph, current_color)
+        counter = generate_neighbour_count_with_color(coloring, current_color)
 
         for color_class in counter.keys():
             # Will loop over all the colors in the graph and refine them.
@@ -149,29 +154,34 @@ def fast_color_refine(graph: Graph, coloring: Coloring) -> Coloring:
                 split_count += 1
                 # Each color_class is added to the list
                 new_color_classes.append(new_color)
-            # The smallest_color here is the first color added to the list, which is the original color
-            smallest_color = new_color_classes[0]
+            # Initialize 'largest_color' with the first color class, because this is the original color
+            largest_color = new_color_classes[0]
             if split_count > 1:
                 debug('New color classes:', new_color_classes)
                 # If the original color is in the queue, all the other colors should be added to the queue
-                if qlist.find(smallest_color) is not None:
+                if qlist.find(color_class) is not None:
                     for color in new_color_classes:
                         if qlist.find(color) is None:
                             qlist.append(color)
-                # Otherwise the color with the least amount over vertices should be added to the queue
+                # Otherwise all the colors except the largest should be added to the queue
                 else:
                     for color in new_color_classes:
-                        if len(coloring.get(smallest_color)) > len(coloring.get(color)):
-                            smallest_color = color
-                    qlist.append(smallest_color)
-            debug('Queue',qlist)
+                        if len(coloring.get(largest_color)) > len(coloring.get(color)):
+                            if qlist.find(color) is None:
+                                qlist.append(color)
+                        else:
+                            if qlist.find(largest_color) is None:
+                                qlist.append(largest_color)
+                            largest_color = color
 
-        debug('Queue',qlist)
+            debug('Queue', qlist)
+
+        debug('Queue', qlist)
     return coloring
 
 
-def my_test(g, cg):
-    fast_color_refine(g, cg)
+def my_test(cg):
+    fast_color_refine(cg)
 
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
@@ -188,7 +198,8 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     """
     if not preprocessing.checks(g, h):
         return 0
-    coloring = initialize_coloring(preprocessing.remove_loners(g + h))
+    g, h = preprocessing.check_complement(g, h)
+    coloring = initialize_coloring(g + h)
     return count_isomorphism(g, h, coloring, count)
 
 
@@ -256,24 +267,78 @@ def member_of(orbit, transversal: [], cycle: permutation, permutations: set(perm
 
 
 
+def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
+    """
+    Store a known isomorphism between two indices in the specified mapping.
+
+    :param int i: Index of one known isomorphism pair member.
+    :param int j: Index of another known isomorphism pair member.
+    :param dict known_isomorphisms: Dictionary in which to store the set of known isomorphisms.
+    """
+
+    isomorphisms = set()
+
+    for index in (i, j):
+        isomorphisms |= known_isomorphisms[index]
+
+    isomorphisms |= {i, j}
+
+    for index in isomorphisms:
+        known_isomorphisms[index] = isomorphisms - {index}
+
+
+def process(graphs: List[Graph]) -> IsomorphismMapping:
+    """
+    Process a list of graphs to find indices into that list of isomorphic graphs.
+
+    :param list graphs: The list of graphs to process.
+    :return: An `IsomorphismMapping`, which is a mapping of graph indices to sets of isomorphic graph indices.
+    """
+
+    graph_indices = range(len(graphs))
+
+    # Note: trivial automorphisms are never stored
+    isomorphism_index_mapping = {}.fromkeys(graph_indices, set())
+    automorphisms = {}
+
+    for i in graph_indices:
+        for j in graph_indices:
+            if j == i:
+                start = time.time()
+                num = get_number_automorphisms(graphs[i])
+                end = time.time()
+
+                automorphisms[graphs[i]] = num
+
+                print('Graph', graphs[i].name, 'has', num, 'automorphisms')
+                print('Took', end - start, 'seconds')
+
+            if j > i:
+                if j in isomorphism_index_mapping[i]:
+                    print(graphs[i].name, 'and', graphs[j].name, 'are already known to be isomorphic')
+
+                else:
+                    start = time.time()
+                    isomorphism = is_isomorphisms(graphs[i], graphs[j])
+                    end = time.time()
+
+                    print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
+
+                    if isomorphism:
+                        store_isomorphism(i, j, isomorphism_index_mapping)
+                        print('There are', automorphisms.get(graphs[i]), 'isomorphisms')
+
+                    print('Took', end - start, 'seconds')
+            print()
+
+    return isomorphism_index_mapping
+
+
 if __name__ == "__main__":
     with open(PATH + GRAPH) as f:
         L = load_graph(f, read_list=True)
 
     graphs = L[0]
     print("Graph: ", GRAPH)
-    for i in range(len(graphs)):
-        for j in range(len(graphs)):
-            if j == i:
-                start = time.time()
-                num = get_number_automorphisms(graphs[i])
-                print('There are', num, 'automorphisms')
-                print('Took', time.time() - start, 'seconds\n')
-            if j > i:
-                start = time.time()
-                isomorph = is_isomorphisms(graphs[i], graphs[j])
-                print(graphs[i].name,'and',graphs[j].name,'isomorphic?',isomorph)
-                coloring = initialize_coloring(graphs[i]+graphs[j])
-                num = count_isomorphism(graphs[i], graphs[j],coloring)
-                print('There are',num,'isomorphisms')
-                print('Took',time.time()-start,'seconds\n')
+
+    known_isomorphisms = process(graphs)

@@ -3,7 +3,7 @@ Test file for Counter
 """
 import unittest
 from graph_io import *
-from color_refiment_helper import initialize_coloring, generate_neighbour_count_with_color
+from color_refinement_helper import initialize_coloring, generate_neighbour_count_with_color
 PATH = 'graphs/'
 class CounterCase(unittest.TestCase):
 
@@ -22,7 +22,7 @@ class CounterCase(unittest.TestCase):
         graph = L[0][0]
         coloring = initialize_coloring(graph)
         color = sorted(coloring.colors)[0]
-        counter = generate_neighbour_count_with_color(graph, color)
+        counter = generate_neighbour_count_with_color(coloring, color)
         for num_neigh in counter.get(1).values():
             self.assertEqual(num_neigh, 0)
         for num_neigh in counter.get(2).values():
@@ -44,7 +44,7 @@ class CounterCase(unittest.TestCase):
         graph = L[0][0]
         coloring = initialize_coloring(graph)
         color = sorted(coloring.colors)[0]
-        counter = generate_neighbour_count_with_color(graph, color)
+        counter = generate_neighbour_count_with_color(coloring, color)
         for num_neigh in counter.get(2).values():
             self.assertEqual(num_neigh, 1)
         for num_neigh in counter.get(3).values():

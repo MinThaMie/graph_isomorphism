@@ -5,6 +5,7 @@ import os
 import unittest
 
 from color_refinement import get_number_isomorphisms
+from color_refinement_helper import debug
 from graph_io import *
 
 PATH = 'graphs/branching'# to run locally from PyCharm: PATH = '../../graphs/branching'
@@ -56,7 +57,7 @@ class CountIsomorphismCase(unittest.TestCase):
             results = testfile(file, self.EXPECTED)
             for result in results:
                 self.assertEqual(result[0], result[1], result[2])
-                print(result[2], 'got', result[1])
+                debug(result[2], 'got', result[1])
 
 
 if __name__ == '__main__':

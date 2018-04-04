@@ -1,5 +1,5 @@
-from graph import Graph
-from color_refiment_helper import compare
+from graph import *
+from color_refinement_helper import compare, debug
 
 
 def checks(g, h) -> bool:
@@ -61,3 +61,12 @@ def remove_loners(g: Graph):
         if vertex.degree is 0 or (all(neigh == vertex for neigh in vertex.neighbours)):
             g.del_vertex(vertex)
     return g
+
+
+def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
+    amount_of_vertices = g.order
+    if g.size > (amount_of_vertices * (amount_of_vertices - 1))/4:
+        debug("Uses complements")
+        return g.complement(), h.complement()
+    else:
+        return g, h

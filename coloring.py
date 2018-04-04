@@ -31,7 +31,8 @@ class Coloring(object):
         if color not in self._dict:
             self._dict[color] = DoubleLinkedList()
         if vertex in self._vertex_dict:
-            raise KeyError('Vertex {} already in coloring, color: {}. Use recolor instead'.format(str(vertex), str(self.color(vertex))))
+            raise KeyError('Vertex {} already in coloring, color: {}. '
+                           'Use recolor instead'.format(str(vertex), str(self.color(vertex))))
 
         self._dict[color].append(vertex)
         self._vertex_dict[vertex] = color
@@ -59,7 +60,7 @@ class Coloring(object):
 
         for v in vertices:
             if v in self._vertex_dict:
-                self.recolor(v,color)
+                self.recolor(v, color)
             else:
                 self.set(v, color)
 
@@ -180,10 +181,10 @@ class Coloring(object):
         """
         new_coloring = Coloring()
         for c, v in self.items():
-            new_coloring.add(v,color=c)
+            new_coloring.add(v, color=c)
         return new_coloring
 
     def set_colornums(self):
         """Sets the 'colornum' attribute of the vertices in the coloring"""
-        for v,color in self._vertex_dict:
+        for v, color in self._vertex_dict:
             v.colornum = color
