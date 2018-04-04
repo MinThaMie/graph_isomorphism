@@ -1,9 +1,6 @@
 from typing import Tuple
 
-import tests
-from graph import *
 from coloring import *
-from graph import *
 
 # Declare module variables
 empty_graph: Graph
@@ -13,11 +10,14 @@ non_trivial_graph: Graph
 non_trivial_graph_different_label: Graph
 non_trivial_graph_different_weight: Graph
 non_trivial_graph_complement: Graph
+isomorphic_graphs: List[Graph]
+anisomorphic_graphs: List[Graph]
 
 
 def set_up_test_graphs():
     global empty_graph, connected_graph_order_2, disconnected_graph_order_2, non_trivial_graph, \
-        non_trivial_graph_different_label, non_trivial_graph_different_weight, non_trivial_graph_complement
+        non_trivial_graph_different_label, non_trivial_graph_different_weight, non_trivial_graph_complement, \
+        isomorphic_graphs, anisomorphic_graphs
 
     # Prepare some vertex labels for general use
     vertex_labels = ['spam', 'ham', 'eggs', 'foo', 'bar', 'baz', 'qux', 'quux', 'quuz', 'corge', 'grault', 'garply',
@@ -39,6 +39,7 @@ def set_up_test_graphs():
     #          \ /
     #           4
     non_trivial_graph = create_graph_helper([(0, 1), (1, 2), (1, 4), (2, 3), (3, 4)])
+    non_trivial_graph.name = 'non_trivial_graph'
 
     # Instantiate the non-trivial graph's complement
     # non_trivial_graph_complement =
@@ -46,6 +47,56 @@ def set_up_test_graphs():
     #              / \
     #     1 - 3 - 0 - 4
     non_trivial_graph_complement = create_graph_helper([(2, 0), (3, 0), (4, 0), (3, 1), (4, 2)])
+    non_trivial_graph_complement.name = 'non_trivial_graph_complement'
+
+    # Instantiate some isomorphic graphs
+    # iso_0 =
+    #           - 0 -
+    #          /     \
+    #     3 - 4 - 1 - 5
+    #          \     /
+    #           - 2 -
+    # iso_1 =
+    #           - 2 -
+    #          /     \
+    #     3 - 4 - 0 - 5
+    #          \     /
+    #           - 1 -
+    # iso_2 =
+    #           - 1 -
+    #          /     \
+    #     3 - 4 - 2 - 5
+    #          \     /
+    #           - 0 -
+    changing_labels = [0, 1, 2]
+    isomorphic_graphs = []
+    for _ in range(len(changing_labels)):  # Because changing_labels changes, this can't simply be changing_labels
+        _0 = changing_labels[0]
+        _1 = changing_labels[1]
+        _2 = changing_labels[2]
+        isomorphism = create_graph_helper([(3, 4), (4, _0), (_0, 5), (4, _1), (_1, 5), (4, _2), (_2, 5)])
+        isomorphism.name = f'isomorphism_{_0}_{_1}_{_2}'
+        isomorphic_graphs.append(isomorphism)
+        changing_labels = [changing_labels.pop()] + changing_labels
+
+    # Instantiate some anisomorphic graphs
+    # anisomorphism_0 =
+    #           - 4 -
+    #          /  |  \
+    #     3 - 0   1   2
+    #          \  |  /
+    #           - 5 -
+    # anisomorphism_1 =
+    #           - 4 -
+    #          /  |  \
+    #     3 - 0 - 1   2
+    #          \     /
+    #           - 5 -
+    anisomorphism_0 = create_graph_helper([(3, 0), (0, 4), (4, 1), (4, 2), (0, 5), (1, 5), (2, 5)])
+    anisomorphism_0.name = 'anisomorphism_0'
+    anisomorphism_1 = create_graph_helper([(3, 0), (0, 4), (4, 1), (4, 2), (0, 5), (1, 0), (2, 5)])
+    anisomorphism_1.name = 'anisomorphism_1'
+    anisomorphic_graphs = [anisomorphism_0, anisomorphism_1]
 
 
 def create_graph_helper(edges: List[Tuple[object, object]] = list()):
