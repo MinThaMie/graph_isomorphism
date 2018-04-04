@@ -8,8 +8,19 @@ class TestPreprocessing(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.v4e4 = graph_vertex4edge4()
-        cls.v5e4loop = graph_vertex5edge4loop()
+        #         Create a graph with structure:
+        #
+        #         1 - 2 - 3
+        #              \ /
+        #               4
+        cls.v4e4 = create_graph_helper([(1, 2), (2, 3), (2, 4), (3, 4)])
+
+        #         Create a graph with structure:
+        #
+        #         1 - 2 - 3   4--
+        #                 |
+        #                 5
+        cls.v5e4loop = create_graph_helper([(1, 2), (2, 3), (3, 5), (4, 4)])
 
     def test_checks(self):
         g = self.v4e4
