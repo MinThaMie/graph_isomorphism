@@ -4,7 +4,7 @@ Module with helper methods for the Color Refinement Algorithm
 from typing import Iterable
 
 from coloring import *
-from permv2 import permutation
+from permv2 import Permutation
 from basicpermutationgroup import Orbit, Stabilizer
 
 DEBUG = False
@@ -210,19 +210,7 @@ def group_by(obj, group_rule=None) -> dict:
     return d
 
 
-def coloring_to_permutation(coloring: Coloring, g: Graph) -> permutation:
-    cycles = list()
-    for color_class in coloring.colors:
-        vertices = coloring.get(color_class) # vertices = DLL
-        vertices_g = get_vertices_of_graph(vertices, g)
-        dll = DoubleLinkedList()
-        for v in list(vertices_g):
-            dll.append(v)
-        cycles.append(dll)
-    return permutation(n=len(g.vertices), vertices=cycles)
-
-
-def member_of(f: permutation, H: [permutation]) -> bool:
+def member_of(f: Permutation, H: [Permutation]) -> bool:
     alpha = 0
     beta = f.P[alpha]
     # compute orbit, transversal and stabalizer for given alpha

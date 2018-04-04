@@ -88,16 +88,25 @@ class TestCRHelper(unittest.TestCase):
         vg_1, vg_2, vg_3, vg_4, vg_5, vg_6 = g.vertices
         vh_1, vh_2, vh_3, vh_4, vh_5, vh_6 = h.vertices
         coloring = Coloring()
-        coloring.add([vg_1, vh_1])
-        perm = coloring_to_permutation(coloring, g)
+
+
+        #coloring.add([vg_1, vh_1])  #En willen we dit echt op 2 graven doen?
+        coloring.add([vg_1])#  Is het niet netter om alle vertices te kleuren?
+        perm = Permutation(len(g.vertices), coloring=coloring)
+
         self.assertEqual(6, len(perm.P))
-        coloring.add([vg_2, vg_3, vh_2, vh_3])
-        perm = coloring_to_permutation(coloring, g)
+
+        coloring.add([vg_2, vg_3]) #, vh_2, vh_3])
+        perm = Permutation(len(g.vertices), coloring=coloring)
+        # #perm = coloring_to_permutation(coloring, g)
         self.assertEqual(6, len(perm.P))
         self.assertEqual(vg_2.label, perm.P[vg_3.label])
         self.assertEqual(vg_3.label, perm.P[vg_2.label])
-        coloring.add([vg_4, vh_4, vg_5, vh_5, vg_6, vh_6])
-        perm = coloring_to_permutation(coloring, g)
+
+
+        coloring.add([vg_4, vg_5, vg_6]) #vh_4, vg_5, vh_5, vg_6, vh_6])
+        perm = Permutation(len(coloring.vertices), coloring=coloring)
+        # #perm = coloring_to_permutation(coloring, g)
         self.assertEqual(6, len(perm.P))
         self.assertEqual(vg_5.label, perm.P[vg_4.label])
         self.assertEqual(vg_6.label, perm.P[vg_5.label])
@@ -109,32 +118,37 @@ class TestCRHelper(unittest.TestCase):
         coloring_p = Coloring()
         coloring_p.add([vg_0, vg_1, vg_2])
         coloring_p.add([vg_4, vg_5])
-        p = coloring_to_permutation(coloring_p, g)
+        p = Permutation(len(g.vertices),coloring=coloring_p)
+
         coloring_q = Coloring()
         coloring_q.add([vg_2, vg_3])
-        q = coloring_to_permutation(coloring_q, g)
+        q = Permutation(len(g.vertices),coloring=coloring_q)
+
         H = list()
         H.append(p)
         H.append(q)
         # test if (0,2) is in generating set (ex of slides)
         coloring_f = Coloring()
         coloring_f.add([vg_0, vg_2])
-        f = coloring_to_permutation(coloring_f, g)
+        f = Permutation(len(g.vertices),coloring=coloring_f)
+
         self.assertTrue(member_of(f, H))
         # test if (0,4) is in generating set
         coloring_f = Coloring()
         coloring_f.add([vg_0, vg_4])
-        f = coloring_to_permutation(coloring_f, g)
+        f = Permutation(len(g.vertices),coloring=coloring_f)
         self.assertFalse(member_of(f, H))
+
         # test if (0,1) is in generating set
         coloring_f = Coloring()
         coloring_f.add([vg_0, vg_1])
-        f = coloring_to_permutation(coloring_f, g)
+        f = Permutation(len(g.vertices),coloring=coloring_f)
         self.assertTrue(member_of(f, H))
+
         # test if (0,5) is in generating set
         coloring_f = Coloring()
         coloring_f.add([vg_0, vg_5])
-        f = coloring_to_permutation(coloring_f, g)
+        f = Permutation(len(g.vertices),coloring=coloring_f)
         self.assertFalse(member_of(f, H))
 
         
