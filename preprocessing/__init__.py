@@ -1,5 +1,5 @@
 from graph import *
-from color_refiment_helper import compare, debug
+from color_refinement_helper import compare, debug
 
 
 def checks(g, h) -> bool:

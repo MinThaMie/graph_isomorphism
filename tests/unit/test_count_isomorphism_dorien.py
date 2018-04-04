@@ -5,7 +5,7 @@ import os
 import unittest
 
 from color_refinement import get_number_isomorphisms
-from color_refiment_helper import debug
+from color_refinement_helper import debug
 from graph_io import *
 
 PATH = 'graphs/branching'# to run locally from PyCharm: PATH = '../../graphs/branching'
