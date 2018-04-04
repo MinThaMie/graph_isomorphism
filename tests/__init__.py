@@ -15,12 +15,18 @@ non_trivial_graph_different_weight: Graph
 non_trivial_graph_complement: Graph
 isomorphic_graphs: List[Graph]
 anisomorphic_graphs: List[Graph]
+v4e4_connected: Graph
+v5e4loop_unconnected: Graph
+v5e7: Graph
+v2e2_connected: Graph
+v5e4_connected: Graph
 
 
 def set_up_test_graphs():
     global empty_graph, connected_graph_order_2, disconnected_graph_order_2, non_trivial_graph, \
         non_trivial_graph_different_label, non_trivial_graph_different_weight, non_trivial_graph_complement, \
-        isomorphic_graphs, anisomorphic_graphs
+        isomorphic_graphs, anisomorphic_graphs, v4e4_connected, v5e4loop_unconnected, v5e7, v2e2_connected, \
+        v5e4_connected
 
     # Prepare some vertex labels for general use
     vertex_labels = ['spam', 'ham', 'eggs', 'foo', 'bar', 'baz', 'qux', 'quux', 'quuz', 'corge', 'grault', 'garply',
@@ -100,6 +106,44 @@ def set_up_test_graphs():
     anisomorphism_1 = create_graph_helper([(3, 0), (0, 4), (4, 1), (4, 2), (0, 5), (1, 0), (2, 5)])
     anisomorphism_1.name = 'anisomorphism_1'
     anisomorphic_graphs = [anisomorphism_0, anisomorphism_1]
+
+    # Create a graph with 4 vertices and 4 edges:
+    # v4e4 =
+    #         1 - 2 - 3
+    #              \ /
+    #               4
+    v4e4_connected = create_graph_helper([(1, 2), (2, 3), (2, 4), (3, 4)])
+    v4e4_connected.name = 'v4e4'
+
+    # Create a graph with 5 vertices and 4 edges, including looped egde at vertex 4:
+    #
+    #         1 - 2 - 3   4--
+    #                 |
+    #                 5
+    v5e4loop_unconnected = create_graph_helper([(1, 2), (2, 3), (3, 5), (4, 4)])
+    v5e4loop_unconnected.name = 'v5e4_loop4'
+
+    # Create a graph where the complement should be taken during preprocessing :
+    # v4e4 =
+    #               5 --
+    #              / \  \
+    #         1 - 2 - 3 |
+    #              \ /  /
+    #               4 --
+    v5e7 = create_graph_helper([(0, 3), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
+    v5e7.name = 'v5e7'
+
+    # Create a graph where the complement should be taken during preprocessing :
+    # v2e2_connected =
+    #         1 - 2 - 3
+    v2e2_connected = create_graph_helper([(1, 2), (2, 3)])
+    v2e2_connected.name = 'v2e2_connected'
+
+    #         1 - 2 - 3 - 4
+    #                 |
+    #                 5
+    v5e4_connected = create_graph_helper([(1, 2), (2, 3), (3, 5), (3, 4)])
+    v5e4_connected.name = 'v5e4_connected'
 
 
 def create_graph_helper(edges: List[Tuple[object, object]] = list()):
