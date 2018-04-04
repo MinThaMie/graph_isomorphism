@@ -183,6 +183,49 @@ def my_test(cg):
     fast_color_refine(cg)
 
 
+def choose_a_root(g: Graph):
+    # Choose a vertex to be the root (arbitrarily)
+    arb_root = g.vertices[0]
+    # Assign weights of the induced subgraphs
+    # Weight = weight(children) + 1
+    return True
+
+
+def get_weight(root: Vertex, parent: Vertex):
+    """
+    Recursively assigns weights to the induced subgraphs starting with the root
+    :param root: Vertex
+    :param parent: The parent of the root, because those do not count in the weight of a subgraph
+    :return:
+    """
+    if root.degree == 1 and root.neighbours[0] == parent:
+        root.weight = 1
+        return 1
+    else:
+        for n in root.neighbours:
+            if n != parent:
+                root.weight += get_weight(n, root)
+        root.weight += 1
+        return root.weight
+
+
+def shift(vertex: Vertex, amount_verts: int) -> Vertex:
+    """
+    Returns the Vertex that is the root for this tree
+    :param vertex: the vertex we want to shift
+    :param amount_verts: the amount of vertices in the graph [invariant]
+    :return:
+    """
+    # If no neighbour of u has weight > n/2, return u
+    result = vertex
+    for n in vertex.neighbours:
+        if n.weight > amount_verts/2:
+            vertex.weight = vertex.weight - n.weight
+            n.weight = vertex.weight + n.weight
+            result = shift(n, amount_verts)
+    return result
+
+
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     """
     Returns the number of isomorphisms of graph g and h
