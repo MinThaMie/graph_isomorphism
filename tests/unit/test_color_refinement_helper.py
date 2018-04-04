@@ -3,7 +3,7 @@ Test file for Color Refinement Helper
 """
 
 import unittest
-from color_refiment_helper import *
+from color_refinement_helper import *
 from tests import *
 
 

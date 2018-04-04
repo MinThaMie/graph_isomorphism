@@ -2,7 +2,7 @@
 This is a module for the color refinement algorithm
 version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
-from color_refiment_helper import *
+from color_refinement_helper import *
 import time
 import preprocessing
 from graph_io import *

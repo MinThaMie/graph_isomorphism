@@ -5,7 +5,7 @@ import os
 import unittest
 
 from color_refinement import color_refine
-from color_refiment_helper import *
+from color_refinement_helper import *
 from graph_io import *
 
 PATH = 'graphs/colorref'
