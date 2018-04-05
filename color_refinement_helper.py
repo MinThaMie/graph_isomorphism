@@ -5,6 +5,9 @@ from typing import Iterable
 
 from coloring import *
 
+Module = [Vertex]
+ModularDecomposition = [Module]
+
 DEBUG = False
 
 
@@ -117,7 +120,7 @@ def are_twins(u: Vertex, v: Vertex) -> bool:
     return compare(n_u, n_v, lambda vertex: vertex.label)
 
 
-# TODO: get_modules
+# TODO: graph_to_modules
 def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
     """
     Returns a list of true twins and a list of false twins
@@ -136,6 +139,36 @@ def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
                 if compare(u.neighbours, v.neighbours, lambda vertex: vertex.label):
                     false_twins.append((u, v))
     return twins, false_twins
+
+
+def graph_to_modules(graph: Graph) -> ModularDecomposition:
+    vertices = graph.vertices
+    vertices_in_any_module = []
+    modular_decomposition = []
+
+    for vertex in vertices:
+        if vertex in vertices_in_any_module:
+            continue
+
+        module = [vertex]
+        vertices_in_any_module.append(vertex)
+
+        neighbours = vertex.neighbours
+
+        other_vertices = [vertex for vertex in vertices if vertex not in vertices_in_any_module]
+        for other_vertex in other_vertices:
+            other_neighbours = set(other_vertex.neighbours) - {vertex}
+            if other_neighbours == (set(neighbours) - {other_vertex}):
+                module.append(other_vertex)
+                vertices_in_any_module.append(other_vertex)
+
+        modular_decomposition.append(module)
+
+    return modular_decomposition
+
+
+def modules_to_graph(modules: ModularDecomposition) -> Graph:
+    return NotImplemented
 
 
 def initialize_coloring(g: Graph) -> Coloring:
@@ -185,7 +218,7 @@ def generate_neighbour_count_with_color(coloring: Coloring, current_color: int) 
         counter[coloring.color(v)].update({v: count})
     return counter
 
-  
+
 def group_by(obj, group_rule=None) -> dict:
     """
     Group the given object according to the given key.
