@@ -83,6 +83,7 @@ class ChooseRootCase(unittest.TestCase):
         self.assertEqual(2, g.find_vertex(12).level)
 
     def test_tree_isomorphism(self):
+        # G and H are the trees from the article, but root from our algorithm is different so doesn't match in result
         g = create_graph_helper([(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (6, 9), (6, 10), (8, 11), (8, 12)])
         h = create_graph_helper([(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (3, 9), (3, 10), (4, 11), (4, 12)])
 
@@ -90,6 +91,8 @@ class ChooseRootCase(unittest.TestCase):
         self.assertListEqual([0, 0, 0], g.find_vertex(1).tuples)
         self.assertListEqual([0, 0, 0], h.find_vertex(2).tuples)
         self.assertTrue(result)
+
+        # Graph H minus the last edges 4 - 12
         j = create_graph_helper([(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (3, 9), (3, 10), (4, 11)])
 
         result = tree_isomorphism(g, j)
