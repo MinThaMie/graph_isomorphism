@@ -4,8 +4,6 @@ Module with helper methods for the Color Refinement Algorithm
 from typing import Iterable
 
 from coloring import *
-from permv2 import Permutation
-from basicpermutationgroup import compute_orbit, stabilizer
 
 DEBUG = False
 
@@ -208,29 +206,3 @@ def group_by(obj, group_rule=None) -> dict:
             key = group_rule(elem)
             d.setdefault(key, []).append(elem)
     return d
-
-
-def member_of(f: Permutation, H: [Permutation]) -> bool:
-    alpha = 0
-    beta = f.P[alpha]
-    # compute orbit, transversal and stabalizer for given alpha
-    orb, transversal = compute_orbit(H, alpha, return_transversal=True)
-    if beta not in orb:
-        return False
-    stab_alpha = stabilizer(H, alpha)
-
-    u = transversal[beta]
-    # p = permutation(n=len(u), cycles=u)
-    u_inverse = u.__neg__()
-    perm = u_inverse.__mul__(f)
-
-    if perm.P[alpha] == beta:
-        return True
-    else:
-        return member_of(perm, stab_alpha)
-
-# def member_of(orbit, transversal: [], cycle: permutation, permutations: set(permutation)) -> bool:
-#     # cycle = (Vertex, Vertex)
-#     from_Vertex, to_Vertex = cycle
-#     perm = transversal[to_Vertex].__mul__(permutation)
-#     return perm in Stabilizer(permutations, cycle)

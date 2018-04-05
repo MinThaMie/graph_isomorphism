@@ -162,3 +162,37 @@ def stabilizer(generators: [Permutation], element: int) -> [Permutation]:
     :return: stabilizer subgroup of H
     """
     return reduce(schreier_generators(generators, element), 0)
+
+
+def member_of(f: Permutation, H: [Permutation]) -> bool:
+    # Base case: trivial permutation
+    if len(H) == 1 and H[0].istrivial():
+        return True
+
+    # Pick an element with an orbit of at least length 2
+    alpha = find_non_trivial_orbit(H)
+    if alpha is None:
+        return False
+    orbit, transversal = compute_orbit(H, alpha, return_transversal=True)
+
+    # Compute f(alpha), image of alpha under f
+    beta = f.P[alpha]
+    if beta not in orbit:
+        return False
+    else:
+        # Compute generating set for ??
+        stab_alpha = stabilizer(H, alpha)
+
+        # Check if u_beta exists
+        if beta >= len(transversal):
+            return False
+
+        # Compute u_beta^-1 (transversal[i] is a permutation from H that maps 'alpha' to orbit[i])
+        u = transversal[beta]
+        u_inverse = u.__neg__()
+
+        # Compute u_beta^-1 * f
+        perm = u_inverse.__mul__(f)
+
+        # Check membership of u_beta^-1 * f in stabilizer of alpha
+        return member_of(perm, stab_alpha)
