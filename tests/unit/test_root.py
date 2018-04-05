@@ -85,27 +85,13 @@ class ChooseRootCase(unittest.TestCase):
     def test_tree_isomorphism(self):
         g = create_graph_helper([(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (6, 9), (6, 10), (8, 11), (8, 12)])
         h = create_graph_helper([(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (3, 9), (3, 10), (4, 11), (4, 12)])
-        for v in g.vertices:
-            v.weight = 0
-            v.level = None
-            v.children = []
-        for v in h.vertices:
-            v.weight = 0
-            v.level = None
-            v.children = []
+
         result = tree_isomorphism(g, h)
         self.assertListEqual([0, 0, 0], g.find_vertex(1).tuples)
         self.assertListEqual([0, 0, 0], h.find_vertex(2).tuples)
         self.assertTrue(result)
         j = create_graph_helper([(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (3, 9), (3, 10), (4, 11)])
-        for v in g.vertices:
-            v.weight = 0
-            v.level = None
-            v.children = []
-        for v in j.vertices:
-            v.weight = 0
-            v.level = None
-            v.children = []
+
         result = tree_isomorphism(g, j)
         self.assertFalse(result)
 
