@@ -86,7 +86,7 @@ def is_tree(g: Graph):
     Uses the is_cycle method from tree_algorithm_helper.py
 
     :param g: Graph
-    :return: Boolean: True if the degrees are the same
+    :return: Boolean: True if the graph is a Tree
     """
     if len(g.vertices) is 0:
         return True

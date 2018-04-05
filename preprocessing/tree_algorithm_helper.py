@@ -10,7 +10,7 @@ def has_cycle(g: Graph, vertex: Vertex, predecessor: Vertex, visited, result):
     :param predecessor: predecessor vertex of vertex
     :param visited: List with visited vertices
     :param result: list containing the "Truth Of The Tree"
-    :return: Boolean: True if the degrees are the same
+    :return: result: [True] if has_cycle
     """
     if True in result or len(g.vertices) is len(visited):
         return result
