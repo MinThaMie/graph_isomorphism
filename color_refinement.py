@@ -271,6 +271,7 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
 
                 print('Graph', graphs[i].name, 'has', num, 'automorphisms')
                 print('Took', end - start, 'seconds')
+                print()
 
             if j > i:
                 if j in isomorphism_index_mapping[i]:
@@ -288,7 +289,7 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
                         print('There are', automorphisms.get(graphs[i]), 'isomorphisms')
 
                     print('Took', end - start, 'seconds')
-            print()
+                print()
 
     return isomorphism_index_mapping
 
