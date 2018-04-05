@@ -8,6 +8,7 @@ from typing import Dict
 import preprocessing
 from color_refinement_helper import *
 from graph_io import *
+from collections import defaultdict
 
 PATH = 'graphs/branching/'
 GRAPH = 'cubes5.grl'
@@ -260,22 +261,33 @@ def tree_isomorphism(g: Graph, h: Graph) -> bool:
     level_dict_h = group_by(h.vertices, lambda v: v.level)
     lowest_level = max(level_dict_g)
     # Create tuples
-    tuples_g = set_tuples(level_dict_g[lowest_level - 1])
-    tuples_h = set_tuples(level_dict_h[lowest_level - 1])
-    sorted_t_g = sorted(tuples_g)
-    sorted_t_h = sorted(tuples_h)
-    if sorted_t_g != sorted_t_h:
-        return False
-    return True
+    while lowest_level > 0:
+        tuples_g, d_g = set_tuples(level_dict_g[lowest_level - 1])
+        tuples_h, d_h = set_tuples(level_dict_h[lowest_level - 1])
+        sorted_t_g = sorted(tuples_g)
+        sorted_t_h = sorted(tuples_h)
+        if sorted_t_g != sorted_t_h:
+            return False
+        value = 1
+        for t in sorted(d_g):
+            for v in d_g[t]:
+                v.value = value
+            for v in d_h[t]:
+                v.value = value
+            value += 1
+        lowest_level -= 1
+    return sorted(root_g.tuples) == sorted(root_h.tuples)
 
 
-def set_tuples(vertices: List[Vertex]) -> [[]]:
+def set_tuples(vertices: List[Vertex]):
     tuples = []
+    d = defaultdict(list)
     for v in vertices:
         for n in v.children:
             v.tuples.append(n.value)
         tuples.append(sorted(v.tuples))
-    return tuples
+        d[tuple(v.tuples)].append(v)
+    return tuples, d
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     """
