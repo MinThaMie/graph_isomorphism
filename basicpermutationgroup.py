@@ -162,3 +162,17 @@ def stabilizer(generators: [Permutation], element: int) -> [Permutation]:
     :return: stabilizer subgroup of H
     """
     return reduce(schreier_generators(generators, element), 0)
+
+
+def order_computation(H: [Permutation]) -> int:
+    if len(H) == 1 and H[0].istrivial():
+        return 1
+    alpha = find_non_trivial_orbit(H)
+    if alpha is not None:
+        orbit_alpha = compute_orbit(H, alpha, return_transversal=False)
+        stab_alpha = stabilizer(H, alpha)
+        order_orbit = len(orbit_alpha)
+        if len(stab_alpha) == 0:
+            return order_orbit
+        else:
+            return order_orbit * order_computation(stab_alpha)
