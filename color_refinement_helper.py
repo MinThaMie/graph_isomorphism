@@ -4,6 +4,7 @@ Module with helper methods for the Color Refinement Algorithm
 from typing import Iterable
 
 from coloring import *
+from tools import create_graph_helper
 
 Module = List[Vertex]
 
@@ -168,7 +169,52 @@ def get_modules(graph: Graph) -> List[Module]:
 
 
 def modules_to_graph(modules: List[Module]) -> Graph:
-    return NotImplemented
+    """
+    Returns a new Graph object with Modules compressed to a Vertex
+    :param modules: list of modules
+    :return: new Graph
+    """
+    edges_list = []
+    for module in modules:
+        for vertex in module:
+            edges_list += get_edges_of_vertex(vertex)
+
+    for module in modules:
+        if len(module) > 1:
+            new_label = create_new_label(module)
+            edges_list = relabel_edges(module, edges_list, new_label)
+
+    edges = []
+    for edge_list in edges_list:
+        edges.append(tuple(edge_list))
+
+    graph = create_graph_helper(edges)
+    return graph
+
+
+def get_edges_of_vertex(vertex: Vertex) -> List[List[str]]:
+    edges = []
+    for edge in vertex.incidence:
+        edges.append([str(edge.head.label), str(edge.tail.label)])
+    return edges
+
+
+def create_new_label(module: Module) -> str:
+    new_label = str(module[0].label)
+    itermodule = iter(module)
+    next(itermodule)
+    for vertex in itermodule:
+        new_label += "+" + str(vertex.label)
+    return new_label
+
+
+def relabel_edges(module: Module, edges_list: List[List[List]], new_label: str) -> List[List[List]]:
+    for edge in edges_list:
+        for vertex in module:
+            edge[0] = new_label if edge[0] == str(vertex.label) else edge[0]
+            edge[1] = new_label if edge[1] == str(vertex.label) else edge[1]
+    return edges_list
+
 
 def initialize_coloring(g: Graph) -> Coloring:
     """

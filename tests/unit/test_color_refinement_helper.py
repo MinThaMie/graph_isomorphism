@@ -276,8 +276,27 @@ class ColorRefineHelper(unittest.TestCase):
         expected_labels = [{0}, {1, 2, 3, 4}]
         self.assertCountEqual(expected_labels, [{vertex.label for vertex in module} for module in modules])
 
+
     def test_modules_to_graph(self):
-        self.fail('Not implemented')
+        tests.set_up_test_graphs()
+
+        modules = get_modules(tests.non_trivial_graph)
+        graph = modules_to_graph(modules)
+        labels = [vertex.label for vertex in graph.vertices]
+        expected_labels = ["0", "1", "2+4", "3"]
+        self.assertTrue(set(labels) == set(expected_labels))
+
+        modules = get_modules(tests.modular_decomposition_graph)
+        graph = modules_to_graph(modules)
+        labels = [vertex.label for vertex in graph.vertices]
+        expected_labels = ["6+5", "1+0+4", "2+3"]
+        self.assertTrue(set(labels) == set(expected_labels))
+
+        modules = get_modules(tests.butterfly)
+        graph = modules_to_graph(modules)
+        labels = [vertex.label for vertex in graph.vertices]
+        expected_labels = ["1+4", "0", "2+3"]
+        self.assertTrue(set(labels) == set(expected_labels))
 
 
 if __name__ == '__main__':
