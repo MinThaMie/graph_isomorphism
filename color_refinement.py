@@ -291,8 +291,9 @@ def set_tuples(vertices: List[Vertex]):
     for v in vertices:
         for n in v.children:
             v.tuples.append(n.value)
-        tuples.append(sorted(v.tuples))
-        d[tuple(v.tuples)].append(v)
+        if v.value != 0:
+            tuples.append(sorted(v.tuples))
+            d[tuple(sorted(v.tuples))].append(v)
     return tuples, d
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
