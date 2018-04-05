@@ -1,7 +1,7 @@
 from graph import *
 
 
-def has_cycle(g: Graph, vertex: Vertex, predecessor: Vertex, visited, result):
+def has_cycle(g: Graph, vertex: Vertex, predecessor: Vertex, visited):
     """
     Recursive function to detect cycles in a graph
 
@@ -12,14 +12,10 @@ def has_cycle(g: Graph, vertex: Vertex, predecessor: Vertex, visited, result):
     :param result: list containing the "Truth Of The Tree"
     :return: result: [True] if has_cycle
     """
-    if True in result or len(g.vertices) is len(visited):
-        return result
     visited.append(vertex)
 
     for v in vertex.neighbours:
         if v in visited and v is not predecessor:
-            result[0] = True
-            break
+            return True
         elif v not in visited:
-            has_cycle(g, v, vertex, visited, result)
-    return result
+            return has_cycle(g, v, vertex, visited)
