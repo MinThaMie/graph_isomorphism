@@ -252,26 +252,21 @@ class ColorRefineHelper(unittest.TestCase):
     def test_get_modules(self):
         #
         modules = get_modules(tests.non_trivial_graph)
-        expected_labels = [[0], [1], [2, 4], [3]]
-
-        for expected_label, module in zip(expected_labels, modules):
-            self.assertEqual(expected_label, [vertex.label for vertex in module])
+        expected_labels = [{0}, {1}, {2, 4}, {3}]
+        self.assertCountEqual(expected_labels, [{vertex.label for vertex in module} for module in modules])
 
         #
         modules = get_modules(tests.modular_decomposition_graph)
         expected_labels = [{5, 6}, {0, 1, 4}, {2, 3}]
-
-        for expected_label, module in zip(expected_labels, modules):
-            self.assertEqual(expected_label, {vertex.label for vertex in module})
+        self.assertCountEqual(expected_labels, [{vertex.label for vertex in module} for module in modules])
 
         #
         modules = get_modules(tests.butterfly)
         expected_labels = [{1, 4}, {0}, {2, 3}]
-
         self.assertCountEqual(expected_labels, [{vertex.label for vertex in module} for module in modules])
 
+        # Assert that redoing modular decomposition results in another simplification of the graph
         butterfly_modular_decomposition_graph = modules_to_graph(modules)
-
         modules = get_modules(butterfly_modular_decomposition_graph)
         expected_labels = [{0}, {1, 2, 3, 4}]
         self.assertCountEqual(expected_labels, [{vertex.label for vertex in module} for module in modules])
