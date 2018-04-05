@@ -138,6 +138,33 @@ def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
     return twins, false_twins
 
 
+def get_modules(graph: Graph) -> List[List[Vertex]]:
+    vertices = graph.vertices
+    vertices_in_any_module = []
+
+    modules = []
+
+    for vertex in vertices:
+        if vertex in vertices_in_any_module:
+            continue
+
+        module = [vertex]
+        vertices_in_any_module.append(vertex)
+
+        neighbours = vertex.neighbours
+
+        other_vertices = [vertex for vertex in vertices if vertex not in vertices_in_any_module]
+        for other_vertex in other_vertices:
+            other_neighbours = set(other_vertex.neighbours) - {vertex}
+            if other_neighbours == (set(neighbours) - {other_vertex}):
+                module.append(other_vertex)
+                vertices_in_any_module.append(other_vertex)
+
+        modules.append(module)
+
+    return modules
+
+
 def initialize_coloring(g: Graph) -> Coloring:
     """
     Creates an initial coloring for graph g where the vertices with the same degree are in the same color class
