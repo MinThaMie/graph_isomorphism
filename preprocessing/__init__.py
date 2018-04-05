@@ -64,6 +64,13 @@ def remove_loners(g: Graph):
 
 
 def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
+    """
+        Method checks if complement is necessary
+
+    :param g: Graph
+    :param h: Graph
+    :return: Graph g and h, complemented if necessary
+    """
     amount_of_vertices = g.order
     if g.size > (amount_of_vertices * (amount_of_vertices - 1))/4:
         debug("Uses complements")
