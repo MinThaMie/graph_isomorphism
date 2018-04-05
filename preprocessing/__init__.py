@@ -73,25 +73,38 @@ def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
 
 
 def is_tree(g: Graph):
+    """
+    This method checks whether graph g is a tree. First iteration.
+
+    :param g: Graph
+    :return: Boolean: True if the degrees are the same
+    """
     visited = []
 
     if len(g.vertices) is 0:
         return True
     vertex = g.vertices[0]
-    if vertex.label not in visited:
-        visited.append(vertex.label)
-
-    return is_cycle(g, vertex, vertex, visited)
-
-
-def is_cycle(g: Graph, vertex, predecessor, visited):
     visited.append(vertex.label)
 
-    for v in vertex.neighbours:  # - Check neighbors, where G[u] is the adjacency list of u.
-        if visited[v.label] and v is not predecessor:
+    return not is_cycle(g, vertex, vertex, visited)
+
+
+def is_cycle(g: Graph, vertex: Vertex, predecessor: Vertex, visited):
+    """
+    Recursive function to detect cycles in a graph
+
+    :param g: input graph
+    :param vertex: vertex to start from
+    :param predecessor: predecessor vertex of vertex
+    :param visited: List with visited vertices
+    :return: Boolean: True if the degrees are the same
+    """
+    visited.append(vertex.label)
+    cyclic = False
+
+    for v in vertex.neighbours:
+        if v.label in visited and v is not predecessor:
             cyclic = True
-        elif not is_cycle(g, v, vertex, visited):
-            cyclic = False
         else:
-            cyclic = True
+            cyclic = is_cycle(g, v, vertex, visited)
     return cyclic
