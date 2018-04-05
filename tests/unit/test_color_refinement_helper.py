@@ -111,46 +111,46 @@ class TestCRHelper(unittest.TestCase):
         self.assertEqual(vg_6.label, perm.P[vg_5.label])
         self.assertEqual(vg_4.label, perm.P[vg_6.label])
 
-    def test_compute_orbit(self):
-        g = Graph(directed=False, n=6)
-        vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
-        coloring_p = Coloring()
-        coloring_p.add([vg_0, vg_1, vg_2])
-        coloring_p.add([vg_4, vg_5])
-        p = Permutation(len(g.vertices), coloring=coloring_p)
+    # def test_compute_orbit(self):
+    #     g = Graph(directed=False, n=6)
+    #     vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
+    #     coloring_p = Coloring()
+    #     coloring_p.add([vg_0, vg_1, vg_2])
+    #     coloring_p.add([vg_4, vg_5])
+    #     p = Permutation(len(g.vertices), coloring=coloring_p)
+    #
+    #     coloring_q = Coloring()
+    #     coloring_q.add([vg_2, vg_3])
+    #     q = Permutation(len(g.vertices), coloring=coloring_q)
+    #
+    #     H = list()
+    #     H.append(p)
+    #     H.append(q)
+    #     # test if (0,2) is in generating set (ex of slides)
+    #     coloring_f = Coloring()
+    #     coloring_f.add([vg_0, vg_2])
+    #     f = Permutation(len(g.vertices), coloring=coloring_f)
+    #
+    #     self.assertTrue(member_of(f, H))
+    #     # test if (0,4) is in generating set
+    #     coloring_f = Coloring()
+    #     coloring_f.add([vg_0, vg_4])
+    #     f = Permutation(len(g.vertices), coloring=coloring_f)
+    #     self.assertFalse(member_of(f, H))
+    #
+    #     # test if (0,1) is in generating set
+    #     coloring_f = Coloring()
+    #     coloring_f.add([vg_0, vg_1])
+    #     f = Permutation(len(g.vertices), coloring=coloring_f)
+    #     self.assertTrue(member_of(f, H))
+    #
+    #     # test if (0,5) is in generating set
+    #     coloring_f = Coloring()
+    #     coloring_f.add([vg_0, vg_5])
+    #     f = Permutation(len(g.vertices), coloring=coloring_f)
+    #     self.assertFalse(member_of(f, H))
 
-        coloring_q = Coloring()
-        coloring_q.add([vg_2, vg_3])
-        q = Permutation(len(g.vertices), coloring=coloring_q)
-
-        H = list()
-        H.append(p)
-        H.append(q)
-        # test if (0,2) is in generating set (ex of slides)
-        coloring_f = Coloring()
-        coloring_f.add([vg_0, vg_2])
-        f = Permutation(len(g.vertices), coloring=coloring_f)
-
-        self.assertTrue(member_of(f, H))
-        # test if (0,4) is in generating set
-        coloring_f = Coloring()
-        coloring_f.add([vg_0, vg_4])
-        f = Permutation(len(g.vertices), coloring=coloring_f)
-        self.assertFalse(member_of(f, H))
-
-        # test if (0,1) is in generating set
-        coloring_f = Coloring()
-        coloring_f.add([vg_0, vg_1])
-        f = Permutation(len(g.vertices), coloring=coloring_f)
-        self.assertTrue(member_of(f, H))
-
-        # test if (0,5) is in generating set
-        coloring_f = Coloring()
-        coloring_f.add([vg_0, vg_5])
-        f = Permutation(len(g.vertices), coloring=coloring_f)
-        self.assertFalse(member_of(f, H))
-
-    def test_order_computation(self): #TODO: to a testclass of basicpermutations
+    def test_order_computation(self):  # TODO: to a testclass of basicpermutations
         g = Graph(directed=False, n=6)
         vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
         # mapping only to itself
@@ -177,7 +177,7 @@ class TestCRHelper(unittest.TestCase):
         H = [p, q]
         self.assertEqual(48, order_computation(H))
 
-    def test_permutation_coloring(self): #TODO: write more tests
+    def test_permutation_coloring(self):  # TODO: write more tests
         g = Graph(directed=False, n=5)
         h = Graph(directed=False, n=5)
         vg_0, vg_1, vg_2, vg_3, vg_4 = g.vertices
@@ -195,8 +195,19 @@ class TestCRHelper(unittest.TestCase):
         self.assertEqual(1, p.P[0])
         self.assertEqual(0, p.P[1])
 
+    def test_member_of(self):
+        # trivial permuatiation
+        H = Permutation(n=5)
+        f = Permutation(n=2)
+        f2 = Permutation(n=2, cycles=[[0, 1]])
+        self.assertTrue(member_of(f, [H]))
+        self.assertFalse(member_of(f2, [H]))
 
-
+        H1 = Permutation(n=6, cycles=[[0, 1, 2], [4, 5]])
+        H2 = Permutation(n=6, cycles=[[2, 3]])
+        H = [H1, H2]
+        f = Permutation(n=6, cycles=[[0, 2]])
+        self.assertTrue(f, H)
 
 
 if __name__ == '__main__':

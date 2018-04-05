@@ -213,7 +213,7 @@ def group_by(obj, group_rule=None) -> dict:
 def member_of(f: Permutation, H: [Permutation]) -> bool:
     # Base case: trivial permutation
     if len(H) == 1 and H[0].istrivial():
-        return True
+        return f.istrivial()
 
     # Pick an element with an orbit of at least length 2
     alpha = find_non_trivial_orbit(H)
