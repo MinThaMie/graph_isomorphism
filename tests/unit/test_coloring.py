@@ -2,8 +2,8 @@
 Test file for Coloring class
 """
 import unittest
-from coloring import *
 from tests import *
+from tools import create_graph_helper
 
 
 class ColoringCase(unittest.TestCase):
