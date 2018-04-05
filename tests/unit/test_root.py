@@ -1,5 +1,5 @@
 import unittest
-from color_refinement import set_weight, shift, choose_a_root, assign_levels
+from color_refinement import *
 from tests import *
 
 class ChooseRootCase(unittest.TestCase):
@@ -47,6 +47,7 @@ class ChooseRootCase(unittest.TestCase):
         for v in g.vertices:
             v.weight = 0
             v.level = None
+            v.children = []
         root = choose_a_root(g)
         self.assertEqual(g.find_vertex(0), root)
         assign_levels(root)
@@ -59,7 +60,44 @@ class ChooseRootCase(unittest.TestCase):
         self.assertEqual(2, g.find_vertex(6).level)
         self.assertEqual(2, g.find_vertex(7).level)
         self.assertEqual(3, g.find_vertex(8).level)
+        g = create_graph_helper([(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (6, 9), (6, 10), (8, 11), (8, 12)])
+        for v in g.vertices:
+            v.weight = 0
+            v.level = None
+            v.children = []
+        root = choose_a_root(g)
+        self.assertEqual(g.find_vertex(2), root)
+        assign_levels(root)
+        self.assertEqual(1, g.find_vertex(0).level)
+        self.assertEqual(2, g.find_vertex(1).level)
+        self.assertEqual(0, g.find_vertex(2).level)
+        self.assertEqual(3, g.find_vertex(3).level)
+        self.assertEqual(3, g.find_vertex(4).level)
+        self.assertEqual(3, g.find_vertex(5).level)
+        self.assertEqual(1, g.find_vertex(6).level)
+        self.assertEqual(1, g.find_vertex(7).level)
+        self.assertEqual(1, g.find_vertex(8).level)
+        self.assertEqual(2, g.find_vertex(9).level)
+        self.assertEqual(2, g.find_vertex(10).level)
+        self.assertEqual(2, g.find_vertex(11).level)
+        self.assertEqual(2, g.find_vertex(12).level)
 
+    def test_tree_isomorphism(self):
+        g = create_graph_helper([(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (6, 9), (6, 10), (8, 11), (8, 12)])
+        h = create_graph_helper([(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (3, 9), (3, 10), (4, 11), (4, 12)])
+        for v in g.vertices:
+            v.weight = 0
+            v.level = None
+            v.children = []
+        for v in h.vertices:
+            v.weight = 0
+            v.level = None
+            v.children = []
+        tree_isomorphism(g, h)
+        self.assertListEqual([0, 0, 0], g.find_vertex(1).tuples)
+        self.assertListEqual([], g.find_vertex(2).tuples)  # The root
+        self.assertListEqual([0, 0, 0], h.find_vertex(2).tuples)
+        self.assertListEqual([], h.find_vertex(1).tuples)  # The root
 
 
 

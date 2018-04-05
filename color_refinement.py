@@ -199,6 +199,8 @@ def set_weight(root: Vertex, parent: Vertex = None):
     :param parent: The parent of the root, because those do not count in the weight of a subgraph
     :return:
     """
+    root.value = None
+    root.tuples = []
     if root.degree == 1 and root.neighbours[0] == parent:
         root.weight = 1
         return 1
@@ -235,9 +237,45 @@ def assign_levels(root: Vertex, parent: Vertex = None, level: int = 0):
         if n.level is None:
             n.level = level
         if n != parent:
+            root.children.append(n)
             assign_levels(n, root, level)
 
 
+
+def tree_isomorphism(g: Graph, h: Graph) -> bool:
+    # Get the root for the trees
+    root_g = choose_a_root(g)
+    root_h = choose_a_root(h)
+    # Assign all leaves integer 0 (is already by order, so might not be nessecary)
+    for v in g.vertices:
+        if v.degree == 1:
+            v.value = 0
+    for v in h.vertices:
+        if v.degree == 1:
+            v.value = 0
+    # Assign the levels and get the lists
+    assign_levels(root_g)
+    assign_levels(root_h)
+    level_dict_g = group_by(g.vertices, lambda v: v.level)
+    level_dict_h = group_by(h.vertices, lambda v: v.level)
+    lowest_level = max(level_dict_g)
+    # Create tuples
+    tuples_g = set_tuples(level_dict_g[lowest_level - 1])
+    tuples_h = set_tuples(level_dict_h[lowest_level - 1])
+    sorted_t_g = sorted(tuples_g)
+    sorted_t_h = sorted(tuples_h)
+    if sorted_t_g != sorted_t_h:
+        return False
+    return True
+
+
+def set_tuples(vertices: List[Vertex]) -> [[]]:
+    tuples = []
+    for v in vertices:
+        for n in v.children:
+            v.tuples.append(n.value)
+        tuples.append(sorted(v.tuples))
+    return tuples
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     """
