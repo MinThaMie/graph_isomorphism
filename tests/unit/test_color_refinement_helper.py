@@ -263,6 +263,21 @@ class ColorRefineHelper(unittest.TestCase):
         for expected_label, module in zip(expected_labels, modules):
             self.assertEqual(expected_label, {vertex.label for vertex in module})
 
+        #
+        modules = get_modules(tests.butterfly)
+        expected_labels = [{1, 4}, {0}, {2, 3}]
+
+        self.assertCountEqual(expected_labels, [{vertex.label for vertex in module} for module in modules])
+
+        butterfly_modular_decomposition_graph = modules_to_graph(modules)
+
+        modules = get_modules(butterfly_modular_decomposition_graph)
+        expected_labels = [{0}, {1, 2, 3, 4}]
+        self.assertCountEqual(expected_labels, [{vertex.label for vertex in module} for module in modules])
+
+    def test_modules_to_graph(self):
+        self.fail('Not implemented')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -5,6 +5,8 @@ from typing import Iterable
 
 from coloring import *
 
+Module = List[Vertex]
+
 DEBUG = False
 
 
@@ -138,7 +140,7 @@ def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
     return twins, false_twins
 
 
-def get_modules(graph: Graph) -> List[List[Vertex]]:
+def get_modules(graph: Graph) -> List[Module]:
     vertices = graph.vertices
     vertices_in_any_module = []
 
@@ -164,6 +166,9 @@ def get_modules(graph: Graph) -> List[List[Vertex]]:
 
     return modules
 
+
+def modules_to_graph(modules: List[Module]) -> Graph:
+    return NotImplemented
 
 def initialize_coloring(g: Graph) -> Coloring:
     """
@@ -212,7 +217,7 @@ def generate_neighbour_count_with_color(coloring: Coloring, current_color: int) 
         counter[coloring.color(v)].update({v: count})
     return counter
 
-  
+
 def group_by(obj, group_rule=None) -> dict:
     """
     Group the given object according to the given key.

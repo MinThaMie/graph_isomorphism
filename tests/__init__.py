@@ -13,12 +13,13 @@ non_trivial_graph_complement: Graph
 isomorphic_graphs: List[Graph]
 anisomorphic_graphs: List[Graph]
 modular_decomposition_graph: Graph
+butterfly: Graph
 
 
 def set_up_test_graphs():
     global empty_graph, connected_graph_order_2, disconnected_graph_order_2, non_trivial_graph, \
         non_trivial_graph_different_label, non_trivial_graph_different_weight, non_trivial_graph_complement, \
-        isomorphic_graphs, anisomorphic_graphs, modular_decomposition_graph
+        isomorphic_graphs, anisomorphic_graphs, modular_decomposition_graph, butterfly
 
     # Prepare some vertex labels for general use
     vertex_labels = ['spam', 'ham', 'eggs', 'foo', 'bar', 'baz', 'qux', 'quux', 'quuz', 'corge', 'grault', 'garply',
@@ -103,6 +104,9 @@ def set_up_test_graphs():
     modular_decomposition_graph = create_graph_helper(
         [(6, 1), (6, 0), (6, 4), (5, 1), (5, 0), (5, 4), (2, 1), (2, 0), (2, 4), (3, 1), (3, 0), (3, 4), (2, 3)]
     )
+
+    # Instantiate a recursively modular decomposable graph
+    butterfly = create_graph_helper([(0, 1), (0, 2), (0, 3), (0, 4), (1, 4), (2, 3)])
 
 
 def create_graph_helper(edges: List[Tuple[object, object]] = list()):
