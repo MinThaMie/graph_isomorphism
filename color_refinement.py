@@ -11,7 +11,7 @@ from graph_io import *
 from collections import defaultdict
 
 PATH = 'graphs/branching/'
-GRAPH = 'cubes5.grl'
+GRAPH = 'bigtrees3.grl'
 
 
 IsomorphismMapping = Dict[int, Set[int]]
@@ -200,7 +200,6 @@ def set_weight(root: Vertex, parent: Vertex = None):
     :param parent: The parent of the root, because those do not count in the weight of a subgraph
     :return:
     """
-    root.value = None
     root.tuples = []
     if root.degree == 1 and root.neighbours[0] == parent:
         root.weight = 1
@@ -242,18 +241,25 @@ def assign_levels(root: Vertex, parent: Vertex = None, level: int = 0):
             assign_levels(n, root, level)
 
 
+def initialize_tree(g: Graph):
+    for v in g.vertices:
+        v.weight = 0
+        v.level = None
+        v.children = []
+        v.value = None
+        # Assign all leaves integer 0
+        if v.degree == 1:
+            v.value = 0
+    return g
+
 
 def tree_isomorphism(g: Graph, h: Graph) -> bool:
+    g = initialize_tree(g)
+    h = initialize_tree(h)
     # Get the root for the trees
     root_g = choose_a_root(g)
     root_h = choose_a_root(h)
-    # Assign all leaves integer 0 (is already by order, so might not be nessecary)
-    for v in g.vertices:
-        if v.degree == 1:
-            v.value = 0
-    for v in h.vertices:
-        if v.degree == 1:
-            v.value = 0
+
     # Assign the levels and get the lists
     assign_levels(root_g)
     assign_levels(root_h)
