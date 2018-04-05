@@ -27,6 +27,8 @@ def load_graph_from_file(filename):
 
 
 class TestTrees(unittest.TestCase):
+    def setUp(self):
+        tests.set_up_test_graphs()
 
     def test_is_tree(self):
         simple_tree_graph = tests.v3e2_connected
