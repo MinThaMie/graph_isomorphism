@@ -58,7 +58,7 @@ class Permutation():
         elif coloring is not None:
             self.construct_from_coloring(coloring)
 
-    def construct_from_coloring(self, coloring):
+    def construct_from_coloring(self, coloring: Coloring):
         """
         Construct permutation from coloring. Color classes form cycles.
 
@@ -79,7 +79,7 @@ class Permutation():
         """
         for cycle in cycles:
             for i in range(len(cycle)):
-                assert self.P[cycle[i]] == cycle[i]
+                # assert self.P[cycle[i]] == cycle[i]
                 # if self.P[cycle[i]]!=cycle[i]:
                 #	raise permError
                 self.P[cycle[i]] = cycle[(i + 1) % len(cycle)]

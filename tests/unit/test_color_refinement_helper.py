@@ -177,6 +177,26 @@ class TestCRHelper(unittest.TestCase):
         H = [p, q]
         self.assertEqual(48, order_computation(H))
 
+    def test_permutation_coloring(self): #TODO: write more tests
+        g = Graph(directed=False, n=5)
+        h = Graph(directed=False, n=5)
+        vg_0, vg_1, vg_2, vg_3, vg_4 = g.vertices
+        vh_0, vh_1, vh_2, vh_3, vh_4 = h.vertices
+        coloring_p = Coloring()
+        coloring_p.add([vg_0, vh_0])
+        coloring_p.add([vg_1, vh_1])
+        p = Permutation(2, coloring=coloring_p)
+        self.assertEqual(0, p.P[0])
+        self.assertEqual(1, p.P[1])
+        coloring_p = Coloring()
+        coloring_p.add([vg_0, vh_1])
+        coloring_p.add([vg_1, vh_0])
+        p = Permutation(2, coloring=coloring_p)
+        self.assertEqual(1, p.P[0])
+        self.assertEqual(0, p.P[1])
+
+
+
 
 
 if __name__ == '__main__':

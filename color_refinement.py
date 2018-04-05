@@ -8,7 +8,7 @@ from typing import Dict
 import preprocessing
 from color_refinement_helper import *
 from graph_io import *
-from basicpermutationgroup import *
+from basicpermutationgroup import order_computation
 
 PATH = 'graphs/branching/'
 GRAPH = 'cubes5.grl'
@@ -223,39 +223,64 @@ def get_number_automorphisms(g: Graph) -> int:
     :param g: graph for which to determine the number of automorphisms
     :return: The number of automorphisms of graph g
     """
-    # added_graph = g + g.deepcopy()
-    # coloring = initialize_coloring(added_graph)
-    return get_number_isomorphisms(g, g.deepcopy(), True)
+    copy_g = g.deepcopy()
+    coloring = initialize_coloring(g + copy_g)
+    new_coloring = fast_color_refine(coloring)
+    lastvisited = DoubleLinkedList()
+    lastvisited.append(new_coloring)
+    generators, lastvisited = compute_generators(g, copy_g, coloring, list(), lastvisited=lastvisited)
+    return order_computation(generators)
 
 
-def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, permutations: set() = None) -> int:
+def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvisited: DoubleLinkedList = list()) -> (list(), [Coloring]):
     """
-    Returns the number of automorphisms of `Graph` g and h for a given coloring
+    Returns the number of automorphisms of `Graph` g for a given coloring
     """
     # Do colorrefinement -> returns stable or unbalanced coloring
-    new_coloring = color_refine(coloring)
+    new_coloring = fast_color_refine(coloring)
     coloring_status = new_coloring.status(g, h)
-    if coloring_status == "Unbalanced":
-        return 0
-    # Is there a unique coloring?
+    # # No automorphism with given coloring
+    # if coloring_status == "Unbalanced":
+    #     return X, []
+    # Unique automorphism
+    # if new_coloring.defines_bijection():
     if coloring_status == "Bijection":
-        el = coloring
-        orbit, transversal = compute_orbit(permutations, el, return_transversal=True)
-
+        perm_f = Permutation(len(g.vertices), coloring=new_coloring)
         # is this coloring already in the set of colorings?
-        if member_of(coloring, permutations):
+        if not member_of(perm_f, X):
             # put f in the set and return to last visited node
-            permutations.add(f)
-            return 0 #TODO to last visited trivial ancestor node
-    # choose branching vertex x and cell C
-    vertices = choose_color(new_coloring)
-    first_vertex = choose_vertex(vertices, g)
-    vertices_in_h = [v for v in vertices if v.in_graph(h)] # TODO: try to get vertex label of first_vertex first
-    number_automorphisms = 0
-    for second_vertex in vertices_in_h:
-        adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
-        number_automorphisms = number_automorphisms + count_automorphisms(g, h, adapted_coloring, permutations)
-    return number_automorphisms
+            X.append(perm_f)
+            lastvisited.pop()
+            return X, lastvisited #return to last visited
+    # Undecided
+    else:
+        # choose branching vertex x and cell C
+        vertices = choose_color(new_coloring)
+        vertices_in_h = [v for v in vertices if v.in_graph(h)]
+        first_vertex = choose_vertex(vertices, g)
+        trivial_mapping, non_trivial_mapping = get_trivial_mapping(vertices_in_h, first_vertex)
+        if trivial_mapping is not None:
+            lastvisited.append(new_coloring)
+            trivial_coloring = create_new_color_class(new_coloring, first_vertex, trivial_mapping)
+            X, lastvisited = compute_generators(g, h, trivial_coloring, X, lastvisited=lastvisited)
+        # vertices_in_copy = get_mapping_vertices(vertices, first_vertex)
+        for second_vertex in non_trivial_mapping:
+            adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
+            X, lastvisited = compute_generators(g, h, adapted_coloring, X, lastvisited=lastvisited)
+            if lastvisited != new_coloring:
+                return X, lastvisited
+    return X, lastvisited
+
+
+def get_trivial_mapping(vertices: [Vertex], v: Vertex) -> (Vertex, [Vertex]):
+    trivial = None
+    non_trivial = []
+    for vertex in vertices:
+        if vertex.label == v.label:
+            trivial = vertex
+        else:
+            non_trivial.append(vertex)
+    return trivial, non_trivial
 
 
 def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
