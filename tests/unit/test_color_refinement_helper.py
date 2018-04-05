@@ -246,9 +246,10 @@ class ColorRefineHelper(unittest.TestCase):
                              "Expect key " + str(key) + ' to have ' + str(len(expected[key])) + ' vertices')
             self.assertTrue(compare(expected[key], n_neighbors_of_color1[key], lambda v: v.label))
 
-    def test_get_modules(self):
+    def setUp(self):
         tests.set_up_test_graphs()
 
+    def test_get_modules(self):
         #
         modules = get_modules(tests.non_trivial_graph)
         expected_labels = [[0], [1], [2, 4], [3]]
