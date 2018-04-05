@@ -5,7 +5,7 @@ from typing import Iterable
 
 from coloring import *
 from permv2 import Permutation
-from basicpermutationgroup import compute_orbit, stabilizer
+from basicpermutationgroup import compute_orbit, stabilizer, find_non_trivial_orbit
 
 DEBUG = False
 
@@ -211,26 +211,38 @@ def group_by(obj, group_rule=None) -> dict:
 
 
 def member_of(f: Permutation, H: [Permutation]) -> bool:
-    alpha = 0
-    beta = f.P[alpha]
-    # compute orbit, transversal and stabalizer for given alpha
-    orb, transversal = compute_orbit(H, alpha, return_transversal=True)
-    if beta not in orb:
-        return False
-    stab_alpha = stabilizer(H, alpha)
-
-    u = transversal[beta]
-    # p = permutation(n=len(u), cycles=u)
-    u_inverse = u.__neg__()
-    perm = u_inverse.__mul__(f)
-
-    if perm.P[alpha] == beta:
+    # Base case: trivial permutation
+    if len(H) == 1 and H[0].istrivial():
         return True
-    else:
-        return member_of(perm, stab_alpha)
 
-# def member_of(orbit, transversal: [], cycle: permutation, permutations: set(permutation)) -> bool:
-#     # cycle = (Vertex, Vertex)
-#     from_Vertex, to_Vertex = cycle
-#     perm = transversal[to_Vertex].__mul__(permutation)
-#     return perm in Stabilizer(permutations, cycle)
+    # Pick an element with an orbit of at least length 2
+    alpha = find_non_trivial_orbit(H)
+    debug('alpha', alpha)
+    if alpha is None:
+        debug('alpha is None')
+        return False
+    orbit, transversal = compute_orbit(H, alpha, return_transversal=True)
+
+    # Compute f(alpha), image of alpha under f
+    beta = f.P[alpha]
+    if beta not in orbit:
+        debug('beta not in orbit')
+        return False
+    else:
+        # Compute generating set for ??
+        stab_alpha = stabilizer(H, alpha)
+
+        # Check if u_beta exists
+        if beta >= len(transversal):
+            debug('there is no u_beta')
+            return False
+
+        # Compute u_beta^-1 (transversal[i] is a permutation from H that maps 'alpha' to orbit[i])
+        u = transversal[beta]
+        u_inverse = u.__neg__()
+
+        # Compute u_beta^-1 * f
+        perm = u_inverse.__mul__(f)
+
+        # Check membership of u_beta^-1 * f in stabilizer of alpha
+        return member_of(perm, stab_alpha)
