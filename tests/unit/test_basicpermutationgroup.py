@@ -153,8 +153,8 @@ class TestBasicPermutationGroup(unittest.TestCase):
     def test_member_of4(self):
         # trivial permuatiation
         H = Permutation(n=5)
-        f = Permutation(n=2)
-        f2 = Permutation(n=2, cycles=[[0, 1]])
+        f = Permutation(n=5)
+        f2 = Permutation(n=5, cycles=[[0, 1]])
         self.assertTrue(member_of(f, [H]))
         self.assertFalse(member_of(f2, [H]))
 

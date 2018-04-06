@@ -2,7 +2,6 @@
 Test file for Color Refinement Helper
 """
 
-from basicpermutationgroup import member_of
 import unittest
 from color_refinement_helper import *
 from tests import *
