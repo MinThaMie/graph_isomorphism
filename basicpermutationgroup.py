@@ -175,10 +175,10 @@ def member_of(f: Permutation, H: [Permutation]) -> bool:
     """
     # Base case: trivial permutation (or non trivial permutation in trivial generator set)
     if len(H) == 0:
-        return False
+        return f.istrivial()
     if f.istrivial():
         return True
-    if len(H)==1 and H[0].istrivial():
+    if len(H) == 1 and H[0].istrivial():
         return False
 
     # Pick an element with an orbit of at least length 2
