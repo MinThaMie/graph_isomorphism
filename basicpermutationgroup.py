@@ -166,7 +166,7 @@ def stabilizer(generators: [Permutation], element: int) -> [Permutation]:
 
 def member_of(f: Permutation, H: [Permutation]) -> bool:
     # Base case: trivial permutation
-    if len(H) == 1 and H[0].istrivial():
+    if f.istrivial():
         return True
 
     # Pick an element with an orbit of at least length 2
@@ -183,12 +183,12 @@ def member_of(f: Permutation, H: [Permutation]) -> bool:
         # Compute generating set for ??
         stab_alpha = stabilizer(H, alpha)
 
-        # Check if u_beta exists
-        if beta >= len(transversal):
-            return False
+        # For every index i, U[i] is a permutation from H that maps alpha to orbit[i].
+        # Note: len(transversal) == len(orbit)
+        # We want u_beta st. u_beta[alpha] = beta, eg. i st. orbit[i]=beta
+        u = transversal[orbit.index(beta)]
 
         # Compute u_beta^-1 (transversal[i] is a permutation from H that maps 'alpha' to orbit[i])
-        u = transversal[beta]
         u_inverse = u.__neg__()
 
         # Compute u_beta^-1 * f
