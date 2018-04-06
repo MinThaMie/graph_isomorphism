@@ -8,7 +8,7 @@ from typing import Dict
 import preprocessing
 from color_refinement_helper import *
 from graph_io import *
-from basicpermutationgroup import *
+from basicpermutationgroup import order_computation
 
 PATH = 'graphs/branching/'
 GRAPH = 'cubes5.grl'
@@ -217,45 +217,73 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
 
 def get_number_automorphisms(g: Graph) -> int:
     """
-    Returns the number of isomorphisms of graph g
+    Returns the number of automorphisms of graph g
 
-    The algorithm of `get_number_isomorphisms` is used with graph g and a copy of graph g.
+    The algorithm of `compute_generators` is used with graph g and a copy of graph g.
     :param g: graph for which to determine the number of automorphisms
-    :return: The number of automorphisms of graph g
+    :return: The number of automorphisms of graph g including the trivial mapping
     """
-    # added_graph = g + g.deepcopy()
-    # coloring = initialize_coloring(added_graph)
-    return get_number_isomorphisms(g, g.deepcopy(), True)
+    copy_g = g.deepcopy()
+    coloring = initialize_coloring(g + copy_g)
+    new_coloring = fast_color_refine(coloring)
+    lastvisited = DoubleLinkedList()
+    lastvisited.append(new_coloring)
+    generators, _ = compute_generators(g, copy_g, coloring, list(), lastvisited=lastvisited)
+    return order_computation(generators)
 
 
-def count_automorphisms(g: Graph, h: Graph, coloring: Coloring, permutations: set() = None) -> int:
+def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvisited: DoubleLinkedList = DoubleLinkedList) -> (list(), [Coloring]):
     """
-    Returns the number of automorphisms of `Graph` g and h for a given coloring
+    Computes a set of generators of the mapping from graph g to graph h
+
+    (Implements the algorithm of lecture 4)
+    The coloring is refined using the fast_color-refine-algorithm.
+    If the coloring then defines a bijection, it is checked whether this mapping is already in the set of generators. If
+    not, the permutation is added to the set. In both cases, the coloring is put back to the last visited trivial
+    mapping.
+    When the coloring is undecided, the coloring branches. The first pick is the trivial mapping (if possible) and the
+    generating set is computed recursively. Thereafter, the non-trivial mapping is computed recursively.
+    :param Graph g: graph to determine the generators from
+    :param Graph h: graph to be mapped to
+    :param Coloring coloring: an unstable coloring
+    :param set X: list of generators
+    :param DoubleLinkedList lastvisited: list of lastvisited trivial mappings
+    :return (list, [Coloring]): a list of generators of the mapping from graph g to h
     """
     # Do colorrefinement -> returns stable or unbalanced coloring
-    new_coloring = color_refine(coloring)
+    new_coloring = fast_color_refine(coloring)
     coloring_status = new_coloring.status(g, h)
-    if coloring_status == "Unbalanced":
-        return 0
-    # Is there a unique coloring?
+    # # No automorphism with given coloring
+    # if coloring_status == "Unbalanced":
+    #     return X, []
+    # Unique automorphism
+    # if new_coloring.defines_bijection():
     if coloring_status == "Bijection":
-        el = coloring
-        orbit, transversal = compute_orbit(permutations, el, return_transversal=True)
-
+        perm_f = Permutation(len(g.vertices), coloring=new_coloring)
         # is this coloring already in the set of colorings?
-        if member_of(coloring, permutations):
+        if not member_of(perm_f, X):
             # put f in the set and return to last visited node
-            permutations.add(f)
-            return 0 #TODO to last visited trivial ancestor node
-    # choose branching vertex x and cell C
-    vertices = choose_color(new_coloring)
-    first_vertex = choose_vertex(vertices, g)
-    vertices_in_h = [v for v in vertices if v.in_graph(h)] # TODO: try to get vertex label of first_vertex first
-    number_automorphisms = 0
-    for second_vertex in vertices_in_h:
-        adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
-        number_automorphisms = number_automorphisms + count_automorphisms(g, h, adapted_coloring, permutations)
-    return number_automorphisms
+            X.append(perm_f)
+            lastvisited.pop() # TODO: really use lastvisited
+        return X, lastvisited #TODO: return to last visited
+    # Undecided
+    else:
+        # choose branching vertex x and cell C
+        vertices = choose_color(new_coloring)
+        vertices_in_h = [v for v in vertices if v.in_graph(h)]
+        first_vertex = choose_vertex(vertices, g)
+        trivial_mapping, non_trivial_mapping = get_mappings(first_vertex, vertices_in_h) # TODO: make sure a trivial mapping is done if there is one... Now, if a first_vertex does not have a trivial mapping but another vertex of g has a trivial mapping, the trivial mapping is not made
+        if trivial_mapping is not None:
+            lastvisited.append(new_coloring)
+            trivial_coloring = create_new_color_class(new_coloring, first_vertex, trivial_mapping)
+            X, lastvisited = compute_generators(g, h, trivial_coloring, X, lastvisited=lastvisited)
+        # vertices_in_copy = get_mapping_vertices(vertices, first_vertex)
+        for second_vertex in non_trivial_mapping:
+            adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
+            X, lastvisited = compute_generators(g, h, adapted_coloring, X, lastvisited=lastvisited)
+            if lastvisited != new_coloring:
+                return X, lastvisited
+    return X, lastvisited
 
 
 def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
@@ -303,6 +331,7 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
 
                 print('Graph', graphs[i].name, 'has', num, 'automorphisms')
                 print('Took', end - start, 'seconds')
+                print()
 
             if j > i:
                 if j in isomorphism_index_mapping[i]:
@@ -320,7 +349,7 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
                         print('There are', automorphisms.get(graphs[i]), 'isomorphisms')
 
                     print('Took', end - start, 'seconds')
-            print()
+                print()
 
     return isomorphism_index_mapping
 

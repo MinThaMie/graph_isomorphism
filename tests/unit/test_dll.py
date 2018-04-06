@@ -29,7 +29,8 @@ class DoublyLinkedListCase(unittest.TestCase):
             count += 1
 
             self.assertEqual(i, self.dll._head.value, "Expected value " + str(i) + " in first Node")
-            self.assertEqual(prev_added_node.value, self.dll._head.next.value,  "Expected value" + str(prev_added_node.value) + "in next Node")
+            self.assertEqual(prev_added_node.value, self.dll._head.next.value,
+                             "Expected value" + str(prev_added_node.value) + "in next Node")
             self.assertEqual(count, len(self.dll), "Length should be " + str(count))
             self.assertEqual(prev_added_node, self.dll._head.next, "First node should point to second node")
             self.assertEqual(self.dll._head, prev_added_node.prev, "Second node should point to this node")
@@ -63,7 +64,7 @@ class DoublyLinkedListCase(unittest.TestCase):
         self.assertEqual(count, len(self.dll), "Length should be " + str(count))
 
         # Pop from a dll with > 1 elements
-        for i in range(count,1, -1):
+        for i in range(count, 1, -1):
             value = self.dll.pop()
             count -= 1
 
@@ -75,7 +76,7 @@ class DoublyLinkedListCase(unittest.TestCase):
         self.assertEqual(count, len(self.dll), "Length should be " + str(1))
         value = self.dll.pop()
 
-        self.assertEqual(0, len(self.dll),"Length should be " + str(0))
+        self.assertEqual(0, len(self.dll), "Length should be " + str(0))
         self.assertEqual(0, value, "Value should equal " + str(0))
         self.assertIsNone(self.dll._head, "HEAD should be None")
         self.assertIsNone(self.dll._tail, "TAIL should be None")
@@ -134,7 +135,7 @@ class DoublyLinkedListCase(unittest.TestCase):
         self.assertEqual(node.next, node2.prev, "New node is inserted before 'node2")
 
         expected = [i for i in range(n)]
-        expected.insert(m+1, 10)
+        expected.insert(m + 1, 10)
         count = 0
         for i in self.dll:
             self.assertEqual(expected[count], i)
@@ -211,7 +212,7 @@ class DoublyLinkedListCase(unittest.TestCase):
         node = self.dll.find(0)
         next = node.next
         self.dll.delete(node)
-        self.assertEqual(len(self.dll), n-2,"Length should be " + str(n-2))
+        self.assertEqual(len(self.dll), n - 2, "Length should be " + str(n - 2))
         self.assertIsNone(self.dll.find(0), "There should be no value of 0 in the dll")
         for elem in self.dll:
             self.assertEqual(next.value, elem, "Next should now be at the HEAD")
@@ -221,7 +222,6 @@ class DoublyLinkedListCase(unittest.TestCase):
         # Delete last node
         # print(self.dll)
         node = self.dll.find(n - 1)
-
 
     def test_contains(self):
         n = 5
@@ -234,6 +234,7 @@ class DoublyLinkedListCase(unittest.TestCase):
 
         # Should not contain n
         self.assertFalse(n in self.dll, "DLL should not contain" + str(n))
+
 
 if __name__ == '__main__':
     unittest.main()
