@@ -1,7 +1,4 @@
-from typing import Tuple
-
 import tests
-from graph import *
 from coloring import *
 from graph import *
 

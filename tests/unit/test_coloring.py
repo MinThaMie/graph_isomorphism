@@ -2,6 +2,7 @@
 Test file for Coloring class
 """
 import unittest
+
 from tests import *
 from tools import create_graph_helper
 

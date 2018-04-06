@@ -81,61 +81,25 @@ def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
         return g, h
 
 
+def get_modular_decomposition_sizes(md: ModularDecomposition):
+    return map(len, md)
+
+
 def check_modular_decomposition(md_g: ModularDecomposition, md_h: ModularDecomposition) -> bool:
-    # TODO unit test
-    # TODO documentation
+    """
+    Check if modular decompositions of two graphs indicate anisomorphism.
+
+    :param ModularDecomposition md_g: One modular decomposition.
+    :param ModularDecomposition md_h: Another modular decomposition.
+    :return: `False` if the graphs cannot be isomorphic; `True` otherwise.
+    """
 
     return \
         len(md_g) == len(md_h) \
-        and compare(map(len, md_g), map(len, md_h)) \
-        and calculate_modular_decomposition_factor(md_g) == calculate_modular_decomposition_factor(md_h)
+        and compare(get_modular_decomposition_sizes(md_g), get_modular_decomposition_sizes(md_h))
 
 
-def calculate_modular_decompositions_and_factor(g: Graph,
-                                                # h: Graph,
-                                                md_g: ModularDecomposition,
-                                                md_h: ModularDecomposition) -> (Graph, int):
-    """
-    Determine if modular decomposition yields simpler graphs for further processing, along with a factor to multiply
-    with the number of isomorphisms of those simpler graphs.
-
-    :param Graph g: One graph.
-    # :param Graph h: Another graph.
-    :param ModularDecomposition md_g: Graph g's modular decomposition
-    # :param ModularDecomposition md_h: Graph h's modular decomposition
-    :return: 2-tuple of the two graphs to use in the algorithm and a factor with which to multiply the outcome.
-    """
-
-    # TODO unit test
-
-    factor = 1
-
-    if len(md_g) == 1:  # Implies no modules
-        return g, h, factor
-
-    g_md = modules_to_graph(md_g)
-    # h_md = modules_to_graph(md_h)
-
-    factors = [math.factorial(len(module)) for module in g_md]
-    for f in factors:
-        factor *= f
-
-    factor = calculate_modular_decomposition_factor(g_md)
-
-    return g_md, factor
-
-
-def calculate_modular_decomposition_factor(md: ModularDecomposition) -> int:
-    """
-    Calc MD factor.
-
-    :param md:
-    :return:
-    """
-
-    # TODO documentation
-    # TODO unit test
-
+def modular_decomposition_factor(md: ModularDecomposition) -> int:
     result = 1
     factors = [math.factorial(len(module)) for module in md]
 
@@ -143,3 +107,23 @@ def calculate_modular_decomposition_factor(md: ModularDecomposition) -> int:
         result *= factor
 
     return result
+
+
+def calculate_modular_decompositions_and_factor(g: Graph, md_g: ModularDecomposition) -> (Graph, int):
+    """
+    Determine if modular decomposition yields a simpler graph for further processing, along with a factor to multiply
+    with the number of isomorphisms of those simpler graphs.
+
+    :param Graph g: The graph to analyse.
+    :param ModularDecomposition md_g: Graph g's modular decomposition.
+    :return: 2-tuple of the graph to use in the algorithm and a factor with which to multiply the outcome. The graph
+             need not be graph g's modular decomposition.
+    """
+
+    # TODO unit test
+
+    if len(md_g) == g.order:  # Implies order of MD of G is not less than order of G
+        return g, 1
+
+    g_md = modules_to_graph(md_g)
+    return g_md, modular_decomposition_factor(md_g)

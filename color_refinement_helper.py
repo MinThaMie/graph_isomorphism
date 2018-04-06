@@ -184,11 +184,12 @@ def modules_to_graph(modules: ModularDecomposition) -> Graph:
             new_label = create_new_label(module)
             edges_list = relabel_edges(module, edges_list, new_label)
 
-    edges = []
-    for edge_list in edges_list:
-        edges.append(tuple(edge_list))
+    edges = set()
+    for edge in edges_list:
+        if edge[0] != edge[1]:
+            edges.add(tuple(sorted(edge)))
 
-    graph = create_graph_helper(edges)
+    graph = create_graph_helper(list(edges))
     return graph
 
 
@@ -211,8 +212,9 @@ def create_new_label(module: Module) -> str:
 def relabel_edges(module: Module, edges_list: List[List[str]], new_label: str) -> List[List[str]]:
     for edge in edges_list:
         for vertex in module:
-            edge[0] = new_label if edge[0] == str(vertex.label) else edge[0]
-            edge[1] = new_label if edge[1] == str(vertex.label) else edge[1]
+            label = str(vertex.label)
+            edge[0] = new_label if edge[0] == label else edge[0]
+            edge[1] = new_label if edge[1] == label else edge[1]
     return edges_list
 
 

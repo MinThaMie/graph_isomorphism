@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Any
 
 from graph import Graph, Vertex, Edge
 
@@ -36,7 +36,7 @@ def unique_integer() -> int:
     return _last_integer
 
 
-def create_graph_helper(edges: List[Tuple[object, object]] = list()):
+def create_graph_helper(edges: List[Tuple[Any, Any]] = list()):
     """
     Create a graph from the specified edges.
 
@@ -46,16 +46,13 @@ def create_graph_helper(edges: List[Tuple[object, object]] = list()):
 
     graph = Graph(False)
     vertices = {}
-
     for head, tail in edges:
         if head not in vertices:
             vertices[head] = Vertex(graph=graph, label=head)
             graph.add_vertex(vertices[head])
-
         if tail not in vertices:
             vertices[tail] = Vertex(graph=graph, label=tail)
             graph.add_vertex(vertices[tail])
 
         graph.add_edge(Edge(vertices[head], vertices[tail]))
-
     return graph
