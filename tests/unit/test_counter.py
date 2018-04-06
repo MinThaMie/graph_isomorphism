@@ -2,9 +2,13 @@
 Test file for Counter
 """
 import unittest
-from graph_io import *
+
 from color_refinement_helper import initialize_coloring, generate_neighbour_count_with_color
+from graph_io import *
+
 PATH = 'graphs/'
+
+
 class CounterCase(unittest.TestCase):
 
     def test_counter_arrow(self):
@@ -49,6 +53,7 @@ class CounterCase(unittest.TestCase):
             self.assertEqual(num_neigh, 1)
         for num_neigh in counter.get(3).values():
             self.assertEqual(num_neigh, 2)
+
 
 if __name__ == '__main__':
     unittest.main()

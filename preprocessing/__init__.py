@@ -2,7 +2,7 @@ from dll import DoubleLinkedList
 import math
 
 from color_refinement_helper import compare, debug, modules_to_graph, ModularDecomposition
-from graph import *
+from graph import Graph, Vertex
 
 
 def checks(g, h) -> bool:

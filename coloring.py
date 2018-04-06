@@ -3,8 +3,8 @@ This is a module for the Coloring class used in the Color Refinement Algorithm
 """
 # version: 7-3-18, Dorien Meijer Cluwen
 
-from graph import *
 from dll import DoubleLinkedList
+from graph import *
 
 
 class Coloring(object):

@@ -1,5 +1,4 @@
 import unittest
-
 from color_refinement_helper import graph_to_modules
 from disconnected_refinement import graph_component_isomorphic
 from preprocessing import check_modular_decomposition, modular_decomposition_factor, \

@@ -32,7 +32,7 @@ def read_line(f: IO[str]) -> str:
     return line
 
 
-def read_graph(graphclass, f: IO[str], name: str="G") -> Tuple[Graph, List[str], bool]:
+def read_graph(graphclass, f: IO[str], name: str = "G") -> Tuple[Graph, List[str], bool]:
     """
     Read a graph from a file
     :param graphclass: The class of the graph
@@ -91,7 +91,7 @@ def read_graph_list(graph_class, f: IO[str]) -> Tuple[List[Graph], List[str]]:
     cont = True
 
     while cont:
-        graph, new_options, cont = read_graph(graph_class, f, name='G'+ str(len(graphs)))
+        graph, new_options, cont = read_graph(graph_class, f, name='G' + str(len(graphs)))
         options += new_options
         graphs.append(graph)
 
@@ -252,7 +252,7 @@ def read_expected_result(f: IO[str]):
         # Read file name
         try:
             filename = read_line(f)
-            filename = filename[:filename.find(':')] #remove ':  ' from filename
+            filename = filename[:filename.find(':')]  # remove ':  ' from filename
         except Exception:
             pass
 
@@ -291,6 +291,7 @@ def read_expected_result(f: IO[str]):
 
 if __name__ == "__main__":
     from mygraphs import MyGraph
+
     with open('examplegraph.gr') as f:
         G = load_graph(f, MyGraph)
     print(G)
