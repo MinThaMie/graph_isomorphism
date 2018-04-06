@@ -7,13 +7,12 @@ from color_refinement import get_number_automorphisms, is_isomorphisms
 from graph import Graph
 from graph_io import load_graph
 
-BRANCHING = 'graphs/branching/'
-COLORREF = 'graphs/colorref/'
-TREEPATHS = 'graphs/treepaths/'
-OUTPUT = 'export/result/'
+GRAPHS = 'graphs'
+BRANCHING = os.path.join(GRAPHS, 'branching')
+COLORREF = os.path.join(GRAPHS, 'colorref')
+TREEPATHS = os.path.join(GRAPHS, 'treepaths')
 
-FILE = BRANCHING + 'wheeljoin14.grl'
-PRINT = True
+FILE = os.path.join(COLORREF, 'colorref_smallexample_4_16.grl')
 
 
 def main():
@@ -36,7 +35,7 @@ def process_graph_files(graph_files: List[str]):
         graphs = get_graphs_from_file(file)
         isomorphs, iso_time, automorphs, auto_time = process_graphs(graphs)
         result_string = stringify_result(file, isomorphs, iso_time, automorphs, auto_time)
-        print_result(result_string)
+        output_result(result_string)
 
 
 def get_graphs_from_file(file: str) -> List[Graph]:
@@ -48,14 +47,22 @@ def get_graphs_from_file(file: str) -> List[Graph]:
 def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[int], float]:
     output_result(create_title_string("ISOMORPHISMS"))
     iso_start = time.time()
-    isomorphs = calculate_isomorphisms(graphs)
+    preprocessed_graphs = preprocess_isomorphisms(graphs)
+    isomorphs = calculate_isomorphisms(preprocessed_graphs)
     iso_time = time.time() - iso_start
 
     output_result(create_title_string("AUTOMORPHISMS"))
+    graphs = [graphs[0] for graphs in isomorphs]
     auto_start = time.time()
-    automorphs = calculate_automorphisms(isomorphs)
+    preprocessed_graphs = preprocess_automorphisms(graphs)
+    automorphs = calculate_automorphisms(preprocessed_graphs)
     auto_time = time.time() - auto_start
+
     return isomorphs, iso_time, automorphs, auto_time
+
+
+def preprocess_isomorphisms(graphs: List[Graph]) -> List[Graph]:
+    return graphs
 
 
 def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
@@ -69,23 +76,27 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
                 isomorphs[j].append(graphs[i])
                 added = True
                 output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
-                    round(time.time() - start_time, 10)) + "s)")
+                    time.time() - start_time) + ")")
                 break
         if not added:
             isomorphs.append([graphs[i]])
-            output_result(graphs[i].name + " has no isomorphisms yet (" + str(round(time.time() - start_time, 10)) + "s)")
+            output_result(graphs[i].name + " has no isomorphisms yet (" + str(time.time() - start_time) + ")")
     return isomorphs
 
 
-def calculate_automorphisms(isomorphs: List[List[Graph]]) -> List[int]:
+def preprocess_automorphisms(graphs: List[Graph]) -> List[Graph]:
+    return graphs
+
+
+def calculate_automorphisms(graphs: List[Graph]) -> List[int]:
     automorphisms = []
-    for isomorph in isomorphs:
+    for graph in graphs:
         start_time = time.time()
-        graph = isomorph[0]
         num_automorphisms = get_number_automorphisms(graph)
-        automorphisms.append(num_automorphisms)
+
         output_result(graph.name + "\'s group has " + str(num_automorphisms) + " automorphisms (" + str(
-            round(time.time() - start_time, 10)) + "s)")
+            time.time() - start_time) + ")")
+        automorphisms.append(num_automorphisms)
     return automorphisms
 
 
@@ -102,7 +113,7 @@ def create_title_string(title: str) -> str:
 
 
 def get_file_title(file: str) -> str:
-    return file.rsplit('/', 1)[1]
+    return file.rsplit(os.path.sep, 1)[1]
 
 
 def create_data_string(isomorphs: List[List[Graph]], automorphs: List[int]) -> str:
@@ -132,20 +143,7 @@ def create_footer_string(iso_time: float, auto_time: float) -> str:
 
 
 def output_result(result: str):
-    if PRINT:
-        print_result(result)
-    else:
-        export_result(result)
-
-
-def print_result(result: str):
     print(result)
-
-
-def export_result(result: str):
-    output_file = open(OUTPUT + 'result_' + str(round(time.time())), 'w')
-    output_file.write(result)
-    output_file.close()
 
 
 if __name__ == "__main__":
