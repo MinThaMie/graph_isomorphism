@@ -46,7 +46,6 @@ def create_graph_helper(edges: List[Tuple[object, object]] = list()):
 
     graph = Graph(False)
     vertices = {}
-    edges = set(edges)
     for head, tail in edges:
         if head not in vertices:
             vertices[head] = Vertex(graph=graph, label=head)

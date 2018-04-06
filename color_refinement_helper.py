@@ -189,7 +189,7 @@ def modules_to_graph(modules: ModularDecomposition) -> Graph:
         if edge[0] != edge[1]:
             edges.append(tuple(edge))
 
-    graph = create_graph_helper(edges)
+    graph = create_graph_helper(list(set(edges)))
     return graph
 
 
