@@ -217,24 +217,38 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
 
 def get_number_automorphisms(g: Graph) -> int:
     """
-    Returns the number of isomorphisms of graph g
+    Returns the number of automorphisms of graph g
 
-    The algorithm of `get_number_isomorphisms` is used with graph g and a copy of graph g.
+    The algorithm of `compute_generators` is used with graph g and a copy of graph g.
     :param g: graph for which to determine the number of automorphisms
-    :return: The number of automorphisms of graph g
+    :return: The number of automorphisms of graph g including the trivial mapping
     """
     copy_g = g.deepcopy()
     coloring = initialize_coloring(g + copy_g)
     new_coloring = fast_color_refine(coloring)
     lastvisited = DoubleLinkedList()
     lastvisited.append(new_coloring)
-    generators, lastvisited = compute_generators(g, copy_g, coloring, list(), lastvisited=lastvisited)
+    generators, _ = compute_generators(g, copy_g, coloring, list(), lastvisited=lastvisited)
     return order_computation(generators)
 
 
-def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvisited: DoubleLinkedList = list()) -> (list(), [Coloring]):
+def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvisited: DoubleLinkedList = DoubleLinkedList) -> (list(), [Coloring]):
     """
-    Returns the number of automorphisms of `Graph` g for a given coloring
+    Computes a set of generators of the mapping from graph g to graph h
+
+    (Implements the algorithm of lecture 4)
+    The coloring is refined using the fast_color-refine-algorithm.
+    If the coloring then defines a bijection, it is checked whether this mapping is already in the set of generators. If
+    not, the permutation is added to the set. In both cases, the coloring is put back to the last visited trivial
+    mapping.
+    When the coloring is undecided, the coloring branches. The first pick is the trivial mapping (if possible) and the
+    generating set is computed recursively. Thereafter, the non-trivial mapping is computed recursively.
+    :param Graph g: graph to determine the generators from
+    :param Graph h: graph to be mapped to
+    :param Coloring coloring: an unstable coloring
+    :param set X: list of generators
+    :param DoubleLinkedList lastvisited: list of lastvisited trivial mappings
+    :return (list, [Coloring]): a list of generators of the mapping from graph g to h
     """
     # Do colorrefinement -> returns stable or unbalanced coloring
     new_coloring = fast_color_refine(coloring)
@@ -250,15 +264,15 @@ def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvi
         if not member_of(perm_f, X):
             # put f in the set and return to last visited node
             X.append(perm_f)
-            lastvisited.pop()
-            return X, lastvisited #return to last visited
+            lastvisited.pop() # TODO: really use lastvisited
+        return X, lastvisited #TODO: return to last visited
     # Undecided
     else:
         # choose branching vertex x and cell C
         vertices = choose_color(new_coloring)
         vertices_in_h = [v for v in vertices if v.in_graph(h)]
         first_vertex = choose_vertex(vertices, g)
-        trivial_mapping, non_trivial_mapping = get_trivial_mapping(vertices_in_h, first_vertex)
+        trivial_mapping, non_trivial_mapping = get_mappings(first_vertex, vertices_in_h) # TODO: make sure a trivial mapping is done if there is one... Now, if a first_vertex does not have a trivial mapping but another vertex of g has a trivial mapping, the trivial mapping is not made
         if trivial_mapping is not None:
             lastvisited.append(new_coloring)
             trivial_coloring = create_new_color_class(new_coloring, first_vertex, trivial_mapping)
@@ -272,7 +286,18 @@ def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvi
     return X, lastvisited
 
 
-def get_trivial_mapping(vertices: [Vertex], v: Vertex) -> (Vertex, [Vertex]):
+def get_mappings(v: Vertex, vertices: [Vertex]) -> (Vertex, [Vertex]):
+    """
+    Returns the trivial mapping of a Vertex and a list of non-trivial mappings
+
+    Returns a 2-tuple with as first argument the trivial mapping of the Vertex. The second argument is a list of
+    vertices which are not the trivial mapping. A mapping is called trivial if the labels of two vertices are equal.
+    The list of vertices (mappings) must be from another graph compared to vertex.
+    :param Vertex v: the vertex to be mapped
+    :param [Vertex] vertices: list of vertices to map to
+    :return (Vertex, [Vertex]): a trivial mapping from the vertex to the other graph, `None` if it doesn't exist. And a list of vertices
+    which is not a trivial mapping.
+    """
     trivial = None
     non_trivial = []
     for vertex in vertices:
