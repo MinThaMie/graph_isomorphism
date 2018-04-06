@@ -22,7 +22,6 @@ v3e2_connected: Graph
 v5e4_connected: Graph
 
 
-
 def set_up_test_graphs():
     global empty_graph, connected_graph_order_2, disconnected_graph_order_2, non_trivial_graph, \
         non_trivial_graph_different_label, non_trivial_graph_different_weight, non_trivial_graph_complement, \

@@ -9,7 +9,7 @@ PATH = 'graphs/branching'  # to run locally from PyCharm: PATH = '../../graphs/b
 TREE1 = 'trees90.grl'
 TREE2 = 'trees36.grl'
 BIGTREE1 = 'bigtrees1.grl'
-BIGTREE2 = 'bigtrees3.grl'
+BIGTREE2 = 'bigtrees2.grl'
 
 
 def get_files(expected: dict):
