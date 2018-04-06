@@ -292,6 +292,8 @@ def tree_isomorphism(g: Graph, h: Graph) -> bool:
     level_dict_h = group_by(h.vertices, lambda v: v.level)
     # Gets the lowest level in the tree and since we assume isomorphism the dict which is used does not matter
     lowest_level = max(level_dict_g)
+    if max(level_dict_h) != lowest_level:
+        return False
     # Loop through the levels
     if max(level_dict_h) != lowest_level:
         return False

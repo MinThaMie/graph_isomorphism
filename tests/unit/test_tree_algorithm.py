@@ -5,10 +5,11 @@ import os
 from color_refinement import *
 from graph_io import load_graph
 
-PATH = '../../graphs/branching'  # to run locally from PyCharm: PATH = '../../graphs/branching'
+PATH = 'graphs/branching'  # to run locally from PyCharm: PATH = '../../graphs/branching'
 TREE1 = 'trees90.grl'
 TREE2 = 'trees36.grl'
 BIGTREE1 = 'bigtrees1.grl'
+BIGTREE2 = 'bigtrees2.grl'
 BIGTREE3 = 'bigtrees3.grl'
 EXPECTED = dict()
 EXPECTED[TREE1] = {'G0G1': False, 'G0G2': False, 'G0G3': True, 'G1G2': True, 'G1G3': False, 'G2G3': False }
@@ -19,6 +20,7 @@ EXPECTED[TREE2] = {'G0G1': False, 'G0G2': False, 'G0G3': False, 'G0G4': False, '
                    'G4G5': False, 'G4G6': False, 'G4G7': False, 'G5G6': False, 'G5G7': False, 'G6G7': False,}
 EXPECTED[BIGTREE1] = {'G0G1': False, 'G0G2': True, 'G0G3': False, 'G1G2': False, 'G1G3': True, 'G2G3': False }
 EXPECTED[BIGTREE3] = {'G0G1': False, 'G0G2': True, 'G0G3': False, 'G1G2': False, 'G1G3': True, 'G2G3': False }
+
 
 def get_files(expected: dict):
     all_graphs = os.listdir(PATH)
@@ -60,6 +62,8 @@ def testfile(filename):
     return results
 
 class TestTrees(unittest.TestCase):
+    def setUp(self):
+        tests.set_up_test_graphs()
 
     def test_is_tree(self):
         simple_tree_graph = tests.v3e2_connected

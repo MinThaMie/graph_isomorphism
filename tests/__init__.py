@@ -22,7 +22,6 @@ v3e2_connected: Graph
 v5e4_connected: Graph
 
 
-
 def set_up_test_graphs():
     global empty_graph, connected_graph_order_2, disconnected_graph_order_2, non_trivial_graph, \
         non_trivial_graph_different_label, non_trivial_graph_different_weight, non_trivial_graph_complement, \
@@ -138,7 +137,7 @@ def set_up_test_graphs():
     # v3e2_connected =
     #         1 - 2 - 3
     v3e2_connected = create_graph_helper([(1, 2), (2, 3)])
-    v3e2_connected.name = 'v2e2_connected'
+    v3e2_connected.name = 'v3e2_connected'
 
     # Create a tree graph with 5 vertices and 4 edges :
     # v5e4_connected =
