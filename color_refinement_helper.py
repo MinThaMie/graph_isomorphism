@@ -208,7 +208,7 @@ def create_new_label(module: Module) -> str:
     return new_label
 
 
-def relabel_edges(module: Module, edges_list: List[List[List]], new_label: str) -> List[List[List]]:
+def relabel_edges(module: Module, edges_list: List[List[str]], new_label: str) -> List[List[str]]:
     for edge in edges_list:
         for vertex in module:
             edge[0] = new_label if edge[0] == str(vertex.label) else edge[0]
