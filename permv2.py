@@ -8,6 +8,7 @@ Remark: composition / multiplication is reversed compared to the earlier version
 
 from coloring import Coloring
 from tests import create_coloring_helper,create_graph_helper
+from graph import Graph
 
 
 # permv2: based on permv2SOL / perm2
@@ -29,7 +30,7 @@ UseReadableOutput = True
 # repr(P) gives technical representation (following Python style conventions).
 
 class Permutation():
-    def __init__(self, n, cycles=None, mapping=None, coloring:Coloring=None):
+    def __init__(self, n, cycles=None, mapping=None, coloring:Coloring=None, graph:Graph=None):
         """
         A permutation P on n elements can be initialized in various ways:
 
@@ -56,18 +57,20 @@ class Permutation():
         elif cycles is not None:
             self.construct_from_cycles(cycles)
         elif coloring is not None:
-            self.construct_from_coloring(coloring)
+            self.construct_from_coloring(coloring, graph)
 
-    def construct_from_coloring(self, coloring: Coloring):
+    def construct_from_coloring(self, coloring: Coloring, graph: Graph):
         """
         Construct permutation from coloring. Color classes form cycles.
 
         :param coloring: Coloring to create permutation from
         """
-        cycles = []
         for _, vertices in coloring.items():
-            cycles.append([v.label for v in vertices])
-        self.construct_from_cycles(cycles)
+            vertex1, vertex2 = vertices
+            if vertex1.in_graph(graph):
+                self.P[vertex1.label] = vertex2.label
+            else:
+                self.P[vertex2.label] = vertex1.label
 
     def construct_from_cycles(self, cycles):
         """
