@@ -59,55 +59,6 @@ class TestBasicPermutationGroup(unittest.TestCase):
         self.assertTrue(compare([h[1]], stabilizer(h, 2)), 'expected [[1,0,2,3]] got' + str(stabilizer(h, 0)))
 
     def test_member_of(self):
-        pass
-        # TODO Fix
-        # # Use example of sheets
-        # # H = <p,q> with p = (0,1,2)(4,5) and q = (2,3)
-        #
-        # g = Graph(directed=False, n=6)
-        # vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
-        # coloring_p = Coloring()
-        # coloring_p.add([vg_0, vg_1, vg_2])
-        # coloring_p.add([vg_4, vg_5])
-        # p = Permutation(len(g.vertices), coloring=coloring_p)
-        #
-        # coloring_q = Coloring()
-        # coloring_q.add([vg_2, vg_3])
-        # q = Permutation(len(g.vertices), coloring=coloring_q)
-        #
-        # H = list()
-        # H.append(p)
-        # H.append(q)
-        #
-        # # test if (0,2) is in generating set (ex of slides)
-        # coloring_f = Coloring()
-        # coloring_f.add([vg_0, vg_2])
-        # f = Permutation(len(g.vertices), coloring=coloring_f)
-        # self.assertTrue(member_of(f, H))
-        #
-        # # test if (0,4) is in generating set
-        # coloring_f = Coloring()
-        # coloring_f.add([vg_0, vg_4])
-        # f = Permutation(len(g.vertices), coloring=coloring_f)
-        # self.assertFalse(member_of(f, H))
-        #
-        # # test if (0,1) is in generating set
-        # coloring_f = Coloring()
-        # coloring_f.add([vg_0, vg_1])
-        # f = Permutation(len(g.vertices), coloring=coloring_f)
-        # self.assertTrue(member_of(f, H))
-        #
-        # # test if (0,5) is in generating set
-        # coloring_f = Coloring()
-        # coloring_f.add([vg_0, vg_5])
-        # f = Permutation(len(g.vertices), coloring=coloring_f)
-        # self.assertFalse(member_of(f, H))
-        #
-        # # test if p and q are in the generating set <p,q>
-        # self.assertTrue(member_of(p, H))
-        # self.assertTrue(member_of(q, H))
-
-    def test_member_of2(self):
         # Permutation group D_4: symmetries of a rectangle
         #  0 -- 1     <- trivial permutation
         #  |    |
@@ -129,7 +80,7 @@ class TestBasicPermutationGroup(unittest.TestCase):
         f = Permutation(4, cycles=[[1, 2]])
         self.assertFalse(member_of(f, D4))
 
-    def test_member_of3(self):
+    def test_member_of2(self):
         # Another is_member test
         # Use example of sheets
         # H = <p,q> with p = (0,1,2)(4,5) and q = (2,3)
@@ -151,7 +102,7 @@ class TestBasicPermutationGroup(unittest.TestCase):
             element *= elem
             self.assertTrue(member_of(element, H))
 
-    def test_member_of4(self):
+    def test_member_of3(self):
         # trivial permuatiation
         H = Permutation(n=5)
         f = Permutation(n=5)
@@ -164,6 +115,40 @@ class TestBasicPermutationGroup(unittest.TestCase):
         H = [H1, H2]
         f = Permutation(n=6, cycles=[[0, 2]])
         self.assertTrue(f, H)
+
+    def test_order_computation(self):  # TODO: to a testclass of basicpermutations
+        g = Graph(directed=False, n=6, name='g')
+        h = Graph(directed=False, n=6, name='h')
+        vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
+        vh_0, vh_1, vh_2, vh_3, vh_4, vh_5 = h.vertices
+        # mapping only to itself
+        coloring_p = Coloring()
+        coloring_p.add([vg_0, vh_0])
+        coloring_p.add([vg_1, vh_1])
+        p = Permutation(len(g.vertices), coloring=coloring_p)
+        H = [p]
+        self.assertEqual(1, order_computation(H))
+        # mapping to itself and 1 other node
+        coloring_p = Coloring()
+        coloring_p.add([vg_0, vh_1])
+        coloring_p.add([vg_1, vh_0])
+        p = Permutation(len(g.vertices), coloring=coloring_p)
+        H = [p]
+        self.assertEqual(2, order_computation(H))
+        # this is the permutation example of the lecture
+        coloring_p = Coloring()
+        coloring_p.add([vg_0, vh_1])
+        coloring_p.add([vg_1, vh_2])
+        coloring_p.add([vg_2, vh_0])
+        coloring_p.add([vg_4, vh_5])
+        coloring_p.add([vg_5, vh_4])
+        p = Permutation(6, coloring=coloring_p)
+        coloring_q = Coloring()
+        coloring_q.add([vg_2, vh_3])
+        coloring_q.add([vg_3, vh_2])
+        q = Permutation(6, coloring=coloring_q)
+        H = [p, q]
+        self.assertEqual(48, order_computation(H))
 
     def test_permutation_coloring(self):
         g = Graph(directed=False, n=5)
@@ -203,106 +188,6 @@ class TestBasicPermutationGroup(unittest.TestCase):
         self.assertEqual(4, p.P[3])
         self.assertEqual(0, p.P[4])
 
-    def test_order_computation(self):  # TODO: to a testclass of basicpermutations
-        pass
-    # TODO: Fix this test
-        # g = Graph(directed=False, n=6)
-        # vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
-        # h = g.deepcopy()
-        # vh_0, vh_1, vh_2, vh_3, vh_4, vh_5 = h.vertices
-        #
-        # # mapping only to itself
-        # coloring_p = Coloring()
-        # coloring_p.add([vg_0, vh_0])
-        # coloring_p.add([vg_1, vh_1])
-        # p = Permutation(len(g.vertices), coloring=coloring_p)
-        # H = [p]
-        # self.assertEqual(1, order_computation(H))
-        # # mapping to itself and 1 other node
-        # coloring_p = Coloring()
-        # coloring_p.add([vg_0, vg_1])
-        # p = Permutation(len(g.vertices), coloring=coloring_p)
-        # H = [p]
-        # self.assertEqual(2, order_computation(H))
-        # # this is the permutation example of the lecture
-        # coloring_p = Coloring()
-        # coloring_p.add([vg_0, vg_1, vg_2])
-        # coloring_p.add([vg_4, vg_5])
-        # p = Permutation(len(g.vertices), coloring=coloring_p)
-        # coloring_q = Coloring()
-        # coloring_q.add([vg_2, vg_3])
-        # q = Permutation(len(g.vertices), coloring=coloring_q)
-        # H = [p, q]
-        # self.assertEqual(48, order_computation(H))
-
 
 if __name__ == '__main__':
     unittest.main()
-
-    # I have commented it out because it makes permutations based on a single graph coloring: don't know if it still works
-    # def test_coloring_to_permutation(self):
-    #     g = Graph(directed=False, n=6, name='G')
-    #     h = Graph(directed=False, n=6, name='H')
-    #     vg_1, vg_2, vg_3, vg_4, vg_5, vg_6 = g.vertices
-    #     vh_1, vh_2, vh_3, vh_4, vh_5, vh_6 = h.vertices
-    #     coloring = Coloring()
-    #
-    #     # coloring.add([vg_1, vh_1])  #En willen we dit echt op 2 graven doen?
-    #     coloring.add([vg_1])  # Is het niet netter om alle vertices te kleuren?
-    #     perm = Permutation(len(g.vertices), coloring=coloring)
-    #
-    #     self.assertEqual(6, len(perm.P))
-    #
-    #     coloring.add([vg_2, vg_3])  # , vh_2, vh_3])
-    #     perm = Permutation(len(g.vertices), coloring=coloring)
-    #     # #perm = coloring_to_permutation(coloring, g)
-    #     self.assertEqual(6, len(perm.P))
-    #     self.assertEqual(vg_2.label, perm.P[vg_3.label])
-    #     self.assertEqual(vg_3.label, perm.P[vg_2.label])
-    #
-    #     coloring.add([vg_4, vg_5, vg_6])  # vh_4, vg_5, vh_5, vg_6, vh_6])
-    #     perm = Permutation(len(coloring.vertices), coloring=coloring)
-    #     # #perm = coloring_to_permutation(coloring, g)
-    #     self.assertEqual(6, len(perm.P))
-    #     self.assertEqual(vg_5.label, perm.P[vg_4.label])
-    #     self.assertEqual(vg_6.label, perm.P[vg_5.label])
-    #     self.assertEqual(vg_4.label, perm.P[vg_6.label])
-
-    # def test_compute_orbit(self):
-    #     g = Graph(directed=False, n=6)
-    #     vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
-    #     coloring_p = Coloring()
-    #     coloring_p.add([vg_0, vg_1, vg_2])
-    #     coloring_p.add([vg_4, vg_5])
-    #     p = Permutation(len(g.vertices), coloring=coloring_p)
-    #
-    #     coloring_q = Coloring()
-    #     coloring_q.add([vg_2, vg_3])
-    #     q = Permutation(len(g.vertices), coloring=coloring_q)
-    #
-    #     H = list()
-    #     H.append(p)
-    #     H.append(q)
-    #     # test if (0,2) is in generating set (ex of slides)
-    #     coloring_f = Coloring()
-    #     coloring_f.add([vg_0, vg_2])
-    #     f = Permutation(len(g.vertices), coloring=coloring_f)
-    #
-    #     self.assertTrue(member_of(f, H))
-    #     # test if (0,4) is in generating set
-    #     coloring_f = Coloring()
-    #     coloring_f.add([vg_0, vg_4])
-    #     f = Permutation(len(g.vertices), coloring=coloring_f)
-    #     self.assertFalse(member_of(f, H))
-    #
-    #     # test if (0,1) is in generating set
-    #     coloring_f = Coloring()
-    #     coloring_f.add([vg_0, vg_1])
-    #     f = Permutation(len(g.vertices), coloring=coloring_f)
-    #     self.assertTrue(member_of(f, H))
-    #
-    #     # test if (0,5) is in generating set
-    #     coloring_f = Coloring()
-    #     coloring_f.add([vg_0, vg_5])
-    #     f = Permutation(len(g.vertices), coloring=coloring_f)
-    #     self.assertFalse(member_of(f, H))
