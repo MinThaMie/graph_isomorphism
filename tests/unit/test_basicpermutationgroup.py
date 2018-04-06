@@ -172,19 +172,19 @@ class TestBasicPermutationGroup(unittest.TestCase):
         vh_0, vh_1, vh_2, vh_3, vh_4 = h.vertices
 
         coloring_p = Coloring()
-        p = Permutation(0, coloring=coloring_p, graph=g)
+        p = Permutation(0, coloring=coloring_p, g=g)
         self.assertEqual(0, len(p))
 
         coloring_p.add([vg_0, vh_0])
         coloring_p.add([vg_1, vh_1])
-        p = Permutation(2, coloring=coloring_p, graph=g)
+        p = Permutation(2, coloring=coloring_p, g=g)
         self.assertEqual(0, p.P[0])
         self.assertEqual(1, p.P[1])
 
         coloring_p = Coloring()
         coloring_p.add([vg_0, vh_1])
         coloring_p.add([vg_1, vh_0])
-        p = Permutation(2, coloring=coloring_p, graph=g)
+        p = Permutation(2, coloring=coloring_p, g=g)
         self.assertEqual(1, p.P[0])
         self.assertEqual(0, p.P[1])
 
@@ -196,7 +196,7 @@ class TestBasicPermutationGroup(unittest.TestCase):
         coloring_p.add([vg_3, vh_4])
         coloring_p.add([vg_4, vh_0])
 
-        p = Permutation(5, coloring=coloring_p, graph=g)
+        p = Permutation(5, coloring=coloring_p, g=g)
         self.assertEqual(1, p.P[0])
         self.assertEqual(2, p.P[1])
         self.assertEqual(3, p.P[2])
