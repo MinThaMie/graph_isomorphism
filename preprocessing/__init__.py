@@ -90,7 +90,7 @@ def is_tree(g: Graph):
     """
     if len(g.vertices) is 0:
         return True
-    if len(g.edges) > len(g.vertices) - 1:
+    if len(g.edges) != len(g.vertices) - 1:
         return False
 
     vertex = g.vertices[0]
