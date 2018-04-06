@@ -30,7 +30,7 @@ UseReadableOutput = True
 # repr(P) gives technical representation (following Python style conventions).
 
 class Permutation():
-    def __init__(self, n, cycles=None, mapping=None, coloring:Coloring=None, graph:Graph=None):
+    def __init__(self, n, cycles=None, mapping=None, coloring:Coloring=None, g:Graph=None):
         """
         A permutation P on n elements can be initialized in various ways:
 
@@ -57,9 +57,9 @@ class Permutation():
         elif cycles is not None:
             self.construct_from_cycles(cycles)
         elif coloring is not None:
-            self.construct_from_coloring(coloring, graph)
+            self.construct_from_coloring(coloring, g)
 
-    def construct_from_coloring(self, coloring: Coloring, graph: Graph):
+    def construct_from_coloring(self, coloring: Coloring, g: Graph):
         """
         Construct permutation from coloring. Color classes form cycles.
 
@@ -67,7 +67,7 @@ class Permutation():
         """
         for _, vertices in coloring.items():
             vertex1, vertex2 = vertices
-            if vertex1.in_graph(graph):
+            if vertex1.in_graph(g):
                 self.P[vertex1.label] = vertex2.label
             else:
                 self.P[vertex2.label] = vertex1.label
@@ -82,7 +82,7 @@ class Permutation():
         """
         for cycle in cycles:
             for i in range(len(cycle)):
-                # assert self.P[cycle[i]] == cycle[i]
+                assert self.P[cycle[i]] == cycle[i]
                 # if self.P[cycle[i]]!=cycle[i]:
                 #	raise permError
                 self.P[cycle[i]] = cycle[(i + 1) % len(cycle)]
