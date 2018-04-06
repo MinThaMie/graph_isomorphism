@@ -6,6 +6,8 @@ from coloring import *
 from graph import *
 
 # Declare module variables
+from tools import create_graph_helper
+
 empty_graph: Graph
 connected_graph_order_2: Graph
 disconnected_graph_order_2: Graph
@@ -154,31 +156,6 @@ def set_up_test_graphs():
 
     # Instantiate a recursively modular decomposable graph
     butterfly = create_graph_helper([(0, 1), (0, 2), (0, 3), (0, 4), (1, 4), (2, 3)])
-
-
-def create_graph_helper(edges: List[Tuple[object, object]] = list()):
-    """
-    Create a graph from the specified edges.
-
-    :param edges: A list of 2-tuples of vertex labels (of any type) between which to create edges.
-    :return: The graph with labelled vertices and edges
-    """
-
-    graph = Graph(False)
-    vertices = {}
-
-    for head, tail in edges:
-        if head not in vertices:
-            vertices[head] = Vertex(graph=graph, label=head)
-            graph.add_vertex(vertices[head])
-
-        if tail not in vertices:
-            vertices[tail] = Vertex(graph=graph, label=tail)
-            graph.add_vertex(vertices[tail])
-
-        graph.add_edge(Edge(vertices[head], vertices[tail]))
-
-    return graph
 
 
 def create_coloring_helper_vertex(mapping: dict) -> Coloring:
