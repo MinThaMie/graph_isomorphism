@@ -48,17 +48,17 @@ def get_graphs_from_file(file: str) -> List[Graph]:
 def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[int], float]:
     output_result(create_title_string("ISOMORPHISMS"))
     iso_start = time.time()
-    isomorphs = calculate_isomorphs(graphs)
+    isomorphs = calculate_isomorphisms(graphs)
     iso_time = time.time() - iso_start
 
     output_result(create_title_string("AUTOMORPHISMS"))
     auto_start = time.time()
-    automorphs = calculate_automorphs(isomorphs)
+    automorphs = calculate_automorphisms(isomorphs)
     auto_time = time.time() - auto_start
     return isomorphs, iso_time, automorphs, auto_time
 
 
-def calculate_isomorphs(graphs: List[Graph]) -> List[List[Graph]]:
+def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
     isomorphs = [[]]
     isomorphs[0] = [graphs.pop(0)]
     for i in range(len(graphs)):
@@ -68,16 +68,16 @@ def calculate_isomorphs(graphs: List[Graph]) -> List[List[Graph]]:
             if is_isomorphisms(isomorphs[j][0], graphs[i]):
                 isomorphs[j].append(graphs[i])
                 added = True
-                output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphs (" + str(
+                output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
                     round(time.time() - start_time, 10)) + "s)")
                 break
         if not added:
             isomorphs.append([graphs[i]])
-            output_result(graphs[i].name + " has no isomorphs yet (" + str(round(time.time() - start_time, 10)) + "s)")
+            output_result(graphs[i].name + " has no isomorphisms yet (" + str(round(time.time() - start_time, 10)) + "s)")
     return isomorphs
 
 
-def calculate_automorphs(isomorphs: List[List[Graph]]) -> List[int]:
+def calculate_automorphisms(isomorphs: List[List[Graph]]) -> List[int]:
     automorphisms = []
     for isomorph in isomorphs:
         start_time = time.time()
