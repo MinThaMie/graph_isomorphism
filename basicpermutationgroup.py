@@ -170,9 +170,8 @@ def member_of(f: Permutation, H: [Permutation]) -> bool:
         return True
 
     # Pick an element with an orbit of at least length 2
+    # Note that is always such an alpha, cause otherwise f is trivial
     alpha = find_non_trivial_orbit(H)
-    if alpha is None:
-        return False
     orbit, transversal = compute_orbit(H, alpha, return_transversal=True)
 
     # Compute f(alpha), image of alpha under f
