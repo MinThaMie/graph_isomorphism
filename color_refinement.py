@@ -259,7 +259,7 @@ def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvi
     # Unique automorphism
     # if new_coloring.defines_bijection():
     if coloring_status == "Bijection":
-        perm_f = Permutation(len(g.vertices), coloring=new_coloring)
+        perm_f = Permutation(len(g.vertices), coloring=new_coloring, g=g)
         # is this coloring already in the set of colorings?
         if not member_of(perm_f, X):
             # put f in the set and return to last visited node
@@ -329,27 +329,27 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
 
                 automorphisms[graphs[i]] = num
 
-                print('Graph', graphs[i].name, 'has', num, 'automorphisms')
-                print('Took', end - start, 'seconds')
-                print()
+                debug('Graph', graphs[i].name, 'has', num, 'automorphisms')
+                debug('Took', end - start, 'seconds')
+                debug()
 
             if j > i:
                 if j in isomorphism_index_mapping[i]:
-                    print(graphs[i].name, 'and', graphs[j].name, 'are already known to be isomorphic')
+                    debug(graphs[i].name, 'and', graphs[j].name, 'are already known to be isomorphic')
 
                 else:
                     start = time.time()
                     isomorphism = is_isomorphisms(graphs[i], graphs[j])
                     end = time.time()
 
-                    print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
+                    debug(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
 
                     if isomorphism:
                         store_isomorphism(i, j, isomorphism_index_mapping)
-                        print('There are', automorphisms.get(graphs[i]), 'isomorphisms')
+                        debug('There are', automorphisms.get(graphs[i]), 'isomorphisms')
 
-                    print('Took', end - start, 'seconds')
-                print()
+                    debug('Took', end - start, 'seconds')
+                debug()
 
     return isomorphism_index_mapping
 

@@ -289,6 +289,51 @@ def read_expected_result(f: IO[str]):
     return expected
 
 
+def read_expected_result_auto(f: IO[str]):
+    expected = dict()
+
+    while True:
+        # Read file name
+        try:
+            filename = read_line(f)
+            filename = filename[:filename.find(':')] #remove ':  ' from filename
+        except Exception:
+            pass
+
+        # Read results for this file
+        line = read_line(f)
+        expect = dict()
+        try:
+            while line.startswith('['):
+                comma = line.find(',')
+                end = line.find(']')
+                slash = line.find('/')
+
+                graph1 = line[1:comma].strip()
+                graph2 = line[comma + 1: end].strip()
+                if slash == -1:
+                    value = line[end + 1:].strip()
+                else:
+                    value = line[slash + 1:].strip()
+                try:
+                    value = int(value)
+                except Exception:
+                    pass
+
+                expect[int(graph1)] = value
+                expect[int(graph2)] = value
+                line = read_line(f)
+        except Exception:
+            pass
+
+        expected[filename + '.grl'] = expect
+
+        if len(line) == 0:
+            break
+
+    return expected
+
+
 if __name__ == "__main__":
     from mygraphs import MyGraph
     with open('examplegraph.gr') as f:
