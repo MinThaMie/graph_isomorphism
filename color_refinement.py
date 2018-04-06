@@ -10,7 +10,7 @@ from color_refinement_helper import *
 from graph_io import *
 
 PATH = 'graphs/branching/'
-GRAPH = 'cubes5.grl'
+GRAPH = 'bigtrees2.grl'
 
 
 IsomorphismMapping = Dict[int, Set[int]]

@@ -107,8 +107,8 @@ def set_up_test_graphs():
     anisomorphism_1.name = 'anisomorphism_1'
     anisomorphic_graphs = [anisomorphism_0, anisomorphism_1]
 
-    # Create a graph with 4 vertices and 4 edges:
-    # v4e4 =
+    # Create a graph with 4 vertices and 4 edges with a cycle:
+    # v4e4_connected =
     #         1 - 2 - 3
     #              \ /
     #               4
@@ -116,7 +116,7 @@ def set_up_test_graphs():
     v4e4_connected.name = 'v4e4'
 
     # Create a graph with 5 vertices and 4 edges, including looped egde at vertex 4:
-    #
+    # v5e4loop_unconnected =
     #         1 - 2 - 3   4--
     #                 |
     #                 5
@@ -133,12 +133,14 @@ def set_up_test_graphs():
     v5e7 = create_graph_helper([(0, 3), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
     v5e7.name = 'v5e7'
 
-    # Create a graph where the complement should be taken during preprocessing :
+    # Create a graph with 3 vertices and 2 edges :
     # v3e2_connected =
     #         1 - 2 - 3
     v3e2_connected = create_graph_helper([(1, 2), (2, 3)])
-    v3e2_connected.name = 'v2e2_connected'
+    v3e2_connected.name = 'v3e2_connected'
 
+    # Create a tree graph with 5 vertices and 4 edges :
+    # v5e4_connected =
     #         1 - 2 - 3 - 4
     #                 |
     #                 5
