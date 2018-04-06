@@ -109,7 +109,11 @@ def modular_decomposition_factor(md: ModularDecomposition) -> int:
     return result
 
 
-def calculate_modular_decompositions_and_factor(g: Graph, md_g: ModularDecomposition) -> (Graph, int):
+def _check_modular_decomposition_length(g: Graph, md_g: ModularDecomposition) -> bool:
+    return len(md_g) == g.order
+
+
+def calculate_modular_decomposition_and_factor(g: Graph, md_g: ModularDecomposition) -> (Graph, int):
     """
     Determine if modular decomposition yields a simpler graph for further processing, along with a factor to multiply
     with the number of isomorphisms of those simpler graphs.
@@ -120,10 +124,17 @@ def calculate_modular_decompositions_and_factor(g: Graph, md_g: ModularDecomposi
              need not be graph g's modular decomposition.
     """
 
-    # TODO unit test
-
-    if len(md_g) == g.order:  # Implies order of MD of G is not less than order of G
+    if _check_modular_decomposition_length(g, md_g):  # Implies order of MD of G is not less than order of G
         return g, 1
 
+    factor = modular_decomposition_factor(md_g)
+    debug(f'Using modular decomposition with factor = {factor}')  # TODO -> debug(...)
+
     g_md = modules_to_graph(md_g)
-    return g_md, modular_decomposition_factor(md_g)
+    return g_md, factor
+
+
+def calculate_modular_decomposition_without_factor(g: Graph, md_g: ModularDecomposition) -> Graph:
+    if _check_modular_decomposition_length(g, md_g):  # Implies order of MD of G is not less than order of G
+        return g
+    return modules_to_graph(md_g)

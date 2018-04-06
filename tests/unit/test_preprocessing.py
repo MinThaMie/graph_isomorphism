@@ -1,7 +1,9 @@
 import unittest
 
-import tests
-from preprocessing import remove_loners, checks, check_complement, get_modular_decomposition_sizes
+from color_refinement_helper import graph_to_modules
+from preprocessing import check_modular_decomposition, modular_decomposition_factor, \
+    calculate_modular_decomposition_and_factor, remove_loners, checks, check_complement, get_modular_decomposition_sizes
+from tests import *
 
 
 class TestPreprocessing(unittest.TestCase):
@@ -109,22 +111,22 @@ class TestPreprocessing(unittest.TestCase):
         md += [self._triplet_module()]
         self.assertEqual(24, modular_decomposition_factor(md))
 
-    def test_calculate_modular_decompositions_and_factor(self):
+    def test_calculate_modular_decomposition_and_factor(self):
         graph = Graph(directed=False)
         md_graph = graph_to_modules(graph)
-        graph_md, factor = calculate_modular_decompositions_and_factor(graph, md_graph)
+        graph_md, factor = calculate_modular_decomposition_and_factor(graph, md_graph)
         self.assertTrue(graph is graph_md)
         self.assertEqual(1, factor)
 
         graph = tests.non_trivial_graph
         md_graph = graph_to_modules(graph)
-        graph_md, factor = calculate_modular_decompositions_and_factor(graph, md_graph)
+        graph_md, factor = calculate_modular_decomposition_and_factor(graph, md_graph)
         self.assertFalse(graph is graph_md)
         self.assertEqual(2, factor)
 
         graph = tests.modular_decomposition_graph
         md_graph = graph_to_modules(graph)
-        _, factor = calculate_modular_decompositions_and_factor(graph, md_graph)
+        _, factor = calculate_modular_decomposition_and_factor(graph, md_graph)
         self.assertEqual(24, factor)
 
 
