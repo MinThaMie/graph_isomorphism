@@ -6,7 +6,8 @@ from typing import Iterable
 from coloring import *
 from tools import create_graph_helper
 
-Module = List[Vertex]
+Module = [Vertex]
+ModularDecomposition = [Module]
 
 DEBUG = False
 
@@ -120,7 +121,7 @@ def are_twins(u: Vertex, v: Vertex) -> bool:
     return compare(n_u, n_v, lambda vertex: vertex.label)
 
 
-# TODO: get_modules
+# TODO: graph_to_modules
 def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
     """
     Returns a list of true twins and a list of false twins
@@ -141,11 +142,10 @@ def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
     return twins, false_twins
 
 
-def get_modules(graph: Graph) -> List[Module]:
+def graph_to_modules(graph: Graph) -> ModularDecomposition:
     vertices = graph.vertices
     vertices_in_any_module = []
-
-    modules = []
+    modular_decomposition = []
 
     for vertex in vertices:
         if vertex in vertices_in_any_module:
@@ -163,12 +163,12 @@ def get_modules(graph: Graph) -> List[Module]:
                 module.append(other_vertex)
                 vertices_in_any_module.append(other_vertex)
 
-        modules.append(module)
+        modular_decomposition.append(module)
 
-    return modules
+    return modular_decomposition
 
 
-def modules_to_graph(modules: List[Module]) -> Graph:
+def modules_to_graph(modules: ModularDecomposition) -> Graph:
     """
     Returns a new Graph object with Modules compressed to a Vertex
     :param modules: list of modules
