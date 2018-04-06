@@ -1,3 +1,4 @@
+from dll import DoubleLinkedList
 import math
 
 from color_refinement_helper import compare, debug, modules_to_graph, ModularDecomposition
@@ -81,139 +82,41 @@ def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
         return g, h
 
 
-"""
-Exercise 4: Algorithms on graphs
-"""
-from graph import *
-from graph_io import load_graph, save_graph, write_dot
-
-
-# Program a breadth-first search (BFS) algorithm.
-# Use this to:
-# – test whether a given graph is connected,
-# – compute distances from a given vertex (unit edge weights), and
-# – label vertices in the order they are visited.
-
-# Use a queue to store the vertices that should be visited next.
-# (A queue can be implemented using a Python list, or using a doubly-linked list for more efficiency.)
-
-
-def BFS(G: Graph, s: Vertex):
+def find_components(g: Graph):
     """
     Breadth First Search Alg. Which also:
     tests if the graph is connected,
     computes the distance from s to the other edges
     labels the vertices in the order they are visited
-    :param G: Graph
-    :param s: start node
-    :return: (isConnected, {dict of distances}, {dict of labels})
+    :param g: Graph
+    :return: (isConnected, {dict of components})
     """
-    L = [s]  # queue
-    dist = {s: 0}
-    label = {s: 1}
-    label_counter = 1
-    # s.label = 1 # Store visiting order in label
+    visited = set()
+    components = dict()
+    count = 1
 
-    # Label nodes (and compute distance to s meanwhile)
-    while len(L) > 0:
-        v = L[0]  # BFS so FIFO
-        for w in v.neighbours:
-            # If w not labeled
-            if w not in label:
-                label_counter += 1
-                label[w] = label_counter
-                # w.label = k # Store visiting order in vertex label
-                dist[w] = dist[v] + 1
-                w.colornum = dist[w]  # Color according to dist.
-                L.append(w)
-        L.pop(0)
+    while len(visited) < len(g.vertices):
+        for o in g.vertices:
+            if o not in visited:
+                v = o
+                break
+        queue = DoubleLinkedList()  # queue
+        queue.append(v)
+        visited.add(v)
+        components[count] = [v]
 
-    is_connected = (len(label) == len(G.vertices))
-    return is_connected, dist, label
+        while len(queue) > 0:
+            w = queue.pop()  # BFS so FIFO
+            for n in w.neighbours:
+                # If w not visited
+                if n not in visited:
+                    visited.add(n)
+                    queue.append(n)
+                    components[count].append(n)
+        count += 1
 
-
-def DFS(G: Graph, s: Vertex):
-    """
-    Depth First Search Alg. Which also:
-    tests if the graph is connected,
-    computes the distance from s to the other edges
-    labels the vertices in the order they are visited
-    :param G: Graph
-    :param s: start node
-    :return: (isConnected, {dict of distances}, {dict of labels})
-    """
-    L = [s]  # stack
-    pred = {}  # predecessor of each node u in the s-u path
-    dist = {s: 0}
-    label = {s: 1}
-    label_counter = 1
-    s.label = label_counter
-
-    # Label nodes (and compute distance to s meanwhile)
-    while len(L) > 0:
-        v = L[-1]  # BFS so LIFO
-        # Pick first unlabeled neighbour (and set predecessor if needed)
-        next_v = None
-        for w in v.neighbours:
-            if w not in pred.keys():
-                pred[w] = v
-
-            if w not in label:
-                next_v = w
-
-        if next_v != None:
-            # Label neighbour
-            label_counter += 1
-            label[next_v] = label_counter
-            next_v.label = label_counter  # Store visiting order in vertex label
-            # calculate distance using predecessor
-            dist[next_v] = dist[pred[next_v]] + 1
-            next_v.colornum = dist[next_v]  # Color according to dist.
-            L.append(next_v)
-        else:
-            L.pop()
-
-    is_connected = (len(label) == len(G.vertices))
-    return is_connected, dist, label
-
-
-def find_vertex(G: Graph, label):
-    """
-    Find the vertex with the given label in the given graph
-    :param G: Graph
-    :param label: label of the vertex
-    :return: vertex with the given label or None when no such vertex is found
-    """
-    for v in G.vertices:
-        if v.label == label:
-            return v
-    return None
-
-
-def print_result(result):
-    isConnected, dist, label = result[0], result[1], result[2]
-    print('isConnected?', isConnected)
-    print('v,label,dist')
-    for v in dist.keys():
-        print(v, ',', label[v], ',', dist[v])
-
-
-# generate a .dot  le from examplegraph.gr.
-with open('mygraph.gr') as f:
-    G = load_graph(f)
-
-print('\nBFS')
-a = BFS(G, G.vertices[0])
-print_result(a)
-print('G:', G)
-
-print('\nDFS')
-a = DFS(G, G.vertices[0])
-print_result(a)
-print('G:', G)
-
-with open('mygraph2.dot', 'w') as f:
-    write_dot(G, f)
+    is_connected = len(components) == 1
+    return is_connected, components
 
 
 def is_tree(g: Graph):

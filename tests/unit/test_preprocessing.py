@@ -51,6 +51,21 @@ class TestPreprocessing(unittest.TestCase):
         self.assertTrue(g is w_shaped_graph)
         self.assertTrue(h is w_shaped_graph)
 
+    def test_find_components(self):
+        is_connected, components = preprocessing.find_components(tests.v5e4loop_unconnected)
+        self.assertFalse(is_connected)
+        self.assertEqual(2, len(components))
+        self.assertEqual([tests.v5e4loop_unconnected.find_vertex(4)], components[2])
+        component_to_be_found = [tests.v5e4loop_unconnected.find_vertex(1), tests.v5e4loop_unconnected.find_vertex(2),
+                                 tests.v5e4loop_unconnected.find_vertex(3), tests.v5e4loop_unconnected.find_vertex(5)]
+        self.assertEqual(component_to_be_found, components[1])
+        is_connected, components = preprocessing.find_components(tests.v5e7)
+        self.assertTrue(is_connected)
+        self.assertEqual(1, len(components))
+
+
+if __name__ == '__main__':
+    unittest.main()
     def test_get_modular_decomposition_sizes(self):
         md = [self._prime_module()]
         self.assertEqual([1], list(get_modular_decomposition_sizes(md)))
