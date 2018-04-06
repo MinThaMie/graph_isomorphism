@@ -7,12 +7,12 @@ from color_refinement import get_number_automorphisms, is_isomorphisms
 from graph import Graph
 from graph_io import load_graph
 
-PATH_BRANCHING = 'graphs/branching'
-PATH_COLORREF = 'graphs/colorref'
-PATH_TREEPATHS = 'graphs/treepaths'
-OUTPUT_PATH = 'export/result'
+BRANCHING = 'graphs/branching/'
+COLORREF = 'graphs/colorref/'
+TREEPATHS = 'graphs/treepaths/'
+OUTPUT = 'export/result/'
 
-FILE = 'graphs/branching/wheeljoin14.grl'
+FILE = BRANCHING + 'wheeljoin14.grl'
 PRINT = True
 
 
@@ -25,9 +25,9 @@ def main():
 
 
 def find_graphs() -> List[str]:
-    branching_graphs = [PATH_BRANCHING + '/' + file for file in os.listdir(PATH_BRANCHING)]
-    colorref_graphs = [PATH_COLORREF + '/' + file for file in os.listdir(PATH_COLORREF)]
-    treepath_graphs = [PATH_TREEPATHS + '/' + file for file in os.listdir(PATH_TREEPATHS)]
+    branching_graphs = [BRANCHING + file for file in os.listdir(BRANCHING)]
+    colorref_graphs = [COLORREF + file for file in os.listdir(COLORREF)]
+    treepath_graphs = [TREEPATHS + file for file in os.listdir(TREEPATHS)]
     return branching_graphs + colorref_graphs + treepath_graphs
 
 
@@ -71,13 +71,11 @@ def calculate_isomorphs(graphs: List[Graph]) -> List[List[Graph]]:
 
 
 def calculate_automorphs(isomorphs: List[List[Graph]]) -> List[int]:
-    automorphs = []
-    for k in range(len(isomorphs)):
-        automorphs.append(get_number_automorphisms(isomorphs[k][0]))
-    return automorphs
+    return [get_number_automorphisms(isomorph.pop()) for isomorph in isomorphs]
 
 
-def stringify_result(file: str, isomorphs: List[List[Graph]], iso_time: float, automorphs: List[int], auto_time: float) -> str:
+def stringify_result(file: str, isomorphs: List[List[Graph]], iso_time: float, automorphs: List[int],
+                     auto_time: float) -> str:
     title_string = create_title_string(file)
     data_string = create_data_string(isomorphs, automorphs)
     footer_string = create_footer_string(iso_time, auto_time)
@@ -128,7 +126,7 @@ def print_result(result: str):
 
 
 def export_result(result: str):
-    output_file = open('result_' + str(round(time.time())), 'w')
+    output_file = open(OUTPUT + 'result_' + str(round(time.time())), 'w')
     output_file.write(result)
     output_file.close()
 
