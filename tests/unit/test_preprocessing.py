@@ -1,7 +1,7 @@
 import unittest
 import preprocessing
-from graph import Graph
 from tests import *
+from tools import create_graph_helper
 
 
 class TestPreprocessing(unittest.TestCase):
