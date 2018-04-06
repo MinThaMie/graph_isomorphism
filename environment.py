@@ -13,6 +13,7 @@ PATH_TREEPATHS = 'graphs/treepaths'
 OUTPUT_PATH = 'export/result'
 
 FILE = 'graphs/branching/wheeljoin14.grl'
+PRINT = True
 
 
 def main():
@@ -115,11 +116,18 @@ def create_footer_string(iso_time: float, auto_time: float) -> str:
     return footer
 
 
-def print_result(result):
+def output_result(result: str):
+    if PRINT:
+        print_result(result)
+    else:
+        export_result(result)
+
+
+def print_result(result: str):
     print(result)
 
 
-def export_result(result):
+def export_result(result: str):
     output_file = open('result_' + str(round(time.time())), 'w')
     output_file.write(result)
     output_file.close()
