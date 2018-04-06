@@ -190,6 +190,8 @@ class ColorRefineHelper(unittest.TestCase):
         self.assertEqual(1, len(unit_coloring))
         self.assertListEqual(g.vertices, unit_coloring.get(0))
 
+    # TODO: test_generate_neighbour_count_with_color
+
     def test_group_by(self):
         # group_by(List[int]) groups by number
         a = [1, 2, 3, 2, 3]
@@ -245,33 +247,68 @@ class ColorRefineHelper(unittest.TestCase):
                              "Expect key " + str(key) + ' to have ' + str(len(expected[key])) + ' vertices')
             self.assertTrue(compare(expected[key], n_neighbors_of_color1[key], lambda v: v.label))
 
-    def test_coloring_to_permutation(self):
-        g = Graph(directed=False, n=6, name='G')
-        h = Graph(directed=False, n=6, name='H')
-        vg_1, vg_2, vg_3, vg_4, vg_5, vg_6 = g.vertices
-        vh_1, vh_2, vh_3, vh_4, vh_5, vh_6 = h.vertices
-        coloring = Coloring()
+    def test_get_mappings(self):
+        g = Graph(directed=False, n=5, name='g')
+        h = Graph(directed=False, n=5, name='h')
+        vg_0, vg_1, vg_2, vg_3, vg_4 = g.vertices
+        vh_0, vh_1, vh_2, vh_3, vh_4 = h.vertices
 
-        # coloring.add([vg_1, vh_1])  #En willen we dit echt op 2 graven doen?
-        coloring.add([vg_1])  # Is het niet netter om alle vertices te kleuren?
-        perm = Permutation(len(g.vertices), coloring=coloring)
+        triv, non_triv = get_mappings(vg_0, h.vertices)
+        self.assertEqual(vh_0, triv)
+        self.assertEqual(4, len(non_triv))
+        self.assertEqual([vh_1, vh_2, vh_3, vh_4], non_triv)
 
-        self.assertEqual(6, len(perm.P))
+        triv, non_triv = get_mappings(vg_0, [vh_1, vh_2, vh_3, vh_4])
+        self.assertIsNone(triv)
+        self.assertEqual(4, len(non_triv))
+        self.assertEqual([vh_1, vh_2, vh_3, vh_4], non_triv)
 
-        coloring.add([vg_2, vg_3])  # , vh_2, vh_3])
-        perm = Permutation(len(g.vertices), coloring=coloring)
-        # #perm = coloring_to_permutation(coloring, g)
-        self.assertEqual(6, len(perm.P))
-        self.assertEqual(vg_2.label, perm.P[vg_3.label])
-        self.assertEqual(vg_3.label, perm.P[vg_2.label])
+        triv, non_triv = get_mappings(vg_0, [vh_0])
+        self.assertEqual(vh_0, triv)
+        self.assertEqual(0, len(non_triv))
 
-        coloring.add([vg_4, vg_5, vg_6])  # vh_4, vg_5, vh_5, vg_6, vh_6])
-        perm = Permutation(len(coloring.vertices), coloring=coloring)
-        # #perm = coloring_to_permutation(coloring, g)
-        self.assertEqual(6, len(perm.P))
-        self.assertEqual(vg_5.label, perm.P[vg_4.label])
-        self.assertEqual(vg_6.label, perm.P[vg_5.label])
-        self.assertEqual(vg_4.label, perm.P[vg_6.label])
+    def test_member_of(self):
+        # trivial permuatiation
+        H = Permutation(n=5)
+        f = Permutation(n=2)
+        f2 = Permutation(n=2, cycles=[[0, 1]])
+        self.assertTrue(member_of(f, [H]))
+        self.assertFalse(member_of(f2, [H]))
+
+        H1 = Permutation(n=6, cycles=[[0, 1, 2], [4, 5]])
+        H2 = Permutation(n=6, cycles=[[2, 3]])
+        H = [H1, H2]
+        f = Permutation(n=6, cycles=[[0, 2]])
+        self.assertTrue(f, H)
+
+    # I have commented it out because it makes permutations based on a single graph coloring: don't know if it still works
+    # def test_coloring_to_permutation(self):
+    #     g = Graph(directed=False, n=6, name='G')
+    #     h = Graph(directed=False, n=6, name='H')
+    #     vg_1, vg_2, vg_3, vg_4, vg_5, vg_6 = g.vertices
+    #     vh_1, vh_2, vh_3, vh_4, vh_5, vh_6 = h.vertices
+    #     coloring = Coloring()
+    #
+    #     # coloring.add([vg_1, vh_1])  #En willen we dit echt op 2 graven doen?
+    #     coloring.add([vg_1])  # Is het niet netter om alle vertices te kleuren?
+    #     perm = Permutation(len(g.vertices), coloring=coloring)
+    #
+    #     self.assertEqual(6, len(perm.P))
+    #
+    #     coloring.add([vg_2, vg_3])  # , vh_2, vh_3])
+    #     perm = Permutation(len(g.vertices), coloring=coloring)
+    #     # #perm = coloring_to_permutation(coloring, g)
+    #     self.assertEqual(6, len(perm.P))
+    #     self.assertEqual(vg_2.label, perm.P[vg_3.label])
+    #     self.assertEqual(vg_3.label, perm.P[vg_2.label])
+    #
+    #     coloring.add([vg_4, vg_5, vg_6])  # vh_4, vg_5, vh_5, vg_6, vh_6])
+    #     perm = Permutation(len(coloring.vertices), coloring=coloring)
+    #     # #perm = coloring_to_permutation(coloring, g)
+    #     self.assertEqual(6, len(perm.P))
+    #     self.assertEqual(vg_5.label, perm.P[vg_4.label])
+    #     self.assertEqual(vg_6.label, perm.P[vg_5.label])
+    #     self.assertEqual(vg_4.label, perm.P[vg_6.label])
 
     # def test_compute_orbit(self):
     #     g = Graph(directed=False, n=6)
@@ -312,6 +349,7 @@ class ColorRefineHelper(unittest.TestCase):
     #     f = Permutation(len(g.vertices), coloring=coloring_f)
     #     self.assertFalse(member_of(f, H))
 
+    # TODO: to testclass of basicpermutationgroup
     def test_order_computation(self):  # TODO: to a testclass of basicpermutations
         g = Graph(directed=False, n=6)
         vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
@@ -339,17 +377,23 @@ class ColorRefineHelper(unittest.TestCase):
         H = [p, q]
         self.assertEqual(48, order_computation(H))
 
-    def test_permutation_coloring(self):  # TODO: write more tests
+    # TODO: move to test class of basicpermuationgroup
+    def test_permutation_coloring(self):
         g = Graph(directed=False, n=5)
         h = Graph(directed=False, n=5)
         vg_0, vg_1, vg_2, vg_3, vg_4 = g.vertices
         vh_0, vh_1, vh_2, vh_3, vh_4 = h.vertices
+
         coloring_p = Coloring()
+        p = Permutation(0, coloring=coloring_p)
+        self.assertEqual(0, len(p))
+
         coloring_p.add([vg_0, vh_0])
         coloring_p.add([vg_1, vh_1])
         p = Permutation(2, coloring=coloring_p)
         self.assertEqual(0, p.P[0])
         self.assertEqual(1, p.P[1])
+
         coloring_p = Coloring()
         coloring_p.add([vg_0, vh_1])
         coloring_p.add([vg_1, vh_0])
@@ -357,19 +401,19 @@ class ColorRefineHelper(unittest.TestCase):
         self.assertEqual(1, p.P[0])
         self.assertEqual(0, p.P[1])
 
-    def test_member_of(self):
-        # trivial permuatiation
-        H = Permutation(n=5)
-        f = Permutation(n=2)
-        f2 = Permutation(n=2, cycles=[[0, 1]])
-        self.assertTrue(member_of(f, [H]))
-        self.assertFalse(member_of(f2, [H]))
-
-        H1 = Permutation(n=6, cycles=[[0, 1, 2], [4, 5]])
-        H2 = Permutation(n=6, cycles=[[2, 3]])
-        H = [H1, H2]
-        f = Permutation(n=6, cycles=[[0, 2]])
-        self.assertTrue(f, H)
+        # TODO: deze test gaat nog mis...
+        coloring_p = Coloring()
+        coloring_p.add([vg_0, vh_1])
+        coloring_p.add([vg_1, vh_2])
+        coloring_p.add([vg_2, vh_3])
+        coloring_p.add([vg_3, vh_4])
+        coloring_p.add([vg_4, vh_0])
+        p = Permutation(5, coloring=coloring_p)
+        self.assertEqual(1, p.P[0])
+        self.assertEqual(2, p.P[1])
+        self.assertEqual(3, p.P[2])
+        self.assertEqual(4, p.P[3])
+        self.assertEqual(0, p.P[4])
 
 
 if __name__ == '__main__':

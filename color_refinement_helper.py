@@ -218,7 +218,7 @@ def get_mappings(v: Vertex, vertices: [Vertex]) -> (Vertex, [Vertex]):
     vertices which are not the trivial mapping. A mapping is called trivial if the labels of two vertices are equal.
     The list of vertices (mappings) must be from another graph compared to vertex.
     :param Vertex v: the vertex to be mapped
-    :param [Vertex] vertices: list of vertices to map to
+    :param [Vertex] vertices: list of vertices to map to. These vertices must belong to another graph than Vertex v
     :return (Vertex, [Vertex]): a trivial mapping from the vertex to the other graph, `None` if it doesn't exist. And a list of vertices
     which is not a trivial mapping.
     """
