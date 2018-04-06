@@ -203,7 +203,7 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     md_h = graph_to_modules(h)
 
     if not preprocessing.check_modular_decomposition(md_g, md_h):
-        debug('Modular decomposition detected anisomorphism!')  # TODO -> debug(...)
+        debug('Modular decomposition detected anisomorphism!')
 
         return 0
 

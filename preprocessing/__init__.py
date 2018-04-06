@@ -166,7 +166,7 @@ def calculate_modular_decomposition_and_factor(g: Graph, md_g: ModularDecomposit
         return g, 1
 
     factor = modular_decomposition_factor(md_g)
-    debug(f'Using modular decomposition with factor = {factor}')  # TODO -> debug(...)
+    debug(f'Using modular decomposition with factor = {factor}')
 
     g_md = modules_to_graph(md_g)
     return g_md, factor

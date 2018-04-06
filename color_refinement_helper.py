@@ -121,7 +121,6 @@ def are_twins(u: Vertex, v: Vertex) -> bool:
     return compare(n_u, n_v, lambda vertex: vertex.label)
 
 
-# TODO: graph_to_modules
 def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
     """
     Returns a list of true twins and a list of false twins
