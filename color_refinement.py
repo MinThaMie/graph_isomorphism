@@ -8,7 +8,7 @@ from typing import Dict
 import preprocessing
 from color_refinement_helper import *
 from graph_io import *
-from basicpermutationgroup import order_computation
+from basicpermutationgroup import order_computation, member_of
 
 PATH = 'graphs/branching/'
 GRAPH = 'cubes5.grl'
