@@ -138,7 +138,7 @@ def set_up_test_graphs():
     # v3e2_connected =
     #         1 - 2 - 3
     v3e2_connected = create_graph_helper([(1, 2), (2, 3)])
-    v3e2_connected.name = 'v2e2_connected'
+    v3e2_connected.name = 'v3e2_connected'
 
     # Create a tree graph with 5 vertices and 4 edges :
     # v5e4_connected =
