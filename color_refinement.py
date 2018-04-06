@@ -286,28 +286,6 @@ def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvi
     return X, lastvisited
 
 
-def get_mappings(v: Vertex, vertices: [Vertex]) -> (Vertex, [Vertex]):
-    """
-    Returns the trivial mapping of a Vertex and a list of non-trivial mappings
-
-    Returns a 2-tuple with as first argument the trivial mapping of the Vertex. The second argument is a list of
-    vertices which are not the trivial mapping. A mapping is called trivial if the labels of two vertices are equal.
-    The list of vertices (mappings) must be from another graph compared to vertex.
-    :param Vertex v: the vertex to be mapped
-    :param [Vertex] vertices: list of vertices to map to
-    :return (Vertex, [Vertex]): a trivial mapping from the vertex to the other graph, `None` if it doesn't exist. And a list of vertices
-    which is not a trivial mapping.
-    """
-    trivial = None
-    non_trivial = []
-    for vertex in vertices:
-        if vertex.label == v.label:
-            trivial = vertex
-        else:
-            non_trivial.append(vertex)
-    return trivial, non_trivial
-
-
 def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
     """
     Store a known isomorphism between two indices in the specified mapping.
