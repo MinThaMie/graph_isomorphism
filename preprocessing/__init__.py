@@ -81,6 +81,44 @@ def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
         return g, h
 
 
+def is_tree(g: Graph):
+    """
+    This method checks whether graph g is a tree. First iteration.
+    Uses the is_cycle method from tree_algorithm_helper.py
+
+    :param g: Graph
+    :return: Boolean: True if the graph is a Tree
+    """
+    if len(g.vertices) is 0:
+        return True
+    if len(g.edges) != len(g.vertices) - 1:
+        return False
+
+    vertex = g.vertices[0]
+
+    return not has_cycle(g, vertex, vertex, [])
+
+
+def has_cycle(g: Graph, vertex: Vertex, predecessor: Vertex, visited):
+    """
+    Recursive function to detect cycles in a graph
+
+    :param g: input graph
+    :param vertex: vertex to start from
+    :param predecessor: predecessor vertex of vertex
+    :param visited: List with visited vertices
+    :param result: list containing the "Truth Of The Tree"
+    :return: result: [True] if has_cycle
+    """
+    visited.append(vertex)
+
+    for v in vertex.neighbours:
+        if v in visited and v is not predecessor:
+            return True
+        elif v not in visited:
+            return has_cycle(g, v, vertex, visited)
+
+
 def get_modular_decomposition_sizes(md: ModularDecomposition):
     return map(len, md)
 
