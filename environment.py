@@ -46,9 +46,12 @@ def get_graphs_from_file(file: str) -> List[Graph]:
 
 
 def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[int], float]:
+    output_result(create_title_string("ISOMORPHISMS"))
     iso_start = time.time()
     isomorphs = calculate_isomorphs(graphs)
     iso_time = time.time() - iso_start
+
+    output_result(create_title_string("AUTOMORPHISMS"))
     auto_start = time.time()
     automorphs = calculate_automorphs(isomorphs)
     auto_time = time.time() - auto_start
@@ -60,32 +63,44 @@ def calculate_isomorphs(graphs: List[Graph]) -> List[List[Graph]]:
     isomorphs[0] = [graphs.pop(0)]
     for i in range(len(graphs)):
         added = False
+        start_time = time.time()
         for j in range(len(isomorphs)):
             if is_isomorphisms(isomorphs[j][0], graphs[i]):
                 isomorphs[j].append(graphs[i])
                 added = True
+                output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphs (" + str(round(time.time() - start_time, 10)) + "s)")
                 break
         if not added:
             isomorphs.append([graphs[i]])
+            output_result(graphs[i].name + " has no isomorphs yet (" + str(round(time.time() - start_time, 10)) + "s)")
     return isomorphs
 
 
 def calculate_automorphs(isomorphs: List[List[Graph]]) -> List[int]:
-    return [get_number_automorphisms(isomorph.pop()) for isomorph in isomorphs]
+    automorphisms = []
+    for isomorph in isomorphs:
+        start_time = time.time()
+        graph = isomorph[0]
+        num_automorphisms = get_number_automorphisms(graph)
+        automorphisms.append(num_automorphisms)
+        output_result(graph.name + "\'s group has " + str(num_automorphisms) + " automorphisms (" + str(round(time.time() - start_time, 10)) + "s)")
+    return automorphisms
 
 
 def stringify_result(file: str, isomorphs: List[List[Graph]], iso_time: float, automorphs: List[int],
                      auto_time: float) -> str:
-    title_string = create_title_string(file)
+    title_string = create_title_string(get_file_title(file))
     data_string = create_data_string(isomorphs, automorphs)
     footer_string = create_footer_string(iso_time, auto_time)
     return title_string + '\n' + data_string + '\n' + footer_string + '\n'
 
 
-def create_title_string(file: str) -> str:
-    title = '{:_<41}'.format('') + '\n' \
-            + file.rsplit('/', 1)[1] + '\n'
-    return title
+def create_title_string(title: str) -> str:
+    return '\n' + title + '\n' + '{:_<41}'.format('') + '\n'
+
+
+def get_file_title(file: str) -> str:
+    return file.rsplit('/', 1)[1]
 
 
 def create_data_string(isomorphs: List[List[Graph]], automorphs: List[int]) -> str:
@@ -107,10 +122,10 @@ def create_data_string(isomorphs: List[List[Graph]], automorphs: List[int]) -> s
 def create_footer_string(iso_time: float, auto_time: float) -> str:
     output_format = '{:<20} {:>20.10f}'
     total_time = iso_time + auto_time
-    footer = output_format.format('isomorphs time', iso_time) + '\n' \
-             + output_format.format('automorphs time', auto_time) + '\n' \
+    footer = output_format.format('Isomorphs time', iso_time) + '\n' \
+             + output_format.format('Automorphs time', auto_time) + '\n' \
              + '{:25} {:-<15}'.format('', '') + '\n' \
-             + output_format.format('total time (s)', total_time)
+             + output_format.format('Total time (s)', total_time)
     return footer
 
 
