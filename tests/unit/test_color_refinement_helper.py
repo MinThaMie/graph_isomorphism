@@ -280,6 +280,8 @@ class ColorRefineHelper(unittest.TestCase):
         H = [H1, H2]
         f = Permutation(n=6, cycles=[[0, 2]])
         self.assertTrue(f, H)
+        self.assertTrue(H1, H)
+        self.assertTrue(H2, H)
 
     # I have commented it out because it makes permutations based on a single graph coloring: don't know if it still works
     # def test_coloring_to_permutation(self):
@@ -351,53 +353,60 @@ class ColorRefineHelper(unittest.TestCase):
 
     # TODO: to testclass of basicpermutationgroup
     def test_order_computation(self):  # TODO: to a testclass of basicpermutations
-        g = Graph(directed=False, n=6)
+        g = Graph(directed=False, n=6, name='g')
+        h = Graph(directed=False, n=6, name='h')
         vg_0, vg_1, vg_2, vg_3, vg_4, vg_5 = g.vertices
+        vh_0, vh_1, vh_2, vh_3, vh_4, vh_5 = h.vertices
         # mapping only to itself
         coloring_p = Coloring()
-        coloring_p.add([vg_0])
-        coloring_p.add([vg_1])
+        coloring_p.add([vg_0, vh_0])
+        coloring_p.add([vg_1, vh_1])
         p = Permutation(len(g.vertices), coloring=coloring_p)
         H = [p]
         self.assertEqual(1, order_computation(H))
         # mapping to itself and 1 other node
         coloring_p = Coloring()
-        coloring_p.add([vg_0, vg_1])
+        coloring_p.add([vg_0, vh_1])
+        coloring_p.add([vg_1, vh_0])
         p = Permutation(len(g.vertices), coloring=coloring_p)
         H = [p]
         self.assertEqual(2, order_computation(H))
         # this is the permutation example of the lecture
         coloring_p = Coloring()
-        coloring_p.add([vg_0, vg_1, vg_2])
-        coloring_p.add([vg_4, vg_5])
-        p = Permutation(len(g.vertices), coloring=coloring_p)
+        coloring_p.add([vg_0, vh_1])
+        coloring_p.add([vg_1, vh_2])
+        coloring_p.add([vg_2, vh_0])
+        coloring_p.add([vg_4, vh_5])
+        coloring_p.add([vg_5, vh_4])
+        p = Permutation(6, coloring=coloring_p)
         coloring_q = Coloring()
-        coloring_q.add([vg_2, vg_3])
-        q = Permutation(len(g.vertices), coloring=coloring_q)
+        coloring_q.add([vg_2, vh_3])
+        coloring_q.add([vg_3, vh_2])
+        q = Permutation(6, coloring=coloring_q)
         H = [p, q]
         self.assertEqual(48, order_computation(H))
 
     # TODO: move to test class of basicpermuationgroup
     def test_permutation_coloring(self):
-        g = Graph(directed=False, n=5)
-        h = Graph(directed=False, n=5)
+        g = Graph(directed=False, n=5, name='g')
+        h = Graph(directed=False, n=5, name='h')
         vg_0, vg_1, vg_2, vg_3, vg_4 = g.vertices
         vh_0, vh_1, vh_2, vh_3, vh_4 = h.vertices
 
         coloring_p = Coloring()
-        p = Permutation(0, coloring=coloring_p)
-        self.assertEqual(0, len(p))
+        # p = Permutation(0, coloring=coloring_p, g=g)
+        # self.assertEqual(0, len(p))
 
         coloring_p.add([vg_0, vh_0])
         coloring_p.add([vg_1, vh_1])
-        p = Permutation(2, coloring=coloring_p)
+        p = Permutation(2, coloring=coloring_p, g=g)
         self.assertEqual(0, p.P[0])
         self.assertEqual(1, p.P[1])
 
         coloring_p = Coloring()
         coloring_p.add([vg_0, vh_1])
-        coloring_p.add([vg_1, vh_0])
-        p = Permutation(2, coloring=coloring_p)
+        coloring_p.add([vh_0, vg_1])
+        p = Permutation(2, coloring=coloring_p, g=g)
         self.assertEqual(1, p.P[0])
         self.assertEqual(0, p.P[1])
 
@@ -408,7 +417,7 @@ class ColorRefineHelper(unittest.TestCase):
         coloring_p.add([vg_2, vh_3])
         coloring_p.add([vg_3, vh_4])
         coloring_p.add([vg_4, vh_0])
-        p = Permutation(5, coloring=coloring_p)
+        p = Permutation(5, coloring=coloring_p, g=g)
         self.assertEqual(1, p.P[0])
         self.assertEqual(2, p.P[1])
         self.assertEqual(3, p.P[2])
