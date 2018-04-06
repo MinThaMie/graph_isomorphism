@@ -281,7 +281,7 @@ def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvi
         for second_vertex in non_trivial_mapping:
             adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
             X, lastvisited = compute_generators(g, h, adapted_coloring, X, lastvisited=lastvisited)
-            if lastvisited != new_coloring:
+            if not lastvisited.__contains__(new_coloring):
                 return X, lastvisited
     return X, lastvisited
 
