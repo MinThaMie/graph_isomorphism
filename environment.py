@@ -108,8 +108,8 @@ def create_data_string(isomorphs: List[List[Graph]], automorphs: List[int]) -> s
 def create_footer_string(iso_time: float, auto_time: float) -> str:
     output_format = '{:<20} {:>20.10f}'
     total_time = iso_time + auto_time
-    footer = output_format.format('iso time', iso_time) + '\n' \
-             + output_format.format('auto time', auto_time) + '\n' \
+    footer = output_format.format('isomorphs time', iso_time) + '\n' \
+             + output_format.format('automorphs time', auto_time) + '\n' \
              + '{:25} {:-<15}'.format('', '') + '\n' \
              + output_format.format('total time (s)', total_time)
     return footer
