@@ -11,7 +11,7 @@ from graph_io import *
 from collections import defaultdict
 
 PATH = 'graphs/branching/'
-GRAPH = 'bigtrees3.grl'
+GRAPH = 'bigtrees2.grl'
 
 
 IsomorphismMapping = Dict[int, Set[int]]
@@ -293,6 +293,9 @@ def tree_isomorphism(g: Graph, h: Graph) -> bool:
     # Gets the lowest level in the tree and since we assume isomorphism the dict which is used does not matter
     lowest_level = max(level_dict_g)
     # Loop through the levels
+    if max(level_dict_h) != lowest_level:
+        return False
+
     while lowest_level > 0:
         tuples_g, d_g = set_tuples(level_dict_g[lowest_level - 1])
         tuples_h, d_h = set_tuples(level_dict_h[lowest_level - 1])

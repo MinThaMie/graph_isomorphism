@@ -5,12 +5,20 @@ import os
 from color_refinement import *
 from graph_io import load_graph
 
-PATH = 'graphs/branching'  # to run locally from PyCharm: PATH = '../../graphs/branching'
+PATH = '../../graphs/branching'  # to run locally from PyCharm: PATH = '../../graphs/branching'
 TREE1 = 'trees90.grl'
 TREE2 = 'trees36.grl'
 BIGTREE1 = 'bigtrees1.grl'
-BIGTREE2 = 'bigtrees3.grl'
-
+BIGTREE3 = 'bigtrees3.grl'
+EXPECTED = dict()
+EXPECTED[TREE1] = {'G0G1': False, 'G0G2': False, 'G0G3': True, 'G1G2': True, 'G1G3': False, 'G2G3': False }
+EXPECTED[TREE2] = {'G0G1': False, 'G0G2': False, 'G0G3': False, 'G0G4': False, 'G0G5': False, 'G0G6': False, 'G0G7': True,
+                   'G1G2': False, 'G1G3': False, 'G1G4': True, 'G1G5': False,'G1G6': False, 'G1G7': False,
+                   'G2G3': False, 'G2G4': False, 'G2G5': False, 'G2G6': True, 'G2G7': False,
+                   'G3G4': False, 'G3G5': True, 'G3G6': False, 'G3G7': False,
+                   'G4G5': False, 'G4G6': False, 'G4G7': False, 'G5G6': False, 'G5G7': False, 'G6G7': False,}
+EXPECTED[BIGTREE1] = {'G0G1': False, 'G0G2': True, 'G0G3': False, 'G1G2': False, 'G1G3': True, 'G2G3': False }
+EXPECTED[BIGTREE3] = {'G0G1': False, 'G0G2': True, 'G0G3': False, 'G1G2': False, 'G1G3': True, 'G2G3': False }
 
 def get_files(expected: dict):
     all_graphs = os.listdir(PATH)
@@ -25,6 +33,31 @@ def load_graph_from_file(filename):
     graph = L[0][0]
     return graph
 
+def get_expected_result(filename, g_name, h_name):
+    if filename in EXPECTED.keys():
+        key = g_name + h_name
+        return EXPECTED[filename][key]
+
+def get_tree_files():
+    all_graphs = os.listdir(PATH)
+    return [x for x in all_graphs if x in EXPECTED.keys()]
+
+def testfile(filename):
+    """Check if results for the given file are correct"""
+    with open(PATH + "/" + filename) as f:
+        L = load_graph(f, read_list=True)
+
+    graphs = L[0]
+    results = []
+    for i in range(len(graphs)):
+        for j in range(len(graphs)):
+            if j > i:
+                result = tree_isomorphism(graphs[i], graphs[j])
+                expected = get_expected_result(filename, graphs[i].name, graphs[j].name)
+                message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[
+                    j].name + " in " + filename
+                results.append([expected, result, message])
+    return results
 
 class TestTrees(unittest.TestCase):
 
@@ -144,6 +177,14 @@ class TestTrees(unittest.TestCase):
 
         result = tree_isomorphism(g, j)
         self.assertFalse(result)
+
+    def test_files(self):
+        files = get_tree_files()
+        for file in files:
+            results = testfile(file)
+            for result in results:
+                self.assertEqual(result[0], result[1], result[2])
+                debug(result[2], 'got', result[1])
 
 
 if __name__ == '__main__':
