@@ -68,7 +68,8 @@ def calculate_isomorphs(graphs: List[Graph]) -> List[List[Graph]]:
             if is_isomorphisms(isomorphs[j][0], graphs[i]):
                 isomorphs[j].append(graphs[i])
                 added = True
-                output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphs (" + str(round(time.time() - start_time, 10)) + "s)")
+                output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphs (" + str(
+                    round(time.time() - start_time, 10)) + "s)")
                 break
         if not added:
             isomorphs.append([graphs[i]])
@@ -83,7 +84,8 @@ def calculate_automorphs(isomorphs: List[List[Graph]]) -> List[int]:
         graph = isomorph[0]
         num_automorphisms = get_number_automorphisms(graph)
         automorphisms.append(num_automorphisms)
-        output_result(graph.name + "\'s group has " + str(num_automorphisms) + " automorphisms (" + str(round(time.time() - start_time, 10)) + "s)")
+        output_result(graph.name + "\'s group has " + str(num_automorphisms) + " automorphisms (" + str(
+            round(time.time() - start_time, 10)) + "s)")
     return automorphisms
 
 
