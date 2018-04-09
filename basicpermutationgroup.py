@@ -113,14 +113,14 @@ def Reduce(generators, wordy=0):
     """
     if wordy >= 1:
         print("  Reducing. Input length:", len(generators))
-    if generators == []:
+    if not generators:
         return generators
     n = generators[0].n
     outputgenerators = []
     todo = generators
-    while todo != []:
+    while todo:
         el = FindNonTrivialOrbit(todo)
-        if el == None:  # can happen if the input (erroneously) contains trivial permutations
+        if el is None:  # can happen if the input (erroneously) contains trivial permutations
             break
         if wordy >= 2:
             print("    Next iteration: still to reduce:\n     ", todo)
@@ -130,7 +130,7 @@ def Reduce(generators, wordy=0):
         for P in todo:
             if P[el] == el:
                 todonext.append(P)
-            elif images[P[el]] == None:
+            elif images[P[el]] is None:
                 if wordy >= 2:
                     print("      Keeping", P, "which maps", el, "to", P[el])
                 outputgenerators.append(P)
