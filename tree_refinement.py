@@ -31,13 +31,16 @@ def tree_isomorphism(g: Graph, h: Graph, modules: [[Vertex]] = None) -> bool:
     assign_levels(root_h)
     level_dict_g = group_by(g.vertices, lambda v: v.level)
     level_dict_h = group_by(h.vertices, lambda v: v.level)
-    # Modules must have the same level
+    # Module pairs must have the same level
     if modules:
         for module in modules:
-            level = module[0].level
-            for v in module:
-                if v.level != level:
+            levels = group_by(module, group_rule=lambda v: v.level)
+            for _, level in levels.items():
+                num_vertices_in_g = len([1 for v in level if v.in_graph(g)])
+                num_vertices_in_h = len([1 for v in level if v.in_graph(h)])
+                if num_vertices_in_g != num_vertices_in_h:
                     return False
+
     # Gets the lowest level in the tree and since we assume isomorphism the dict which is used does not matter
     lowest_level = max(level_dict_g)
     if max(level_dict_h) != lowest_level:
@@ -68,10 +71,13 @@ def tree_isomorphism(g: Graph, h: Graph, modules: [[Vertex]] = None) -> bool:
     # Modules should all have the same tuple, just like roots
     if modules:
         for module in modules:
-            tuples = module[0].tuples
-            for v in module:
-                if v.tuples != tuples:
+            tuples_grouped = group_by(module, group_rule=lambda v: str(sorted(v.tuples)))
+            for _, tuple in tuples_grouped.items():
+                num_vertices_in_g = len([1 for v in tuple if v.in_graph(g)])
+                num_vertices_in_h = len([1 for v in tuple if v.in_graph(h)])
+                if num_vertices_in_g != num_vertices_in_h:
                     return False
+
     # If the roots have the same tuple the trees are isomorphic
     return sorted(root_g.tuples) == sorted(root_h.tuples)
 

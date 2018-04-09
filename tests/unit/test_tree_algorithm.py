@@ -204,6 +204,10 @@ class TestTrees(unittest.TestCase):
         result = tree_isomorphism(g, h, [[g.find_vertex(2), h.find_vertex(1)], [g.find_vertex(9), h.find_vertex(4)]])
         self.assertFalse(result)
 
+        # Pretend that [g_8,h_4, g_11,h_11] are isomorphic modules
+        result = tree_isomorphism(g, h, [[g.find_vertex(8), h.find_vertex(4), g.find_vertex(11), h.find_vertex(11)]])
+        self.assertTrue(result)
+
 
     def test_files(self):
         files = get_tree_files()
