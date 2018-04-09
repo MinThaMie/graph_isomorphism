@@ -183,8 +183,8 @@ def get_number_isomorphisms(g: Graph, h: Graph, coloring: Coloring, count: bool,
     First, it is determined if graph have potential to be isomorphic by the number of vertices and edges. Next, the
     coloring is initialized by degree of the vertices. Next, the number of isomorphisms is counted by the algorithm of
     `count_isomorphism`.
-    :param coloring:
-    :param modular_decomposition_factor:
+    :param coloring: initial coloring
+    :param modular_decomposition_factor: modular_decomposition_factor
     :param g: graph for which to determine the number of isomorphisms
     :param h: graph for which to determine the number of isomorphisms
     :param count: whether the number of isomorphisms
