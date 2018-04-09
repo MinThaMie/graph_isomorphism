@@ -24,6 +24,10 @@ def main():
 
 
 def find_graphs() -> List[str]:
+    """
+    Find all graph files on a given path
+    :return: List of strings representing the paths to graph files
+    """
     branching_graphs = [BRANCHING + file for file in os.listdir(BRANCHING)]
     colorref_graphs = [COLORREF + file for file in os.listdir(COLORREF)]
     treepath_graphs = [TREEPATHS + file for file in os.listdir(TREEPATHS)]
@@ -31,10 +35,14 @@ def find_graphs() -> List[str]:
 
 
 def process_graph_files(graph_files: List[str]):
+    """
+    Run graph processing for every file in the input list
+    :param graph_files: list of strings representing the paths to graph files
+    """
     for file in graph_files:
         graphs = get_graphs_from_file(file)
         isomorphs, iso_time, automorphs, auto_time = process_graphs(graphs)
-        result_string = stringify_result(file, isomorphs, iso_time, automorphs, auto_time)
+        result_string = stringify_results(file, isomorphs, iso_time, automorphs, auto_time)
         output_result(result_string)
 
 
@@ -45,6 +53,11 @@ def get_graphs_from_file(file: str) -> List[Graph]:
 
 
 def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[int], float]:
+    """
+    First preprocesses the given graphs, then runs calculations for isomorphisms and automorphisms.
+    :param graphs: raw graphs to be processed
+    :return: result tuple containing a list with: a list of isomorphic graphs, isomorphisms calculation time, automorphisms per graph and automorphisms calculation time
+    """
     output_result(create_title_string("ISOMORPHISMS"))
     iso_start = time.time()
     preprocessed_graphs = preprocess_isomorphisms(graphs)
@@ -62,10 +75,20 @@ def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[
 
 
 def preprocess_isomorphisms(graphs: List[Graph]) -> List[Graph]:
+    """
+    Preprocess graphs for isomorphism calculation
+    :param graphs: raw graphs
+    :return: graphs prepared for isomorphism calculation
+    """
     return graphs
 
 
 def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
+    """
+    Run isomorphism calculation for every graph in the input list
+    :param graphs: list of graphs to be calculated
+    :return: list with list of isomorphic graphs
+    """
     isomorphs = [[]]
     isomorphs[0] = [graphs.pop(0)]
     for i in range(len(graphs)):
@@ -85,23 +108,32 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
 
 
 def preprocess_automorphisms(graphs: List[Graph]) -> List[Graph]:
+    """
+    Preprocess graphs for automorphism calculation
+    :param graphs: raw graphs
+    :return: graphs prepared for automorphism calculation
+    """
     return graphs
 
 
 def calculate_automorphisms(graphs: List[Graph]) -> List[int]:
+    """
+    Run automorphism calculation for every graph in the input list
+    :param graphs: list of graphs to be calculated
+    :return: list with number of automorphisms per graph
+    """
     automorphisms = []
     for graph in graphs:
         start_time = time.time()
         num_automorphisms = get_number_automorphisms(graph)
-
         output_result(graph.name + "\'s group has " + str(num_automorphisms) + " automorphisms (" + str(
             time.time() - start_time) + ")")
         automorphisms.append(num_automorphisms)
     return automorphisms
 
 
-def stringify_result(file: str, isomorphs: List[List[Graph]], iso_time: float, automorphs: List[int],
-                     auto_time: float) -> str:
+def stringify_results(file: str, isomorphs: List[List[Graph]], iso_time: float, automorphs: List[int],
+                      auto_time: float) -> str:
     title_string = create_title_string(get_file_title(file))
     data_string = create_data_string(isomorphs, automorphs)
     footer_string = create_footer_string(iso_time, auto_time)
