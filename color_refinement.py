@@ -249,7 +249,7 @@ def modular_decomposition(g: Graph, h: Graph) -> Tuple[bool, Graph, Graph, int]:
 
     # At this point, g and h must have the same MD factor
     g, modular_decomposition_factor = preprocessing.calculate_modular_decomposition_and_factor(g, md_g)
-    h = preprocessing.calculate_modular_decomposition_without_factor(h, md_h)
+    h, _ = preprocessing.calculate_modular_decomposition_without_factor(h, md_h)
 
     return True, g, h, modular_decomposition_factor
 

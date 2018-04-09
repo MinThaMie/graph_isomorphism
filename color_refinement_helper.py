@@ -142,7 +142,7 @@ def graph_to_modules(graph: Graph) -> ModularDecomposition:
     return modular_decomposition
 
 
-def modules_to_graph(modules: ModularDecomposition):
+def modules_to_graph(modules: ModularDecomposition) -> (Graph, dict()):
     """
     Returns a new Graph object with Modules compressed to a Vertex
     :param modules: list of modules
