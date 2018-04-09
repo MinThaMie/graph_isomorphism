@@ -251,20 +251,35 @@ def get_number_automorphisms(g: Graph) -> int:
     :return: The number of automorphisms of graph g
     """
 
-    for idx, v in enumerate(g.vertices):
-        v.set_id(idx)
 
     copy_g = g.deepcopy()
-    coloring = initialize_coloring(g + copy_g)
+    copy_g.name = 'g_copy'
+    _, g, copy_g, factor, md_iso_groups_g, md_iso_groups_h = modular_decomposition(g, copy_g)
+
+    for idx, v in enumerate(g.vertices):
+        v.set_id(idx)
+    for idx, v in enumerate(copy_g.vertices):
+        v.set_id(idx)
+
+    coloring = Coloring()
+    # TODO: make sure only md's who are isomorph are in the same group
+    for group in md_iso_groups_g:
+        coloring.add(group, 0)
+    for group in md_iso_groups_h:
+        coloring.add(group, 0)
+    if len(md_iso_groups_g) == 0:
+        coloring = initialize_coloring(g + copy_g)
+    else:
+        not_modules_g = [v for v in g.vertices if v not in coloring.get(0)]
+        not_modules_h = [v for v in copy_g.vertices if v not in coloring.get(0)]
+        # for v in not_modules_g:
+        coloring.add(not_modules_g, 1)
+        # for v in not_modules_h:
+        coloring.add(not_modules_h, 1)
     lastvisited = [coloring]
     generators = []
-
-    # TODO: fix modular decomposition for #Aut(G)
-    # h = g.deepcopy()
-    # is_potential_isomorph, g, h, factor, md_iso_groups_g, md_iso_groups_h = modular_decomposition(g, h)
-    # coloring = initialize_coloring(g + h)
     generators, _ = compute_generators(g, copy_g, coloring, generators=generators, lastvisited=lastvisited)
-    return order_computation(generators)
+    return factor * order_computation(generators)
 
 
 def compute_generators(g: Graph, h: Graph, start_coloring: Coloring, generators: list() = [],
