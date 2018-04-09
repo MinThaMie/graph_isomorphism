@@ -167,12 +167,15 @@ def graph_to_modules(graph: Graph) -> ModularDecomposition:
     return modular_decomposition
 
 
-def modules_to_graph(modules: ModularDecomposition) -> Graph:
+def modules_to_graph(modules: ModularDecomposition):
     """
     Returns a new Graph object with Modules compressed to a Vertex
     :param modules: list of modules
     :return: new Graph
     """
+
+    label_mapping = {}
+
     edges_list = []
     for module in modules:
         for vertex in module:
@@ -181,6 +184,8 @@ def modules_to_graph(modules: ModularDecomposition) -> Graph:
     for module in modules:
         if len(module) > 1:
             new_label = create_new_label(module)
+            for vertex in module:
+                label_mapping[vertex] = new_label
             edges_list = relabel_edges(module, edges_list, new_label)
 
     edges = set()
@@ -195,7 +200,60 @@ def modules_to_graph(modules: ModularDecomposition) -> Graph:
         graph.add_vertex(vertex)
     else:
         graph = create_graph_helper(sorted(list(edges)))
-    return graph
+
+    mapping = {}
+    for vertex, label in label_mapping.items():
+        mapping[vertex] = graph.find_vertex(label)
+
+    return graph, mapping
+
+
+def determine_module_connectivity(md: ModularDecomposition):
+    connected_modules = []
+    disconnected_modules = []
+    for module in (module for module in md if len(module) > 1):
+        if module[1] in module[0].neighbours:
+            # Connected, i.e. serial
+            connected_modules.append(module)
+        else:
+            # Disconnected, i.e. parallel
+            disconnected_modules.append(module)
+
+    return connected_modules, disconnected_modules
+
+
+def find_isomorphic_modules(md: ModularDecomposition):
+    isomorphic_modules = {}
+    for module in md:
+        isomorphic_modules.setdefault(len(module), []).append(module)
+    return isomorphic_modules
+
+
+def modules_to_graph_with_module_isomorphism(md: ModularDecomposition):
+    graph, mapping = modules_to_graph(md)
+
+    connected_md, disconnected_md = determine_module_connectivity(md)
+    isomorphic_connected_modules = find_isomorphic_modules(connected_md)
+    isomorphic_disconnected_modules = find_isomorphic_modules(disconnected_md)
+
+    modular_isomorphisms = []
+    for module in isomorphic_connected_modules.values():
+        iso = []
+        for md in module:
+            vertex = md[0]
+            iso.append(mapping[vertex])
+
+        modular_isomorphisms.append(iso)
+
+    for module in isomorphic_disconnected_modules.values():
+        iso = []
+        for md in module:
+            vertex = md[0]
+            iso.append(mapping[vertex])
+
+        modular_isomorphisms.append(iso)
+
+    return graph, modular_isomorphisms
 
 
 def get_edges_of_vertex(vertex: Vertex) -> List[List[str]]:

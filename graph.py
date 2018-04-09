@@ -380,7 +380,7 @@ class Graph(object):
             G.add_edge(e_copy)
         return G
 
-    def find_vertex(self, label: int) -> "Vertex":
+    def find_vertex(self, label) -> "Vertex":
         for v in self._v:
             if v.label == label:
                 return v
