@@ -31,8 +31,10 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, refinement_algorit
     and 1 is returned when the first isomorphism is found
     :return: the number of isomorphisms of graph g and h for a given coloring
     """
+
     new_coloring = refinement_algorithm(coloring)
     coloring_status = new_coloring.status(g, h)
+
     if coloring_status == "Unbalanced":
         return 0
     if coloring_status == "Bijection":
@@ -45,7 +47,7 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, refinement_algorit
     for second_vertex in vertices_in_h:
         adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
         number_isomorphisms += count_isomorphism(g, h, adapted_coloring, refinement_algorithm, count)
-        # for if you want to know if isomorphic and not number
+
         if not count and number_isomorphisms > 0:
             return number_isomorphisms
     return number_isomorphisms
@@ -63,32 +65,34 @@ def color_refine(coloring: Coloring) -> Coloring:
     :param coloring: initial coloring
     :return: a stable or unbalanced coloring
     """
+
     has_changed = True
     while has_changed:
         new_coloring = Coloring()
         for color in coloring.colors:
             unbalanced = False
+
             vertices = coloring.get(color)
             while len(vertices) > 0:
                 new_color = new_coloring.next_color()
                 unbalanced = True
                 u = vertices.pop()
                 new_coloring.set(u, new_color)
+
                 for v in list(vertices):
                     if has_same_color_neighbours(u, v, coloring):
                         new_coloring.set(v, new_color)
                         vertices.remove(v)
                         unbalanced = not unbalanced
-            # Check if coloring is unbalanced, then we must stop
+
             if unbalanced:
-                # len(new_coloring.get(new_color)) == 1:
-                # TODO 1 or odd?
                 debug('Coloring is unbalanced')
                 return new_coloring
 
         debug('New coloring ', new_coloring)
         has_changed = (len(coloring) != len(new_coloring))
         coloring = new_coloring
+
     debug('No changes found')
     return coloring
 
@@ -106,34 +110,39 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
     : param coloring: Given coloring which needs refinement
     : return: The refined coloring of the graph
     """
-    # Start with first color
+
+    # Push the first color into the queue
     queue = DoubleLinkedList()
     for c in sorted(coloring.colors):
         queue.append(c)
     debug('Queue', queue)
 
     while len(queue) > 0:
-        # Start refining with the first color from the queue.
+        # Start refining with the first color from the queue
         current_color = queue.pop_left()
         counter = generate_neighbour_count_with_color(coloring, current_color)
 
+        # Loop over all the colors in the graph and refine them
         for color_class in counter.keys():
-            # Will loop over all the colors in the graph and refine them.
             debug('Refining the following color:', color_class)
             neighbour_map = counter[color_class]
-            # Partitions class 'c' into cells according to #neighbours of current_color
+
+            # Partition class 'c' into cells according to #neighbours of current_color
             vertices_of_c = list(neighbour_map.keys())
             debug('Vertices of color', color_class, vertices_of_c)
             debug('Neighbours', neighbour_map)
+
             # Keep split_count so the first vertices you encounter are not recolored
             split_count = 0
-            # Keep a list of the color_classes from this loop so we can count them after the loop and see which one
-            # is the smallest and should be added to the queue
+
+            # Keep a list of the color_classes from this iteration so we can count them afterwards and see which one is
+            # the smallest and should be added to the queue
             new_color_classes = []
 
             while len(vertices_of_c) > 0:
                 u = vertices_of_c.pop()
                 new_color = color_class
+
                 if split_count > 0:
                     new_color = coloring.next_color()
                     coloring.recolor(u, new_color)
@@ -141,6 +150,7 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
                 for v in list(vertices_of_c):
                     n_neighbours_u = neighbour_map[u]
                     n_neighbours_v = neighbour_map[v]
+
                     # Compare the amount of neighbours of u with the amount of neighbours of v
                     # If they are equal u and v are in the same cell
                     # If the split count is larger then zero they should both be colored with the same color
@@ -148,18 +158,23 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
                         if split_count > 0:
                             coloring.recolor(v, new_color)
                         vertices_of_c.remove(v)
+
                 split_count += 1
                 # Each color_class is added to the list
                 new_color_classes.append(new_color)
+
             # Initialize 'largest_color' with the first color class, because this is the original color
             largest_color = new_color_classes[0]
+
             if split_count > 1:
                 debug('New color classes:', new_color_classes)
+
                 # If the original color is in the queue, all the other colors should be added to the queue
                 if queue.find(color_class) is not None:
                     for color in new_color_classes:
                         if queue.find(color) is None:
                             queue.append(color)
+
                 # Otherwise all the colors except the largest should be added to the queue
                 else:
                     for color in new_color_classes:
@@ -172,13 +187,8 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
                             largest_color = color
 
             debug('Queue', queue)
-
         debug('Queue', queue)
     return coloring
-
-
-def my_test(cg):
-    fast_color_refine(cg)
 
 
 def get_number_isomorphisms(g: "Graph", h: "Graph", refinement_algorithm, count: bool) -> int:
@@ -188,8 +198,8 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", refinement_algorithm, count:
     First, it is determined if graph have potential to be isomorphic by the number of vertices and edges. Next, the
     coloring is initialized by degree of the vertices. Next, the number of isomorphisms is counted by the algorithm of
     `count_isomorphism`.
-    :param g: graph for which to determine the number of isomorphisms
-    :param h: graph for which to determine the number of isomorphisms
+    :param Graph g: graph for which to determine the number of isomorphisms
+    :param Graph h: graph for which to determine the number of isomorphisms
     :param function refinement_algorithm: The refinement algorithm to use.
     :param count: whether the number of isomorphisms
     :return: The number of isomorphisms of graph g and h
