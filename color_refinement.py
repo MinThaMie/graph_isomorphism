@@ -12,9 +12,6 @@ from tree_refinement import tree_isomorphism
 from basicpermutationgroup import order_computation, member_of
 from permv2 import Permutation
 
-PATH = 'graphs/branching/'
-GRAPH = 'wheeljoin14.grl'
-
 IsomorphismMapping = Dict[int, Set[int]]
 
 

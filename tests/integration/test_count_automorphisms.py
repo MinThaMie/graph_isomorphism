@@ -8,7 +8,7 @@ from color_refinement import get_number_automorphisms
 from color_refinement_helper import debug
 from graph_io import *
 
-PATH_auto = '../../graphs/branching'# to run locally from PyCharm: PATH = '../../graphs/branching'
+PATH_auto = 'graphs/branching'# to run locally from PyCharm: PATH = '../../graphs/branching'
 
 
 def expected_result(filename, key, expected):
