@@ -262,11 +262,12 @@ def get_number_automorphisms(g: Graph) -> int:
     lastvisited = [coloring]
     generators = []
 
-
-    h = g.deepcopy()
-    is_potential_isomorph, g, h, factor = modular_decomposition(g, h)
-    coloring = initialize_coloring(g + h)
-    return get_number_isomorphisms(g, h, coloring, True, factor)
+    # TODO: fix modular decomposition for #Aut(G)
+    # h = g.deepcopy()
+    # is_potential_isomorph, g, h, factor = modular_decomposition(g, h)
+    # coloring = initialize_coloring(g + h)
+    generators, _ = compute_generators(g, copy_g, coloring, generators=generators, lastvisited=lastvisited)
+    return order_computation(generators)
 
 
 def compute_generators(g: Graph, h: Graph, start_coloring: Coloring, generators: list()=[], lastvisited: list()=list()) -> (list(), list()):
