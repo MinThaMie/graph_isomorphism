@@ -48,10 +48,10 @@ def create_graph_helper(edges: List[Tuple[Any, Any]] = list()):
     vertices = {}
     for head, tail in edges:
         if head not in vertices:
-            vertices[head] = Vertex(graph=graph, label=head)
+            vertices[head] = Vertex(graph=graph, label=head, id=head)
             graph.add_vertex(vertices[head])
         if tail not in vertices:
-            vertices[tail] = Vertex(graph=graph, label=tail)
+            vertices[tail] = Vertex(graph=graph, label=tail, id=tail)
             graph.add_vertex(vertices[tail])
 
         graph.add_edge(Edge(vertices[head], vertices[tail]))

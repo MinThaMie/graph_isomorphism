@@ -6,10 +6,15 @@ Remark: composition / multiplication is reversed compared to the earlier version
 (ADS practicum 0): Now P*Q means apply Q first, then P.
 """
 
+from coloring import Coloring
+from tests import create_coloring_helper,create_graph_helper
+from graph import Graph
+
+
 # permv2: based on permv2SOL / perm2
 # Paul Bonsma, 18-03-2015.
 
-testvalidity = True
+testvalidity = False
 # Check whether permutations are initialized correctly
 # (Whether they are bijections to 0..n-1, etc).
 # Set to <False> for slightly faster, but possibly error prone initialization.
@@ -24,8 +29,8 @@ UseReadableOutput = True
 # If False: print(P) gives nice representation, but
 # repr(P) gives technical representation (following Python style conventions).
 
-class permutation():
-    def __init__(self, n, cycles=None, mapping=None):
+class Permutation():
+    def __init__(self, n, cycles=None, mapping=None, coloring:Coloring=None, g:Graph=None):
         """
         A permutation P on n elements can be initialized in various ways:
 
@@ -40,33 +45,70 @@ class permutation():
         list of lists e.g.:
 
             P=permutation(5,cycles=[[1,2],[3,4]])
+
+        Or a permutation is initialized from a Coloring
+            P=Permutation(len(coloring.vertices),coloring)
+
         """
         self.n = n
-        if mapping != None:
-            if testvalidity:
-                assert len(mapping) == n
-                # if len(mapping)!=n:
-                #	raise permError
-                test = [0] * n
-                for val in mapping:
-                    test[val] += 1
-                    assert test[val] <= 1
-            # if test[val]>1:
-            #	raise permError
-            if safeInit:
-                self.P = mapping[:]  # safe
+        self.P = [i for i in range(n)] # Trivial permutation
+        if mapping is not None:
+            self.construct_from_mapping(mapping, n)
+        elif cycles is not None:
+            self.construct_from_cycles(cycles)
+        elif coloring is not None:
+            self.construct_from_coloring(coloring, g)
+
+    def construct_from_coloring(self, coloring: Coloring, g: Graph):
+        """
+        Construct permutation from coloring. Color classes form cycles.
+
+        :param coloring: Coloring to create permutation from
+        """
+        for _, vertices in coloring.items():
+            vertex1, vertex2 = vertices
+            if vertex1.in_graph(g):
+                self.P[vertex1.id] = vertex2.id
             else:
-                self.P = mapping  # fast
-        elif cycles != None:
-            self.P = [i for i in range(n)]
-            for cycle in cycles:
-                for i in range(len(cycle)):
-                    assert self.P[cycle[i]] == cycle[i]
-                    # if self.P[cycle[i]]!=cycle[i]:
-                    #	raise permError
-                    self.P[cycle[i]] = cycle[(i + 1) % len(cycle)]
+                self.P[vertex2.id] = vertex1.id
+
+    def construct_from_cycles(self, cycles):
+        """
+        Construct permutation by giving its cycles, using a
+        list of lists e.g.:
+
+            P=Permutation(5,cycles=[[1,2],[3,4]])
+        :param cycles: list of lists
+        """
+        for cycle in cycles:
+            for i in range(len(cycle)):
+                assert self.P[cycle[i]] == cycle[i]
+                # if self.P[cycle[i]]!=cycle[i]:
+                #	raise permError
+                self.P[cycle[i]] = cycle[(i + 1) % len(cycle)]
+
+    def construct_from_mapping(self, mapping, n):
+        """
+        Construct permutation by giving the mapping from 0...n-1 to 0...n-1
+        explicitly, eg. P=Permutation(5,mapping=[0,2,1,4,3])
+
+        :param mapping: list which maps 0...n-1 to 0...n-1
+        :param n: number of elements
+        """
+        if testvalidity:
+            assert len(mapping) == n
+            # if len(mapping)!=n:
+            #	raise permError
+            test = [0] * n
+            for val in mapping:
+                test[val] += 1
+                assert test[val] <= 1
+        # if test[val]>1:
+        #	raise permError
+        if safeInit:
+            self.P = mapping[:]  # safe
         else:
-            self.P = [i for i in range(n)]
+            self.P = mapping  # fast
 
     def cycles(self):
         """
@@ -105,16 +147,16 @@ class permutation():
         """
         Returns a nice string representation of the permutation, using cycle notation.
         """
-        C = self.cycles()
-        s = ''
-        for cycle in C:
-            cyclestr = '('
-            for el in cycle:
-                cyclestr += str(el) + ','
-            s += cyclestr[:len(cyclestr) - 1] + ')'
-        if s == '':
-            s = '()'
-        return s
+        # C = self.cycles()
+        # s = ''
+        # for cycle in C:
+        #     cyclestr = '('
+        #     for el in cycle:
+        #         cyclestr += str(el) + ','
+        #     s += cyclestr[:len(cyclestr) - 1] + ')'
+        # if s == '':
+        #     s = '()'
+        return str(self.P)
 
     def __getitem__(self, key):
         """
@@ -131,7 +173,7 @@ class permutation():
         Q = [0] * self.n
         for i in range(self.n):
             Q[self.P[i]] = i
-        return permutation(self.n, mapping=Q)
+        return Permutation(self.n, mapping=Q)
 
     def __mul__(self, other):
         """
@@ -140,12 +182,12 @@ class permutation():
         Usage: simply type P*Q to obtain the composition of P and Q.
         (Q is applied first.)
         """
-        if self.n != other.n:
-            raise permError
+        # if self.n != other.n:
+        #     raise permError()
         Q = [0] * self.n
         for i in range(self.n):
             Q[i] = self.P[other.P[i]]
-        return permutation(self.n, mapping=Q)
+        return Permutation(self.n, mapping=Q)
 
     def __pow__(self, i):
         """
@@ -153,13 +195,13 @@ class permutation():
         Usage: simply type P**i.
         """
         if i == 0:
-            return permutation(self.n)
+            return Permutation(self.n)
         if i < 0:
             i = -i
             P = -self
         else:
             P = self
-        Q = permutation(self.n)
+        Q = Permutation(self.n)
         while i != 0:
             if i % 2 == 1:
                 Q *= P
@@ -190,3 +232,14 @@ class permutation():
             if self.P[i] != other.P[i]:
                 return False
         return True
+
+    def __len__(self):
+        return len(self.P)
+
+
+if __name__ == "__main__":
+    G0 = create_graph_helper(edges=[[0, 1], [1, 2], [2, 3], [3, 4], [2, 4], [4, 5], [5, 6]])
+    coloring = create_coloring_helper(G0.vertices,
+                                        {0: [0, 6], 1: [1, 5], 2: [3], 3: [2, 4]})
+    perm = Permutation(len(coloring.vertices), coloring=coloring)
+    print(perm)
