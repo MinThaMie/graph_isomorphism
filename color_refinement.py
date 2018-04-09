@@ -8,9 +8,7 @@ from typing import Dict
 import preprocessing
 from color_refinement_helper import *
 from graph_io import *
-
-PATH = 'graphs/branching/'
-GRAPH = 'wheeljoin14.grl'
+from tree_refinement import tree_isomorphism
 
 IsomorphismMapping = Dict[int, Set[int]]
 
@@ -177,42 +175,21 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
     return coloring
 
 
-def my_test(cg):
-    fast_color_refine(cg)
-
-
-def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
+def get_number_isomorphisms(g: Graph, h: Graph, coloring: Coloring, count: bool,
+                            modular_decomposition_factor: int = 1) -> int:
     """
     Returns the number of isomorphisms of graph g and h
 
     First, it is determined if graph have potential to be isomorphic by the number of vertices and edges. Next, the
     coloring is initialized by degree of the vertices. Next, the number of isomorphisms is counted by the algorithm of
     `count_isomorphism`.
+    :param coloring: initial coloring
+    :param modular_decomposition_factor: modular_decomposition_factor
     :param g: graph for which to determine the number of isomorphisms
     :param h: graph for which to determine the number of isomorphisms
     :param count: whether the number of isomorphisms
     :return: The number of isomorphisms of graph g and h
     """
-
-    if not preprocessing.checks(g, h):
-        return 0
-
-    g, h = preprocessing.check_complement(g, h)
-
-    md_g = graph_to_modules(g)
-    md_h = graph_to_modules(h)
-
-    if not preprocessing.check_modular_decomposition(md_g, md_h):
-        debug('Modular decomposition detected anisomorphism!')
-
-        return 0
-
-    # At this point, g and h must have the same MD factor
-    g, modular_decomposition_factor = preprocessing.calculate_modular_decomposition_and_factor(g, md_g)
-    h = preprocessing.calculate_modular_decomposition_without_factor(h, md_h)
-
-    coloring = initialize_coloring(g + h)
-
     return modular_decomposition_factor * count_isomorphism(g, h, coloring, count)
 
 
@@ -226,7 +203,41 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
     :param h: graph to compare for isomorphism
     :return: `True` if graph g and h are isomorphic, `False` otherwise
     """
-    return get_number_isomorphisms(g, h, False) > 0
+    if preprocessing.is_tree(g):
+        if preprocessing.is_tree(h):
+            return tree_isomorphism(g, h)
+        else:
+            return False
+    elif preprocessing.is_tree(h):
+        return False
+    else:
+        is_potential_isomorph, g, h, factor = modular_decomposition(g, h)
+        if is_potential_isomorph:
+            if preprocessing.is_tree(g):
+                if preprocessing.is_tree(h):
+                    return tree_isomorphism(g, h)
+                else:
+                    return False
+            else:
+                coloring = initialize_coloring(g + h)
+                return get_number_isomorphisms(g, h, coloring, False) > 0
+        else:
+            return False
+
+
+def modular_decomposition(g: Graph, h: Graph) -> Tuple[bool, Graph, Graph, int]:
+    md_g = graph_to_modules(g)
+    md_h = graph_to_modules(h)
+
+    if not preprocessing.is_same_decomposition(md_g, md_h):
+        debug('Modular decomposition detected anisomorphism!')
+        return False, md_g, md_h, 1
+
+    # At this point, g and h must have the same MD factor
+    g, modular_decomposition_factor = preprocessing.calculate_modular_decomposition_and_factor(g, md_g)
+    h = preprocessing.calculate_modular_decomposition_without_factor(h, md_h)
+
+    return True, g, h, modular_decomposition_factor
 
 
 def get_number_automorphisms(g: Graph) -> int:
@@ -237,7 +248,10 @@ def get_number_automorphisms(g: Graph) -> int:
     :param g: graph for which to determine the number of automorphisms
     :return: The number of automorphisms of graph g
     """
-    return get_number_isomorphisms(g, g.deepcopy(), True)
+    h = g.deepcopy()
+    is_potential_isomorph, g, h, factor = modular_decomposition(g, h)
+    coloring = initialize_coloring(g + h)
+    return get_number_isomorphisms(g, h, coloring, True, factor)
 
 
 def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
@@ -306,13 +320,3 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
                 print()
 
     return isomorphism_index_mapping
-
-
-if __name__ == "__main__":
-    with open(PATH + GRAPH) as f:
-        L = load_graph(f, read_list=True)
-
-    graphs = L[0]
-    print("Graph: ", GRAPH)
-
-    known_isomorphisms = process(graphs)

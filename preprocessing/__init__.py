@@ -13,10 +13,10 @@ def checks(g, h) -> bool:
     :param h: Graph
     :return: Boolean: True if everything checks out
     """
-    return check_graph_size(g, h) and check_graph_order(g, h) and check_degrees(g, h)
+    return is_same_size(g, h) and is_same_order(g, h) and is_same_degrees(g, h)
 
 
-def check_graph_order(g: Graph, h: Graph):
+def is_same_order(g: Graph, h: Graph):
     """
     This method checks if the order (amount of vertices) of the graphs are equal
 
@@ -27,7 +27,7 @@ def check_graph_order(g: Graph, h: Graph):
     return len(g.vertices) == len(h.vertices)
 
 
-def check_graph_size(g: Graph, h: Graph):
+def is_same_size(g: Graph, h: Graph):
     """
     This method checks if the number of edges of the graphs are equal
 
@@ -38,7 +38,7 @@ def check_graph_size(g: Graph, h: Graph):
     return len(g.edges) == len(h.edges)
 
 
-def check_degrees(g: Graph, h: Graph):
+def is_same_degrees(g: Graph, h: Graph):
     """
     This method checks if the degrees of all the vertices in the graphs are all the same
 
@@ -132,9 +132,10 @@ def construct_graph_from_components(components: dict) -> [Graph]:
         for vertex in components[key]:
             if vertex not in subgraph.vertices:
                 subgraph.add_vertex(vertex)
-                for edge in vertex.incidence:
-                    if edge not in subgraph.edges:
-                        subgraph.add_edge(edge)
+        for v in subgraph.vertices:
+            for edge in v.incidence:
+                if edge not in subgraph.edges:
+                    subgraph.add_edge(edge)
         graphs.append(subgraph)
     return graphs
 
@@ -181,7 +182,7 @@ def get_modular_decomposition_sizes(md: ModularDecomposition):
     return map(len, md)
 
 
-def check_modular_decomposition(md_g: ModularDecomposition, md_h: ModularDecomposition) -> bool:
+def is_same_decomposition(md_g: ModularDecomposition, md_h: ModularDecomposition) -> bool:
     """
     Check if modular decompositions of two graphs indicate anisomorphism.
 
