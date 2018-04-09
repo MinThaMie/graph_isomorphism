@@ -57,22 +57,6 @@ class TestCountAutomorphismsSmall(unittest.TestCase):
         g.add_edge(Edge(vg_0, vg_6))
         self.assertEqual(720, get_number_automorphisms(g))
 
-    def test3(self):
-        #     0
-        #   /   \
-        # 1       4
-        # ||      ||
-        # 23      56
-        g = Graph(directed=False, n=7)
-        vg_0, vg_1, vg_2, vg_3, vg_4, vg_5, vg_6 = g.vertices
-        g.add_edge(Edge(vg_0, vg_1))
-        g.add_edge(Edge(vg_0, vg_4))
-        g.add_edge(Edge(vg_1, vg_2))
-        g.add_edge(Edge(vg_1, vg_3))
-        g.add_edge(Edge(vg_4, vg_5))
-        g.add_edge(Edge(vg_4, vg_6))
-        self.assertEqual(4, get_number_automorphisms(g))
-
 
 if __name__ == '__main__':
     unittest.main()
