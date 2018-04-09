@@ -231,7 +231,7 @@ def modular_decomposition(g: Graph, h: Graph) -> Tuple[bool, Graph, Graph, int]:
     md_g = graph_to_modules(g)
     md_h = graph_to_modules(h)
 
-    if not preprocessing.is_same_decomposition(md_g, md_h):
+    if not preprocessing.is_similar_modular_decomposition(md_g, md_h):
         debug('Modular decomposition detected anisomorphism!')
         return False, md_g, md_h, 1
 

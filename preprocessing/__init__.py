@@ -182,7 +182,7 @@ def get_modular_decomposition_sizes(md: ModularDecomposition):
     return map(len, md)
 
 
-def is_same_decomposition(md_g: ModularDecomposition, md_h: ModularDecomposition) -> bool:
+def is_similar_modular_decomposition(md_g: ModularDecomposition, md_h: ModularDecomposition) -> bool:
     """
     Check if modular decompositions of two graphs indicate anisomorphism.
 
