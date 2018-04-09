@@ -398,7 +398,7 @@ class Graph(object):
             graph.add_edge(e_copy)
         return graph
 
-    def find_vertex(self, label: int) -> "Vertex":
+    def find_vertex(self, label) -> "Vertex":
         for v in self._v:
             if v.label == label:
                 return v

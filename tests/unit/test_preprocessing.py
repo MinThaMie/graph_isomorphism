@@ -4,7 +4,7 @@ import tests
 
 from color_refinement_helper import graph_to_modules
 from disconnected_refinement import graph_component_isomorphic
-from preprocessing import is_same_decomposition, modular_decomposition_factor, \
+from preprocessing import is_similar_modular_decomposition, modular_decomposition_factor, \
     calculate_modular_decomposition_and_factor, remove_loners, checks, check_complement, \
     get_modular_decomposition_sizes, find_components, construct_graph_from_components
 from tests import *
@@ -119,32 +119,32 @@ if __name__ == '__main__':
         # Assert that the same singleton modular decompositions (MDs) may be isomorphic
         md0 = [self._prime_module()]
         md1 = [self._prime_module()]
-        self.assertTrue(is_same_decomposition(md0, md1))
-        self.assertTrue(is_same_decomposition(md1, md0))
+        self.assertTrue(is_similar_modular_decomposition(md0, md1))
+        self.assertTrue(is_similar_modular_decomposition(md1, md0))
 
         # Assert that two prime modules in both MDs can be isomorphic
         md0 += [self._prime_module()]
         md1 += [self._prime_module()]
-        self.assertTrue(is_same_decomposition(md0, md0))
-        self.assertTrue(is_same_decomposition(md1, md0))
+        self.assertTrue(is_similar_modular_decomposition(md0, md0))
+        self.assertTrue(is_similar_modular_decomposition(md1, md0))
 
         # Assert that different modular decompositions indicate anisomorphism
         md0 += [self._prime_module()]
-        self.assertFalse(is_same_decomposition(md0, md1))
-        self.assertFalse(is_same_decomposition(md1, md0))
+        self.assertFalse(is_similar_modular_decomposition(md0, md1))
+        self.assertFalse(is_similar_modular_decomposition(md1, md0))
 
         # Assert that a modular decomposition with a different number of different modules in different order do not
         # indicate anisomorphism
         md0 += [self._twin_module()]
         md1 += [self._twin_module(), self._prime_module()]
-        self.assertTrue(is_same_decomposition(md0, md1))
-        self.assertTrue(is_same_decomposition(md1, md0))
+        self.assertTrue(is_similar_modular_decomposition(md0, md1))
+        self.assertTrue(is_similar_modular_decomposition(md1, md0))
 
         # Assert that MDs with identical size but different module sizes indicate anisomorphism
         md0 += [self._prime_module()]
         md1 += [self._twin_module()]
-        self.assertFalse(is_same_decomposition(md0, md1))
-        self.assertFalse(is_same_decomposition(md1, md0))
+        self.assertFalse(is_similar_modular_decomposition(md0, md1))
+        self.assertFalse(is_similar_modular_decomposition(md1, md0))
 
 
     def test_modular_decomposition_factor(self):
