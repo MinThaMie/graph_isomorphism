@@ -3,7 +3,7 @@ import os
 import time
 from typing import List, Tuple
 
-from color_refinement import get_number_automorphisms, is_isomorphisms
+from color_refinement import get_number_automorphisms, is_isomorphisms, fast_color_refine
 from graph import Graph
 from graph_io import load_graph
 
@@ -95,7 +95,7 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
         added = False
         start_time = time.time()
         for j in range(len(isomorphs)):
-            if is_isomorphisms(isomorphs[j][0], graphs[i]):
+            if is_isomorphisms(isomorphs[j][0], graphs[i], fast_color_refine):
                 isomorphs[j].append(graphs[i])
                 added = True
                 output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
@@ -125,7 +125,7 @@ def calculate_automorphisms(graphs: List[Graph]) -> List[int]:
     automorphisms = []
     for graph in graphs:
         start_time = time.time()
-        num_automorphisms = get_number_automorphisms(graph)
+        num_automorphisms = get_number_automorphisms(graph, fast_color_refine)
         output_result(graph.name + "\'s group has " + str(num_automorphisms) + " automorphisms (" + str(
             time.time() - start_time) + ")")
         automorphisms.append(num_automorphisms)
