@@ -251,12 +251,7 @@ def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
     :param dict known_isomorphisms: Dictionary in which to store the set of known isomorphisms.
     """
 
-    isomorphisms = set()
-
-    for index in (i, j):
-        isomorphisms |= known_isomorphisms[index]
-
-    isomorphisms |= {i, j}
+    isomorphisms = known_isomorphisms[i] | known_isomorphisms[j] | {i, j}
 
     for index in isomorphisms:
         known_isomorphisms[index] = isomorphisms - {index}
