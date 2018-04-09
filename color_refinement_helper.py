@@ -91,7 +91,7 @@ def choose_color_trivial(coloring: Coloring, g: Graph) -> (Vertex, [Vertex]):
     for key in coloring.colors:
         vertices = list(coloring.get(key))
         if len(vertices) >= 4 and len(vertices) % 2 == 0:
-            ordered = group_by(vertices, group_rule=lambda v: v.label)
+            ordered = group_by(vertices, group_rule=lambda v: v.id)
             for key1 in ordered.keys():
                 if len(ordered[key1]) == 2:
                     if ordered[key1][0].in_graph(g):
@@ -324,7 +324,7 @@ def get_mappings(v: Vertex, vertices: [Vertex]) -> (Vertex, [Vertex]):
     trivial = None
     non_trivial = []
     for vertex in vertices:
-        if vertex.label == v.label:
+        if vertex.id == v.id:
             trivial = vertex
         else:
             non_trivial.append(vertex)

@@ -68,9 +68,9 @@ class Permutation():
         for _, vertices in coloring.items():
             vertex1, vertex2 = vertices
             if vertex1.in_graph(g):
-                self.P[vertex1.label] = vertex2.label
+                self.P[vertex1.id] = vertex2.id
             else:
-                self.P[vertex2.label] = vertex1.label
+                self.P[vertex2.id] = vertex1.id
 
     def construct_from_cycles(self, cycles):
         """

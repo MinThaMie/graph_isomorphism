@@ -239,6 +239,9 @@ def get_number_automorphisms(g: Graph) -> int:
     :param g: graph for which to determine the number of automorphisms
     :return: The number of automorphisms of graph g including the trivial mapping
     """
+    for idx,v in enumerate(g.vertices):
+        v.set_id(idx)
+
     copy_g = g.deepcopy()
     coloring = initialize_coloring(g + copy_g)
     lastvisited = [coloring]

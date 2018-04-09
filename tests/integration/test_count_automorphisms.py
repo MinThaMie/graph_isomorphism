@@ -8,7 +8,7 @@ from color_refinement import get_number_automorphisms
 from color_refinement_helper import debug
 from graph_io import *
 
-PATH_auto = 'graphs/branching'# to run locally from PyCharm: PATH = '../../graphs/branching'
+PATH_auto = '../../graphs/branching'# to run locally from PyCharm: PATH = '../../graphs/branching'
 
 
 def expected_result(filename, key, expected):
@@ -34,7 +34,8 @@ def testfile(filename, file_expected):
     for graph_nr in file_expected.get(filename).keys():
         num = get_number_automorphisms(graphs[graph_nr])
         expected = expected_result(filename, graph_nr, file_expected)
-        message = "Expected " + str(expected) + " for G" + str(graph_nr) + " in " + filename
+        message = "Expected " + str(expected) + " for G" + str(graph_nr) + " in " + filename + " got " + str(num)
+        #print(message)
         results.append([expected, num, message])
     return results
 
