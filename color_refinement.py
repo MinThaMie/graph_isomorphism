@@ -106,14 +106,14 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
     : return: The refined coloring of the graph
     """
     # Start with first color
-    qlist = DoubleLinkedList()
+    queue = DoubleLinkedList()
     for c in sorted(coloring.colors):
-        qlist.append(c)
-    debug('Queue', qlist)
+        queue.append(c)
+    debug('Queue', queue)
 
-    while len(qlist) > 0:
+    while len(queue) > 0:
         # Start refining with the first color from the queue.
-        current_color = qlist.pop_left()
+        current_color = queue.pop_left()
         counter = generate_neighbour_count_with_color(coloring, current_color)
 
         for color_class in counter.keys():
@@ -155,24 +155,24 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
             if split_count > 1:
                 debug('New color classes:', new_color_classes)
                 # If the original color is in the queue, all the other colors should be added to the queue
-                if qlist.find(color_class) is not None:
+                if queue.find(color_class) is not None:
                     for color in new_color_classes:
-                        if qlist.find(color) is None:
-                            qlist.append(color)
+                        if queue.find(color) is None:
+                            queue.append(color)
                 # Otherwise all the colors except the largest should be added to the queue
                 else:
                     for color in new_color_classes:
                         if len(coloring.get(largest_color)) > len(coloring.get(color)):
-                            if qlist.find(color) is None:
-                                qlist.append(color)
+                            if queue.find(color) is None:
+                                queue.append(color)
                         else:
-                            if qlist.find(largest_color) is None:
-                                qlist.append(largest_color)
+                            if queue.find(largest_color) is None:
+                                queue.append(largest_color)
                             largest_color = color
 
-            debug('Queue', qlist)
+            debug('Queue', queue)
 
-        debug('Queue', qlist)
+        debug('Queue', queue)
     return coloring
 
 
