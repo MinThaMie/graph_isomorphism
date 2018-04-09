@@ -5,7 +5,7 @@ import os
 import unittest
 
 from color_refinement import get_number_isomorphisms
-from color_refinement_helper import debug
+from color_refinement_helper import debug, initialize_coloring
 from graph_io import *
 
 PATH = 'graphs/branching'# to run locally from PyCharm: PATH = '../../graphs/branching'
@@ -34,7 +34,7 @@ def testfile(filename, file_expected):
     for i in range(len(graphs)):
         for j in range(len(graphs)):
             if j > i:
-                num = get_number_isomorphisms(graphs[i], graphs[j], True)
+                num = get_number_isomorphisms(graphs[i], graphs[j], initialize_coloring(graphs[i]+ graphs[j]), True)
                 expected = expected_result(filename, graphs[i].name, graphs[j].name, file_expected)
                 message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[
                     j].name + " in " + filename

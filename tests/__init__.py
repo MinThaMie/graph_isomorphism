@@ -17,6 +17,7 @@ anisomorphic_graphs: List[Graph]
 v4e4_connected: Graph
 v5e4loop_unconnected: Graph
 v8e7loop_unconnected: Graph
+v8e7loop_unconnected2: Graph
 v5e7: Graph
 v3e2_connected: Graph
 v5e4_connected: Graph
@@ -28,7 +29,7 @@ def set_up_test_graphs():
     global empty_graph, connected_graph_order_2, disconnected_graph_order_2, non_trivial_graph, \
         non_trivial_graph_different_label, non_trivial_graph_different_weight, non_trivial_graph_complement, \
         isomorphic_graphs, anisomorphic_graphs, v4e4_connected, v5e4loop_unconnected, v5e7, v3e2_connected, \
-        v5e4_connected, v8e7loop_unconnected, modular_decomposition_graph, butterfly
+        v5e4_connected, v8e7loop_unconnected, modular_decomposition_graph, butterfly, v8e7loop_unconnected2
 
     # Prepare some vertex labels for general use
     vertex_labels = ['spam', 'ham', 'eggs', 'foo', 'bar', 'baz', 'qux', 'quux', 'quuz', 'corge', 'grault', 'garply',
@@ -132,6 +133,14 @@ def set_up_test_graphs():
     #                 4     7
     v8e7loop_unconnected = create_graph_helper([(1, 2), (2, 3), (3, 4), (5, 6), (6, 7), (5, 7), (8, 8)])
     v8e7loop_unconnected.name = 'v8e7loop_unconnected'
+
+    # Create a graph with 8 vertices and 7 edges, unconnected:
+    #    # v8e7_unconnected2 =
+    #         1 - 2 - 3   5 - 6  8=
+    #                 |    \ /
+    #                 4     7
+    v8e7loop_unconnected2 = create_graph_helper([(1, 2), (2, 3), (3, 4), (5, 6), (6, 7), (5, 7), (8, 8)])
+    v8e7loop_unconnected2.name = 'v8e7loop_unconnected2'
 
     # Create a graph where the complement should be taken during preprocessing :
     # v5e7 =

@@ -18,7 +18,7 @@ def graph_component_isomorphic(g: [Graph], h: [Graph]) -> bool:
         sub_graphs_isomorphism = False
         for h_subgraph in h:
             if checks(g_subgraph, h_subgraph):
-                # if is_isomorphisms(g_subgraph, h_subgraph):
+                if is_isomorphisms(g_subgraph, h_subgraph):
                     sub_graphs_isomorphism = True
         if not sub_graphs_isomorphism:
             return False

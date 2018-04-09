@@ -4,8 +4,10 @@ import time
 from typing import List, Tuple
 
 from color_refinement import get_number_automorphisms, is_isomorphisms
+from disconnected_refinement import graph_component_isomorphic
 from graph import Graph
 from graph_io import load_graph
+from preprocessing import checks, check_complement, find_components, construct_graph_from_components
 
 GRAPHS = 'graphs'
 BRANCHING = os.path.join(GRAPHS, 'branching')
@@ -60,27 +62,16 @@ def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[
     """
     output_result(create_title_string("ISOMORPHISMS"))
     iso_start = time.time()
-    preprocessed_graphs = preprocess_isomorphisms(graphs)
-    isomorphs = calculate_isomorphisms(preprocessed_graphs)
+    isomorphs = calculate_isomorphisms(graphs)
     iso_time = time.time() - iso_start
 
     output_result(create_title_string("AUTOMORPHISMS"))
     graphs = [graphs[0] for graphs in isomorphs]
     auto_start = time.time()
-    preprocessed_graphs = preprocess_automorphisms(graphs)
-    automorphs = calculate_automorphisms(preprocessed_graphs)
+    automorphs = calculate_automorphisms(graphs)
     auto_time = time.time() - auto_start
 
     return isomorphs, iso_time, automorphs, auto_time
-
-
-def preprocess_isomorphisms(graphs: List[Graph]) -> List[Graph]:
-    """
-    Preprocess graphs for isomorphism calculation
-    :param graphs: raw graphs
-    :return: graphs prepared for isomorphism calculation
-    """
-    return graphs
 
 
 def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
@@ -95,25 +86,43 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
         added = False
         start_time = time.time()
         for j in range(len(isomorphs)):
-            if is_isomorphisms(isomorphs[j][0], graphs[i]):
-                isomorphs[j].append(graphs[i])
-                added = True
-                output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
-                    time.time() - start_time) + ")")
-                break
+            is_potential_isomorph, g, h = preprocess(isomorphs[j][0], graphs[i])
+            if is_potential_isomorph:
+                is_connected_g, components_g = find_components(g)
+                is_connected_h, components_h = find_components(h)
+                if not is_connected_g and not is_connected_h:
+                    if graph_component_isomorphic(construct_graph_from_components(components_g),
+                                                  construct_graph_from_components(components_h)):
+                        isomorphs[j].append(graphs[i])
+                        added = True
+                        output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
+                            time.time() - start_time) + ")")
+                        break
+                if is_connected_g and is_connected_h:
+                    if is_isomorphisms(g, h):
+                        isomorphs[j].append(graphs[i])
+                        added = True
+                        output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
+                            time.time() - start_time) + ")")
+                        break
         if not added:
             isomorphs.append([graphs[i]])
             output_result(graphs[i].name + " has no isomorphisms yet (" + str(time.time() - start_time) + ")")
     return isomorphs
 
 
-def preprocess_automorphisms(graphs: List[Graph]) -> List[Graph]:
+def preprocess(g: Graph, h: Graph) -> Tuple[bool, Graph, Graph]:
     """
-    Preprocess graphs for automorphism calculation
+    Preprocess graphs for isomorphism calculation
+    :param h:
+    :param g:
     :param graphs: raw graphs
-    :return: graphs prepared for automorphism calculation
+    :return: graphs prepared for isomorphism calculation
     """
-    return graphs
+    is_isomorph = checks(g, h)
+    if is_isomorph:
+        g, h = check_complement(g, h)
+    return is_isomorph, g, h
 
 
 def calculate_automorphisms(graphs: List[Graph]) -> List[int]:
