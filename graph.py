@@ -23,7 +23,7 @@ class GraphError(Exception):
 class Vertex(object):
     """`Vertex` objects belong to graph objects. They have an attribute `label` which can be anything."""
 
-    def __init__(self, graph: "Graph", label=None):
+    def __init__(self, graph: "Graph", label=None, id=None):
         """Instantiate a vertex, part of the specified graph.
 
         :param Graph graph: The graph that this vertex is a part of.
@@ -36,7 +36,7 @@ class Vertex(object):
         self._graphs = [graph]
         self._incidence = {}
         self._label = label
-        self._id = None
+        self._id = id
 
     def __repr__(self):
         """A programmer-friendly representation of this vertex.
@@ -246,7 +246,7 @@ class Graph(object):
         self._name = name
 
         for i in range(n):
-            self.add_vertex(Vertex(self))
+            self.add_vertex(Vertex(self, id=self._next_id()))
 
     def __repr__(self):
         """A programmer-friendly representation of this graph.
