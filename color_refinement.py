@@ -9,16 +9,12 @@ import preprocessing
 from color_refinement_helper import *
 from graph_io import *
 from basicpermutationgroup import order_computation, member_of
-from graph import Vertex
 
 PATH = 'graphs/branching/'
 GRAPH = 'cubes5.grl'
 
 
 IsomorphismMapping = Dict[int, Set[int]]
-VertexMap = (Vertex, [Vertex])
-Vertex2 = (Vertex, VertexMap)
-TreeMap = Dict[Coloring, Vertex2]
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -230,12 +226,13 @@ def get_number_automorphisms(g: Graph) -> int:
     """
     copy_g = g.deepcopy()
     coloring = initialize_coloring(g + copy_g)
-    mapping : TreeMap = {coloring: (None, (None, []))}
-    generators, _ = compute_generators(g, copy_g, coloring, list(), lastvisited={})
+    lastvisited = [coloring]
+    generators = []
+    generators, _ = compute_generators(g, copy_g, coloring, generators=generators, lastvisited=lastvisited)
     return order_computation(generators)
 
 
-def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvisited: TreeMap) -> (list(), TreeMap):
+def compute_generators(g: Graph, h: Graph, coloring: Coloring, generators: list()=list(), lastvisited: list()=list()) -> (list(), list()):
     """
     Computes a set of generators of the mapping from graph g to graph h
 
@@ -249,7 +246,7 @@ def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvi
     :param Graph g: graph to determine the generators from
     :param Graph h: graph to be mapped to
     :param Coloring coloring: an unstable coloring
-    :param set X: list of generators
+    :param set generators: list of generators
     :param DoubleLinkedList lastvisited: list of lastvisited trivial mappings
     :return (list, [Coloring]): a list of generators of the mapping from graph g to h
     """
@@ -261,13 +258,13 @@ def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvi
     #     return X, []
     # Unique automorphism
     # if new_coloring.defines_bijection():
-    perm_f = Permutation(len(g.vertices), coloring=new_coloring, g=g)
     if coloring_status == "Bijection":
+        perm_f = Permutation(len(g.vertices), coloring=new_coloring, g=g)
         # is this coloring already in the set of colorings?
-        if not member_of(perm_f, X):
+        if len(generators) or not member_of(perm_f, generators):
             # put f in the set and return to last visited node
-            X.append(perm_f)
-        return X, lastvisited #TODO: return to last visited
+            generators.append(perm_f)
+        return generators, lastvisited #TODO: return to last visited
     # Undecided
     else:
         # choose branching vertex x and cell C
@@ -276,29 +273,29 @@ def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvi
         chosen_vertex_g = choose_vertex(vertices, g)
         trivial_mapping, non_trivial_mapping = get_mappings(chosen_vertex_g, vertices_in_h) # TODO: make sure a trivial mapping is done if there is one... Now, if a first_vertex does not have a trivial mapping but another vertex of g has a trivial mapping, the trivial mapping is not made
         # add this coloring to a map
-
+        is_trivial = lastvisited.__contains__(coloring)
         # if this coloring is not trivial: only do left branch (if there is a trivial, do trivial, else, do one of non_trivial)
-        if not perm_f.istrivial():
+        if not is_trivial:
             if trivial_mapping is not None:
-                lastvisited[coloring] = (chosen_vertex_g, (trivial_mapping, []))
+                # lastvisited[coloring] = is_trivial
                 trivial_coloring = create_new_color_class(new_coloring, chosen_vertex_g, trivial_mapping)
-                X, lastvisited = compute_generators(g, h, trivial_coloring, X, lastvisited=lastvisited)
-            else:
-                if len(non_trivial_mapping) > 0:
-                    lastvisited[coloring] = (chosen_vertex_g, (None, non_trivial_mapping))
-                    adapted_coloring = create_new_color_class(new_coloring, chosen_vertex_g, non_trivial_mapping[0])
-                    X, lastvisited = compute_generators(g, h, adapted_coloring, X, lastvisited=lastvisited)
+                generators, lastvisited = compute_generators(g, h, trivial_coloring, generators=generators, lastvisited=lastvisited)
+            elif len(non_trivial_mapping) > 0:
+                # lastvisited[coloring] = is_trivial
+                adapted_coloring = create_new_color_class(new_coloring, chosen_vertex_g, non_trivial_mapping[0])
+                generators, lastvisited = compute_generators(g, h, adapted_coloring, generators=generators, lastvisited=lastvisited)
         # if coloring is trivial: do all branches
         else:
-            lastvisited[coloring] = (chosen_vertex_g, (trivial_mapping, non_trivial_mapping))
             if trivial_mapping is not None:
+                # lastvisited[coloring] = True
+                lastvisited.append(new_coloring)
                 trivial_coloring = create_new_color_class(new_coloring, chosen_vertex_g, trivial_mapping)
-                X, lastvisited = compute_generators(g, h, trivial_coloring, X, lastvisited=lastvisited)
-            else:
-                for second_vertex in non_trivial_mapping:
-                    adapted_coloring = create_new_color_class(new_coloring, chosen_vertex_g, second_vertex)
-                    X, lastvisited = compute_generators(g, h, adapted_coloring, X, lastvisited=lastvisited)
-    return X, lastvisited
+                generators, lastvisited = compute_generators(g, h, trivial_coloring, generators=generators, lastvisited=lastvisited)
+                # lastvisited[coloring] = False
+            for second_vertex in non_trivial_mapping:
+                adapted_coloring = create_new_color_class(new_coloring, chosen_vertex_g, second_vertex)
+                generators, lastvisited = compute_generators(g, h, adapted_coloring, generators=generators, lastvisited=lastvisited)
+    return generators, lastvisited
 
 
 def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
