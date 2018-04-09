@@ -2,7 +2,7 @@
 Module for Doubly Linked Lists
 """
 # See for more info on generics in python https://docs.python.org/3/library/typing.html
-from typing import TypeVar
+from typing import TypeVar, Union
 
 T = TypeVar('T')
 
@@ -236,7 +236,7 @@ class DoubleLinkedList:
         self._size -= 1
         return node.value
 
-    def find(self, value: T) -> Node:
+    def find(self, value: T) -> Union[Node, None]:
         """
         Returns the first occurrence of a node with the given value
 

@@ -366,19 +366,19 @@ class Graph(object):
         edge.tail._add_incidence(edge)
 
     def deepcopy(self) -> "Graph":
-        G = Graph(self.directed)
+        graph = Graph(self.directed)
         for v in self.vertices:
-            v_copy = Vertex(G)
+            v_copy = Vertex(graph)
             v_copy.label = v.label
-            G.add_vertex(v_copy)
+            graph.add_vertex(v_copy)
         for e in self.edges:
             tail = e.tail
-            tail_copy = G.find_vertex(tail.label)
+            tail_copy = graph.find_vertex(tail.label)
             head = e.head
-            head_copy = G.find_vertex(head.label)
+            head_copy = graph.find_vertex(head.label)
             e_copy = Edge(tail_copy, head_copy)
-            G.add_edge(e_copy)
-        return G
+            graph.add_edge(e_copy)
+        return graph
 
     def find_vertex(self, label: int) -> "Vertex":
         for v in self._v:

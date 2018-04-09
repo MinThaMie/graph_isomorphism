@@ -125,7 +125,6 @@ class DoublyLinkedListCase(unittest.TestCase):
 
     def test_insert_after(self):
         n, m = 5, 3
-        node = None
         for i in range(n):
             self.dll.append(i)
 
@@ -149,7 +148,6 @@ class DoublyLinkedListCase(unittest.TestCase):
 
     def test_insert_before(self):
         n, m = 5, 3
-        node = None
         for i in range(n):
             self.dll.append(i)
 
@@ -222,7 +220,7 @@ class DoublyLinkedListCase(unittest.TestCase):
 
         # Delete last node
         # print(self.dll)
-        node = self.dll.find(n - 1)
+        # node = self.dll.find(n - 1)
 
     def test_contains(self):
         n = 5

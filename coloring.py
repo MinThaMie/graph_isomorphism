@@ -81,7 +81,6 @@ class Coloring:
 
         :param vertex: the vertex to put in another color class
         :param new_color: the color class to put the vertex in
-        :param color: the color class to remove the vertex from
         :raises KeyError when vertex is not found in the coloring
         """
         old_color = self.color(vertex)
@@ -144,7 +143,7 @@ class Coloring:
             for color in self._dict.keys()
         ) + " }"
 
-    def status(self, g: Graph, h: Graph) -> str:
+    def status(self, g: Graph, h: Graph) -> Union[str, None]:
         """
         Determines the status of the coloring
 

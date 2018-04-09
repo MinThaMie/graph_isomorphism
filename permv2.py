@@ -24,7 +24,7 @@ UseReadableOutput = True
 # If False: print(P) gives nice representation, but
 # repr(P) gives technical representation (following Python style conventions).
 
-class permutation():
+class permutation:
     def __init__(self, n, cycles=None, mapping=None):
         """
         A permutation P on n elements can be initialized in various ways:

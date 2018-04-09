@@ -27,10 +27,8 @@ EXPECTED[BIGTREE3] = {'G0G1': False, 'G0G2': True, 'G0G3': False, 'G1G2': False,
 def load_graph_from_file(filename):
     """Check if results for the given file are correct"""
     with open(PATH + "/" + filename) as f:
-        L = load_graph(f, read_list=True)
-
-    graph = L[0][0]
-    return graph
+        graphs = load_graph(f, read_list=True)
+    return graphs[0][0]
 
 
 def get_expected_result(filename, g_name, h_name):
@@ -47,9 +45,9 @@ def get_tree_files():
 def testfile(filename):
     """Check if results for the given file are correct"""
     with open(PATH + "/" + filename) as f:
-        L = load_graph(f, read_list=True)
+        graphs = load_graph(f, read_list=True)
 
-    graphs = L[0]
+    graphs = graphs[0]
     results = []
     for i in range(len(graphs)):
         for j in range(len(graphs)):
@@ -183,7 +181,7 @@ class TestTrees(unittest.TestCase):
         result = tree_isomorphism(g, j)
         self.assertFalse(result)
 
-    def test_files(self):
+    def test_more_files(self):
         files = get_tree_files()
         for file in files:
             results = testfile(file)

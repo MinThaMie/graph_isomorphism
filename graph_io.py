@@ -35,10 +35,12 @@ def read_line(f: IO[str]) -> str:
 def read_graph(graphclass, f: IO[str], name: str = "G") -> Tuple[Graph, List[str], bool]:
     """
     Read a graph from a file
+    :param str name: Graph name.
     :param graphclass: The class of the graph
     :param f: The file
     :return: The graph
     """
+
     options = []
 
     while True:
@@ -133,7 +135,7 @@ def write_line(f: IO[str], line: str):
     f.write(line + '\n')
 
 
-def write_graph_list(graph_list: List[Graph], f: IO[str], options=[]):
+def write_graph_list(graph_list: List[Graph], f: IO[str], options=list()):
     """
     Write a graph list to a file.
     :param graph_list: The list of graphs
@@ -169,7 +171,7 @@ def write_graph_list(graph_list: List[Graph], f: IO[str], options=[]):
             write_line(f, '--- Next graph:')
 
 
-def save_graph(graph_list: Union[Graph, List[Graph]], f: IO[str], options=[]):
+def save_graph(graph_list: Union[Graph, List[Graph]], f: IO[str], options=list()):
     """
     Write a graph, or a list of graphs to a file.
     :param graph_list: The graph, or a list of graphs.
@@ -182,7 +184,7 @@ def save_graph(graph_list: Union[Graph, List[Graph]], f: IO[str], options=[]):
         write_graph_list([graph_list], f, options)
 
 
-def print_graph(graph_list: Union[Graph, List[Graph]], options=[]):
+def print_graph(graph_list: Union[Graph, List[Graph]], options=list()):
     """
     Print a graph, or a list of graphs to sys.stdout
     :param graph_list: The graph, or list of graphs.

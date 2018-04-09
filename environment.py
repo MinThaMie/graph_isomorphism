@@ -2,9 +2,11 @@ import os
 import time
 from typing import List, Tuple
 
-from color_refinement import get_number_automorphisms, is_isomorphisms, fast_color_refine
+from color_refinement import get_number_automorphisms, is_isomorphisms
+from disconnected_refinement import graph_component_isomorphic
 from graph import Graph
 from graph_io import load_graph
+from preprocessing import checks, check_complement, find_components, construct_graph_from_components
 
 GRAPHS = 'graphs'
 BRANCHING = os.path.join(GRAPHS, 'branching')
@@ -48,40 +50,31 @@ def process_graph_files(graph_files: List[str]):
 
 def get_graphs_from_file(file: str) -> List[Graph]:
     with open(file) as f:
-        L = load_graph(f, read_list=True)
-    return L[0]
+        graphs = load_graph(f, read_list=True)
+    return graphs[0]
 
 
 def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[int], float]:
     """
-    First preprocesses the given graphs, then runs calculations for isomorphisms and automorphisms.
-    :param graphs: raw graphs to be processed
-    :return: result tuple containing a list with: a list of isomorphic graphs, isomorphisms calculation time, automorphisms per graph and automorphisms calculation time
+    First preprocesses the given graphs, then runs calculations for isomorphisms and automorphisms. :param graphs:
+    raw graphs to be processed
+
+    :return: result tuple containing a list with: a list of isomorphic graphs, isomorphisms calculation time,
+             automorphisms per graph and automorphisms calculation time
     """
 
     output_result(create_title_string("ISOMORPHISMS"))
     iso_start = time.time()
-    preprocessed_graphs = preprocess_isomorphisms(graphs)
-    isomorphs = calculate_isomorphisms(preprocessed_graphs)
+    isomorphs = calculate_isomorphisms(graphs)
     iso_time = time.time() - iso_start
 
     output_result(create_title_string("AUTOMORPHISMS"))
     graphs = [graphs[0] for graphs in isomorphs]
     auto_start = time.time()
-    preprocessed_graphs = preprocess_automorphisms(graphs)
-    automorphs = calculate_automorphisms(preprocessed_graphs)
+    automorphs = calculate_automorphisms(graphs)
     auto_time = time.time() - auto_start
 
     return isomorphs, iso_time, automorphs, auto_time
-
-
-def preprocess_isomorphisms(graphs: List[Graph]) -> List[Graph]:
-    """
-    Preprocess graphs for isomorphism calculation
-    :param graphs: raw graphs
-    :return: graphs prepared for isomorphism calculation
-    """
-    return graphs
 
 
 def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
@@ -97,14 +90,27 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
         added = False
         start_time = time.time()
         for j in range(len(isomorphs)):
-            if is_isomorphisms(isomorphs[j][0], graphs[i], fast_color_refine):
-                isomorphs[j].append(graphs[i])
-                added = True
-                end_time = time.time()
-                output_result(
-                    f"{graphs[i].name} and {isomorphs[j][0].name} are isomorphisms ({str(end_time - start_time)})"
-                )
-                break
+            is_potential_isomorph, g, h = preprocess(isomorphs[j][0], graphs[i])
+            if is_potential_isomorph:
+                is_connected_g, components_g = find_components(g)
+                is_connected_h, components_h = find_components(h)
+                if not is_connected_g and not is_connected_h:
+                    if graph_component_isomorphic(construct_graph_from_components(components_g),
+                                                  construct_graph_from_components(components_h)):
+                        end_time = time.time()
+                        isomorphs[j].append(graphs[i])
+                        added = True
+                        output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
+                            end_time - start_time) + ")")
+                        break
+                if is_connected_g and is_connected_h:
+                    if is_isomorphisms(g, h):
+                        end_time = time.time()
+                        isomorphs[j].append(graphs[i])
+                        added = True
+                        output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
+                            end_time - start_time) + ")")
+                        break
         if not added:
             isomorphs.append([graphs[i]])
             end_time = time.time()
@@ -112,13 +118,18 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
     return isomorphs
 
 
-def preprocess_automorphisms(graphs: List[Graph]) -> List[Graph]:
+def preprocess(g: Graph, h: Graph) -> Tuple[bool, Graph, Graph]:
     """
-    Preprocess graphs for automorphism calculation
-    :param graphs: raw graphs
-    :return: graphs prepared for automorphism calculation
+    Preprocess graphs for isomorphism calculation
+    :param Graph h: One graph.
+    :param Graph g: Another graph.
+    :return: graphs prepared for isomorphism calculation
     """
-    return graphs
+
+    is_isomorph = checks(g, h)
+    if is_isomorph:
+        g, h = check_complement(g, h)
+    return is_isomorph, g, h
 
 
 def calculate_automorphisms(graphs: List[Graph]) -> List[int]:
@@ -131,7 +142,7 @@ def calculate_automorphisms(graphs: List[Graph]) -> List[int]:
     automorphisms = []
     for graph in graphs:
         start_time = time.time()
-        num_automorphisms = get_number_automorphisms(graph, fast_color_refine)
+        num_automorphisms = get_number_automorphisms(graph)
         end_time = time.time()
         output_result(
             f"{graph.name}\'s group has {str(num_automorphisms)} automorphisms ({str(end_time - start_time)})")

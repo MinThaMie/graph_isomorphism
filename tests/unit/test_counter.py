@@ -22,8 +22,8 @@ class CounterCase(unittest.TestCase):
         #    |
         #    4
         with open(PATH + "arrow.grl") as f:
-            L = load_graph(f, read_list=True)
-        graph = L[0][0]
+            graphs = load_graph(f, read_list=True)
+        graph = graphs[0][0]
         coloring = initialize_coloring(graph)
         color = sorted(coloring.colors)[0]
         counter = generate_neighbour_count_with_color(coloring, color)
@@ -44,8 +44,8 @@ class CounterCase(unittest.TestCase):
         #   |       |
         #   0 ----- 1
         with open(PATH + "domino.grl") as f:
-            L = load_graph(f, read_list=True)
-        graph = L[0][0]
+            graphs = load_graph(f, read_list=True)
+        graph = graphs[0][0]
         coloring = initialize_coloring(graph)
         color = sorted(coloring.colors)[0]
         counter = generate_neighbour_count_with_color(coloring, color)

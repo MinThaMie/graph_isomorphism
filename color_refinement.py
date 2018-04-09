@@ -8,12 +8,10 @@ import preprocessing
 from color_refinement_helper import *
 from graph_io import *
 from tools import IsomorphismMapping, update_known_isomorphisms
-
-PATH = 'graphs/branching/'
-GRAPH = 'bigtrees2.grl'
+from tree_refinement import tree_isomorphism
 
 
-def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, refinement_algorithm, count: bool = True) -> int:
+def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
     """
     Returns the number of isomorphisms of `Graph` g and h for a given coloring
 
@@ -24,13 +22,12 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, refinement_algorit
     :param g: first graph to compare
     :param h: second graph to compare
     :param coloring: coloring of `Graph` g and h
-    :param function refinement_algorithm: The refinement algorithm to use.
     :param count: if `True` the number of isomorphisms is returned, if `False` 0 is returned if no isomorphisms is found
     and 1 is returned when the first isomorphism is found
     :return: the number of isomorphisms of graph g and h for a given coloring
     """
 
-    new_coloring = refinement_algorithm(coloring)
+    new_coloring = fast_color_refine(coloring)
     coloring_status = new_coloring.status(g, h)
 
     if coloring_status == "Unbalanced":
@@ -44,7 +41,7 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, refinement_algorit
     number_isomorphisms = 0
     for second_vertex in vertices_in_h:
         adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
-        number_isomorphisms += count_isomorphism(g, h, adapted_coloring, refinement_algorithm, count)
+        number_isomorphisms += count_isomorphism(g, h, adapted_coloring, count)
 
         if not count and number_isomorphisms > 0:
             return number_isomorphisms
@@ -189,74 +186,91 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
     return coloring
 
 
-def get_number_isomorphisms(g: "Graph", h: "Graph", refinement_algorithm, count: bool) -> int:
+def get_number_isomorphisms(g: Graph, h: Graph, coloring: Coloring, count: bool,
+                            modular_decomposition_factor: int = 1) -> int:
     """
     Returns the number of isomorphisms of graph g and h
 
     First, it is determined if graph have potential to be isomorphic by the number of vertices and edges. Next, the
     coloring is initialized by degree of the vertices. Next, the number of isomorphisms is counted by the algorithm of
     `count_isomorphism`.
+    :param coloring: initial coloring
+    :param modular_decomposition_factor: modular_decomposition_factor
     :param Graph g: graph for which to determine the number of isomorphisms
     :param Graph h: graph for which to determine the number of isomorphisms
-    :param function refinement_algorithm: The refinement algorithm to use.
     :param count: whether the number of isomorphisms
     :return: The number of isomorphisms of graph g and h
     """
-
-    if not preprocessing.checks(g, h):
-        return 0
-
-    g, h = preprocessing.check_complement(g, h)
-
-    md_g = graph_to_modules(g)
-    md_h = graph_to_modules(h)
-
-    if not preprocessing.check_modular_decomposition(md_g, md_h):
-        debug('Modular decomposition detected anisomorphism!')
-
-        return 0
-
-    # At this point, g and h must have the same MD factor
-    g, modular_decomposition_factor = preprocessing.calculate_modular_decomposition_and_factor(g, md_g)
-    h = preprocessing.calculate_modular_decomposition_without_factor(h, md_h)
-
-    coloring = initialize_coloring(g + h)
-
-    return modular_decomposition_factor * count_isomorphism(g, h, coloring, refinement_algorithm, count)
+    return modular_decomposition_factor * count_isomorphism(g, h, coloring, count)
 
 
-def is_isomorphisms(g: Graph, h: Graph, refinement_algorithm) -> bool:
+def is_isomorphisms(g: Graph, h: Graph) -> bool:
     """
     Returns whether the two graphs are isomorphic
 
     Uses the algorithm of `get_number_isomorphisms` with count set to `False` is used to determine the number of
     isomorphisms. When the number of isomorphisms is 0, graphs are not isomorphic. Otherwise, the graphs are isomorphic.
-    :param g: One graph to compare for isomorphism.
-    :param h: Another graph to compare for isomorphism.
-    :param function refinement_algorithm: The refinement algorithm to use.
+    :param Graph g: One graph to compare for isomorphism.
+    :param Graph h: Another graph to compare for isomorphism.
     :return: `True` if graph g and h are isomorphic, `False` otherwise
     """
-    return get_number_isomorphisms(g, h, refinement_algorithm, False) > 0
+
+    if preprocessing.is_tree(g):
+        if preprocessing.is_tree(h):
+            return tree_isomorphism(g, h)
+        else:
+            return False
+    elif preprocessing.is_tree(h):
+        return False
+    else:
+        is_potential_isomorph, g, h, factor = modular_decomposition(g, h)
+        if is_potential_isomorph:
+            if preprocessing.is_tree(g):
+                if preprocessing.is_tree(h):
+                    return tree_isomorphism(g, h)
+                else:
+                    return False
+            else:
+                coloring = initialize_coloring(g + h)
+                return get_number_isomorphisms(g, h, coloring, False) > 0
+        else:
+            return False
 
 
-def get_number_automorphisms(g: Graph, refinement_algorithm) -> int:
+def modular_decomposition(g: Graph, h: Graph) -> Tuple[bool, Graph, Graph, int]:
+    md_g = graph_to_modules(g)
+    md_h = graph_to_modules(h)
+
+    if not preprocessing.is_same_decomposition(md_g, md_h):
+        debug('Modular decomposition detected anisomorphism!')
+        return False, md_g, md_h, 1
+
+    # At this point, g and h must have the same MD factor
+    g, modular_decomposition_factor = preprocessing.calculate_modular_decomposition_and_factor(g, md_g)
+    h = preprocessing.calculate_modular_decomposition_without_factor(h, md_h)
+
+    return True, g, h, modular_decomposition_factor
+
+
+def get_number_automorphisms(g: Graph) -> int:
     """
     Returns the number of isomorphisms of graph g
 
     The algorithm of `get_number_isomorphisms` is used with graph g and a copy of graph g.
     :param g: graph for which to determine the number of automorphisms.
-    :param function refinement_algorithm: The refinement algorithm to use.
     :return: The number of automorphisms of graph g
     """
-    return get_number_isomorphisms(g, g.deepcopy(), refinement_algorithm, count=True)
+    h = g.deepcopy()
+    is_potential_isomorph, g, h, factor = modular_decomposition(g, h)
+    coloring = initialize_coloring(g + h)
+    return get_number_isomorphisms(g, h, coloring, True, factor)
 
 
-def process(graphs: List[Graph], refinement_algorithm) -> IsomorphismMapping:
+def process(graphs: List[Graph]) -> IsomorphismMapping:
     """
     Process a list of graphs to find indices into that list of isomorphic graphs.
 
     :param list graphs: The list of graphs to process.
-    :param function refinement_algorithm: The refinement algorithm to use.
     :return: An `IsomorphismMapping`, which is a mapping of graph indices to sets of isomorphic graph indices.
     """
 
@@ -270,7 +284,7 @@ def process(graphs: List[Graph], refinement_algorithm) -> IsomorphismMapping:
         for j in graph_indices:
             if j == i:
                 start = time.time()
-                num = get_number_automorphisms(graphs[i], refinement_algorithm)
+                num = get_number_automorphisms(graphs[i])
                 end = time.time()
 
                 automorphisms[graphs[i]] = num
@@ -285,7 +299,7 @@ def process(graphs: List[Graph], refinement_algorithm) -> IsomorphismMapping:
 
                 else:
                     start = time.time()
-                    isomorphism = is_isomorphisms(graphs[i], graphs[j], refinement_algorithm)
+                    isomorphism = is_isomorphisms(graphs[i], graphs[j])
                     end = time.time()
 
                     print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
@@ -298,13 +312,3 @@ def process(graphs: List[Graph], refinement_algorithm) -> IsomorphismMapping:
                 print()
 
     return isomorphism_index_mapping
-
-
-if __name__ == "__main__":
-    with open(PATH + GRAPH) as f:
-        L = load_graph(f, read_list=True)
-
-    graphs = L[0]
-    print("Graph: ", GRAPH)
-
-    known_isomorphisms = process(graphs, fast_color_refine)
