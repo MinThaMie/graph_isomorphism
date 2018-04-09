@@ -189,7 +189,7 @@ def graph_to_modules(graph: Graph) -> ModularDecomposition:
     return modular_decomposition
 
 
-def modules_to_graph(modules: ModularDecomposition) -> (Graph, dict()):
+def modules_to_graph(modules: ModularDecomposition) -> (Graph, {Vertex: Vertex}):
     """
     Returns a new Graph object with Modules compressed to a Vertex
     :param modules: list of modules
@@ -223,11 +223,11 @@ def modules_to_graph(modules: ModularDecomposition) -> (Graph, dict()):
     else:
         graph = create_graph_helper(sorted(list(edges)))
 
-    mapping = {}
+    old_new_vertex_mapping = {}
     for vertex, label in label_mapping.items():
-        mapping[vertex] = graph.find_vertex(label)
+        old_new_vertex_mapping[vertex] = graph.find_vertex(label)
 
-    return graph, mapping
+    return graph, old_new_vertex_mapping
 
 
 def determine_module_connectivity(md: ModularDecomposition):
@@ -244,38 +244,31 @@ def determine_module_connectivity(md: ModularDecomposition):
     return connected_modules, disconnected_modules
 
 
-def find_isomorphic_modules(md: ModularDecomposition):
-    isomorphic_modules = {}
-    for module in md:
-        isomorphic_modules.setdefault(len(module), []).append(module)
-    return isomorphic_modules
+def modules_to_graph_with_module_isomorphism(md: ModularDecomposition) -> (Graph, [[Vertex]]):
+    def _add_iso_groups(md_groups, groups, mapping):
+        for modules in md_groups:
+            iso = []
+            for module in modules:
+                iso.append(mapping[module[0]])
+            groups.append(iso)
 
+    def _sort_iso_groups(length_to_module_mapping):
+        return [length_to_module_mapping[length] for length in sorted(length_to_module_mapping.keys())]
 
-def modules_to_graph_with_module_isomorphism(md: ModularDecomposition):
-    graph, mapping = modules_to_graph(md)
-
+    graph, old_new_vertex_mapping = modules_to_graph(md)
     connected_md, disconnected_md = determine_module_connectivity(md)
-    isomorphic_connected_modules = find_isomorphic_modules(connected_md)
-    isomorphic_disconnected_modules = find_isomorphic_modules(disconnected_md)
 
-    modular_isomorphisms = []
-    for module in isomorphic_connected_modules.values():
-        iso = []
-        for md in module:
-            vertex = md[0]
-            iso.append(mapping[vertex])
+    length_to_iso_connected_modules = group_by(connected_md, len)
+    length_to_isomorphic_disconnected_modules = group_by(disconnected_md, len)
 
-        modular_isomorphisms.append(iso)
+    connected_iso_groups = _sort_iso_groups(length_to_iso_connected_modules)
+    disconnected_iso_groups = _sort_iso_groups(length_to_isomorphic_disconnected_modules)
 
-    for module in isomorphic_disconnected_modules.values():
-        iso = []
-        for md in module:
-            vertex = md[0]
-            iso.append(mapping[vertex])
+    md_iso_groups = []
+    _add_iso_groups(connected_iso_groups, md_iso_groups, old_new_vertex_mapping)
+    _add_iso_groups(disconnected_iso_groups, md_iso_groups, old_new_vertex_mapping)
 
-        modular_isomorphisms.append(iso)
-
-    return graph, modular_isomorphisms
+    return graph, md_iso_groups
 
 
 def get_edges_of_vertex(vertex: Vertex) -> List[List[str]]:
@@ -350,7 +343,7 @@ def generate_neighbour_count_with_color(coloring: Coloring, current_color: int) 
         counter[coloring.color(v)].update({v: count})
     return counter
 
-  
+
 def group_by(obj, group_rule=None) -> dict:
     """
     Group the given object according to the given key.
