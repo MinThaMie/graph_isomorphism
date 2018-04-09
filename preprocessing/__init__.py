@@ -140,7 +140,7 @@ def construct_graph_from_components(components: dict) -> [Graph]:
     return graphs
 
 
-def is_tree(g: Graph):
+def is_tree(g: Graph) -> bool:
     """
     This method checks whether graph g is a tree. First iteration.
     Uses the is_cycle method from tree_algorithm_helper.py
@@ -227,11 +227,11 @@ def calculate_modular_decomposition_and_factor(g: Graph, md_g: ModularDecomposit
     factor = modular_decomposition_factor(md_g)
     debug(f'Using modular decomposition with factor = {factor}')
 
-    g_md = modules_to_graph(md_g)
+    g_md, _ = modules_to_graph(md_g)
     return g_md, factor
 
 
-def calculate_modular_decomposition_without_factor(g: Graph, md_g: ModularDecomposition) -> Graph:
+def calculate_modular_decomposition_without_factor(g: Graph, md_g: ModularDecomposition) -> (Graph, dict()):
     if _check_modular_decomposition_length(g, md_g):  # Implies order of MD of G is not less than order of G
-        return g
+        return g, {}
     return modules_to_graph(md_g)
