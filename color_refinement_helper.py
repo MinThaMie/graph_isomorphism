@@ -4,8 +4,7 @@ Module with helper methods for the Color Refinement Algorithm
 from typing import Iterable
 
 from coloring import *
-from permv2 import Permutation
-from basicpermutationgroup import compute_orbit, stabilizer, find_non_trivial_orbit
+from graph import Graph
 
 DEBUG = False
 
@@ -75,6 +74,27 @@ def choose_color(coloring: Coloring) -> List[Vertex]:
         if len(vertices) >= 4 and len(vertices) % 2 == 0:
             return vertices
     return []
+
+
+def choose_color_trivial(coloring: Coloring, g: Graph) -> (Vertex, [Vertex]):
+    """
+    Returns a partition cell (aka color class) with at least four vertices
+
+    Returns the first color class with at least four vertices that is found.
+    :param coloring: current coloring
+    :return: a color class with at least four vertices, `None` if no color class could be found
+    """
+    for key in coloring.colors:
+        vertices = list(coloring.get(key))
+        if len(vertices) >= 4 and len(vertices) % 2 == 0:
+            ordered = group_by(vertices, group_rule=lambda v: v.label)
+            for key1 in ordered.keys():
+                if len(ordered[key1]) == 2:
+                    if ordered[key1][0].in_graph(g):
+                        return ordered[key1][0], vertices
+                    else:
+                        return ordered[key1][1], vertices
+    return None, []
 
 
 def choose_vertex(color: List[Vertex], g: Graph) -> Vertex:

@@ -266,6 +266,16 @@ class ColorRefineHelper(unittest.TestCase):
         self.assertEqual(vh_0, triv)
         self.assertEqual(0, len(non_triv))
 
+    def test_choose_color_trivial(self):
+        g = create_graph_helper([(1, 2), (2, 3)])
+        v_g1, v_g2, v_g3 = g.vertices
+        g_copy = g.deepcopy()
+        v_1, v_2, v_3 = g_copy.vertices
+        added = g + g_copy
+        coloring = initialize_coloring(added)
+        chosen, color_class = choose_color_trivial(coloring, g)
+        self.assertEqual([v_g1, v_g3, v_1, v_3], color_class)
+        self.assertEqual(v_g1, chosen)
 
 
 
