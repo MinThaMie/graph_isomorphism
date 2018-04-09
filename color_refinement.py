@@ -40,7 +40,7 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, refinement_algorit
 
     vertices = choose_color(new_coloring)
     first_vertex = choose_vertex(vertices, g)
-    vertices_in_h = [v for v in vertices if v.in_graph(h)]
+    vertices_in_h = (v for v in vertices if v.in_graph(h))
     number_isomorphisms = 0
     for second_vertex in vertices_in_h:
         adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
