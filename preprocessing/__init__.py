@@ -1,3 +1,4 @@
+from dll import DoubleLinkedList
 import math
 
 from color_refinement_helper import compare, debug, modules_to_graph, ModularDecomposition
@@ -79,6 +80,63 @@ def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
         return g.complement(), h.complement()
     else:
         return g, h
+
+
+def find_components(g: Graph):
+    """
+    Breadth First Search Alg. Which also:
+    tests if the graph is connected,
+    computes the distance from s to the other edges
+    labels the vertices in the order they are visited
+    :param g: Graph
+    :return: (isConnected, {dict of components})
+    """
+    visited = set()
+    components = dict()
+    count = 1
+
+    while len(visited) < len(g.vertices):
+        for o in g.vertices:
+            if o not in visited:
+                v = o
+                break
+        queue = DoubleLinkedList()  # queue
+        queue.append(v)
+        visited.add(v)
+        components[count] = [v]
+
+        while len(queue) > 0:
+            w = queue.pop()  # BFS so FIFO
+            for n in w.neighbours:
+                # If w not visited
+                if n not in visited:
+                    visited.add(n)
+                    queue.append(n)
+                    components[count].append(n)
+        count += 1
+
+    is_connected = len(components) == 1
+    return is_connected, components
+
+
+def construct_graph_from_components(components: dict) -> [Graph]:
+    """
+    constructs a list of graphs from a dictionary of components
+
+        :param components: a dictionary constructed from an (unconnected) graph
+        :return: list of subgraphs
+        """
+    graphs = list()
+    for key in components.keys():
+        subgraph = Graph(False)
+        for vertex in components[key]:
+            if vertex not in subgraph.vertices:
+                subgraph.add_vertex(vertex)
+                for edge in vertex.incidence:
+                    if edge not in subgraph.edges:
+                        subgraph.add_edge(edge)
+        graphs.append(subgraph)
+    return graphs
 
 
 def is_tree(g: Graph):
