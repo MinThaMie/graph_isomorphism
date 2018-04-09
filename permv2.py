@@ -42,7 +42,7 @@ class permutation():
             P=permutation(5,cycles=[[1,2],[3,4]])
         """
         self.n = n
-        if mapping != None:
+        if mapping is not None:
             if testvalidity:
                 assert len(mapping) == n
                 # if len(mapping)!=n:
@@ -57,7 +57,7 @@ class permutation():
                 self.P = mapping[:]  # safe
             else:
                 self.P = mapping  # fast
-        elif cycles != None:
+        elif cycles is not None:
             self.P = [i for i in range(n)]
             for cycle in cycles:
                 for i in range(len(cycle)):
@@ -140,8 +140,8 @@ class permutation():
         Usage: simply type P*Q to obtain the composition of P and Q.
         (Q is applied first.)
         """
-        if self.n != other.n:
-            raise permError
+        # if self.n != other.n:
+        #     raise permError
         Q = [0] * self.n
         for i in range(self.n):
             Q[i] = self.P[other.P[i]]
