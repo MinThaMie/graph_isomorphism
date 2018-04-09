@@ -38,11 +38,12 @@ def tree_isomorphism(g: Graph, h: Graph, modules_g: [[Vertex]] = None, modules_h
     level_dict_g = group_by(g.vertices, lambda v: v.level)
     level_dict_h = group_by(h.vertices, lambda v: v.level)
     # Modules must have the same level
-    if modules:
-        for module in modules:
-            level = module[0].level
-            for v in module:
-                if v.level != level:
+    if modules_g and modules_h:
+        for module_g in modules_g:
+            for module_h in modules_h:
+                level_g = module_g[0].level
+                level_h = module_h[0].level #TODO, hier klopt denk ik niets van, morgenochtend nog ff een blik tegenaan slingeren: zelfde geld voor tuples in module....
+                if level_g != level_h:
                     return False
     # Gets the lowest level in the tree and since we assume isomorphism the dict which is used does not matter
     lowest_level = max(level_dict_g)
@@ -72,11 +73,12 @@ def tree_isomorphism(g: Graph, h: Graph, modules_g: [[Vertex]] = None, modules_h
             value += 1
         lowest_level -= 1
     # Modules should all have the same tuple, just like roots
-    if modules:
-        for module in modules:
-            tuples = module[0].tuples
-            for v in module:
-                if v.tuples != tuples:
+    if modules_g:
+        for module_g in modules_g:
+            for module_h in modules_h:
+                tuples_g = module_g[0].tuples
+                tuples_h = module_h[0].tuples
+                if tuples_g != tuples_h:
                     return False
     # If the roots have the same tuple the trees are isomorphic
     return sorted(root_g.tuples) == sorted(root_h.tuples)
