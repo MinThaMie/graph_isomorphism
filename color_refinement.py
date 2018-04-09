@@ -5,12 +5,12 @@ version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 import time
 
 import preprocessing
-from basicpermutationgroup import order_computation, member_of
 from color_refinement_helper import *
 from graph_io import *
+from tools import update_known_isomorphisms, IsomorphismMapping
 from permv2 import Permutation
-from tools import IsomorphismMapping, update_known_isomorphisms
 from tree_refinement import tree_isomorphism
+from basicpermutationgroup import order_computation, member_of
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -225,7 +225,7 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
     elif preprocessing.is_tree(h):
         return False
     else:
-        is_potential_isomorph, g, h, factor = modular_decomposition(g, h)
+        is_potential_isomorph, g, h, factor, md_iso_groups_g, md_iso_groups_h = modular_decomposition(g, h)
         if is_potential_isomorph:
             if preprocessing.is_tree(g):
                 if preprocessing.is_tree(h):
@@ -239,19 +239,19 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
             return False
 
 
-def modular_decomposition(g: Graph, h: Graph) -> Tuple[bool, Graph, Graph, int]:
+def modular_decomposition(g: Graph, h: Graph) -> (bool, Graph, Graph, int, [[Vertex]], [[Vertex]]):
     md_g = graph_to_modules(g)
     md_h = graph_to_modules(h)
 
     if not preprocessing.is_similar_modular_decomposition(md_g, md_h):
         debug('Modular decomposition detected anisomorphism!')
-        return False, md_g, md_h, 1
+        return False, md_g, md_h, 1, [], []
 
     # At this point, g and h must have the same MD factor
-    g, modular_decomposition_factor = preprocessing.calculate_modular_decomposition_and_factor(g, md_g)
-    h, _ = preprocessing.calculate_modular_decomposition_without_factor(h, md_h)
+    g, modular_decomposition_factor, md_iso_groups_g = preprocessing.calculate_modular_decomposition_and_factor(g, md_g)
+    h, md_iso_groups_h = preprocessing.calculate_modular_decomposition_without_factor(h, md_h)
 
-    return True, g, h, modular_decomposition_factor
+    return True, g, h, modular_decomposition_factor, md_iso_groups_g, md_iso_groups_h
 
 
 def get_number_automorphisms(g: Graph) -> int:
@@ -273,7 +273,7 @@ def get_number_automorphisms(g: Graph) -> int:
 
     # TODO: fix modular decomposition for #Aut(G)
     # h = g.deepcopy()
-    # is_potential_isomorph, g, h, factor = modular_decomposition(g, h)
+    # is_potential_isomorph, g, h, factor, md_iso_groups_g, md_iso_groups_h = modular_decomposition(g, h)
     # coloring = initialize_coloring(g + h)
     generators, _ = compute_generators(g, copy_g, coloring, generators=generators, lastvisited=lastvisited)
     return order_computation(generators)

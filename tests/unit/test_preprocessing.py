@@ -167,19 +167,19 @@ if __name__ == '__main__':
     def test_calculate_modular_decomposition_and_factor(self):
         graph = Graph(directed=False)
         md_graph = graph_to_modules(graph)
-        graph_md, factor = calculate_modular_decomposition_and_factor(graph, md_graph)
+        graph_md, factor, _ = calculate_modular_decomposition_and_factor(graph, md_graph)
         self.assertTrue(graph is graph_md)
         self.assertEqual(1, factor)
 
         graph = tests.non_trivial_graph
         md_graph = graph_to_modules(graph)
-        graph_md, factor = calculate_modular_decomposition_and_factor(graph, md_graph)
+        graph_md, factor, _ = calculate_modular_decomposition_and_factor(graph, md_graph)
         self.assertFalse(graph is graph_md)
         self.assertEqual(2, factor)
 
         graph = tests.modular_decomposition_graph
         md_graph = graph_to_modules(graph)
-        _, factor = calculate_modular_decomposition_and_factor(graph, md_graph)
+        _, factor, _ = calculate_modular_decomposition_and_factor(graph, md_graph)
         self.assertEqual(24, factor)
 
 if __name__ == '__main__':
