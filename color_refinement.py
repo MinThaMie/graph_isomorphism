@@ -208,6 +208,8 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
             return tree_isomorphism(g, h)
         else:
             return False
+    elif preprocessing.is_tree(h):
+        return False
     else:
         is_potential_isomorph, g, h, factor = modular_decomposition(g, h)
         if is_potential_isomorph:
@@ -318,13 +320,3 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
                 print()
 
     return isomorphism_index_mapping
-
-
-if __name__ == "__main__":
-    with open(PATH + GRAPH) as f:
-        L = load_graph(f, read_list=True)
-
-    graphs = L[0]
-    print("Graph: ", GRAPH)
-
-    known_isomorphisms = process(graphs)
