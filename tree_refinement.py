@@ -8,6 +8,7 @@ from graph import Graph, Vertex
 def tree_isomorphism(g: Graph, h: Graph, modules: [[Vertex]] = None) -> bool:
     """
     Checks if Tree g and Tree h are isomorphic
+    :param modules: list of modules for graph g and h
     :param g: Graph
     :param h: Graph
     :return: Boolean whether they are isomorphic
