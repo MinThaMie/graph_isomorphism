@@ -4,7 +4,7 @@ Test file for Color Refinement Algorithm
 import os
 import unittest
 
-from color_refinement import get_number_isomorphisms
+from color_refinement import get_number_isomorphisms, fast_color_refine
 from color_refinement_helper import debug
 from graph_io import *
 
@@ -34,7 +34,7 @@ def testfile(filename, file_expected):
     for i in range(len(graphs)):
         for j in range(len(graphs)):
             if j > i:
-                num = get_number_isomorphisms(graphs[i], graphs[j], True)
+                num = get_number_isomorphisms(graphs[i], graphs[j], fast_color_refine, True)
                 expected = expected_result(filename, graphs[i].name, graphs[j].name, file_expected)
                 message = "Expected " + str(expected) + " for " + graphs[i].name + " and " + graphs[
                     j].name + " in " + filename

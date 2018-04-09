@@ -65,7 +65,7 @@ class FastColorRefineCase(unittest.TestCase):
         # isomorphisms are correct
         tests.set_up_test_graphs()
         graphs = tests.isomorphic_graphs + tests.anisomorphic_graphs
-        known_isomorphisms = process(graphs)
+        known_isomorphisms = process(graphs, fast_color_refine)
 
         self.assertEqual({1, 2}, known_isomorphisms[0])
         self.assertEqual({0, 2}, known_isomorphisms[1])
