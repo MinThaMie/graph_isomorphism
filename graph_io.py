@@ -287,13 +287,3 @@ def read_expected_result(f: IO[str]):
             break
 
     return expected
-
-
-if __name__ == "__main__":
-    from mygraphs import MyGraph
-
-    with open('examplegraph.gr') as f:
-        G = load_graph(f, MyGraph)
-    print(G)
-    G.del_vert(next(iter(G.vertices)))
-    print(G)
