@@ -4,6 +4,10 @@ Module with helper methods for the Color Refinement Algorithm
 from typing import Iterable
 
 from coloring import *
+from tools import create_graph_helper
+
+Module = [Vertex]
+ModularDecomposition = [Module]
 
 DEBUG = False
 
@@ -117,7 +121,6 @@ def are_twins(u: Vertex, v: Vertex) -> bool:
     return compare(n_u, n_v, lambda vertex: vertex.label)
 
 
-# TODO: get_modules
 def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
     """
     Returns a list of true twins and a list of false twins
@@ -136,6 +139,82 @@ def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
                 if compare(u.neighbours, v.neighbours, lambda vertex: vertex.label):
                     false_twins.append((u, v))
     return twins, false_twins
+
+
+def graph_to_modules(graph: Graph) -> ModularDecomposition:
+    vertices = graph.vertices
+    vertices_in_any_module = []
+    modular_decomposition = []
+
+    for vertex in vertices:
+        if vertex in vertices_in_any_module:
+            continue
+
+        module = [vertex]
+        vertices_in_any_module.append(vertex)
+
+        neighbours = vertex.neighbours
+
+        other_vertices = [vertex for vertex in vertices if vertex not in vertices_in_any_module]
+        for other_vertex in other_vertices:
+            other_neighbours = set(other_vertex.neighbours) - {vertex}
+            if other_neighbours == (set(neighbours) - {other_vertex}):
+                module.append(other_vertex)
+                vertices_in_any_module.append(other_vertex)
+
+        modular_decomposition.append(module)
+
+    return modular_decomposition
+
+
+def modules_to_graph(modules: ModularDecomposition) -> Graph:
+    """
+    Returns a new Graph object with Modules compressed to a Vertex
+    :param modules: list of modules
+    :return: new Graph
+    """
+    edges_list = []
+    for module in modules:
+        for vertex in module:
+            edges_list += get_edges_of_vertex(vertex)
+
+    for module in modules:
+        if len(module) > 1:
+            new_label = create_new_label(module)
+            edges_list = relabel_edges(module, edges_list, new_label)
+
+    edges = set()
+    for edge in edges_list:
+        if edge[0] != edge[1]:
+            edges.add(tuple(sorted(edge)))
+
+    graph = create_graph_helper(list(edges))
+    return graph
+
+
+def get_edges_of_vertex(vertex: Vertex) -> List[List[str]]:
+    edges = []
+    for edge in vertex.incidence:
+        edges.append([str(edge.head.label), str(edge.tail.label)])
+    return edges
+
+
+def create_new_label(module: Module) -> str:
+    new_label = str(module[0].label)
+    itermodule = iter(module)
+    next(itermodule)
+    for vertex in itermodule:
+        new_label += "+" + str(vertex.label)
+    return new_label
+
+
+def relabel_edges(module: Module, edges_list: List[List[str]], new_label: str) -> List[List[str]]:
+    for edge in edges_list:
+        for vertex in module:
+            label = str(vertex.label)
+            edge[0] = new_label if edge[0] == label else edge[0]
+            edge[1] = new_label if edge[1] == label else edge[1]
+    return edges_list
 
 
 def initialize_coloring(g: Graph) -> Coloring:
@@ -185,7 +264,7 @@ def generate_neighbour_count_with_color(coloring: Coloring, current_color: int) 
         counter[coloring.color(v)].update({v: count})
     return counter
 
-  
+
 def group_by(obj, group_rule=None) -> dict:
     """
     Group the given object according to the given key.

@@ -1,7 +1,7 @@
-import tests
-import unittest
 import os
+import unittest
 
+import tests
 from color_refinement import *
 from graph_io import load_graph
 from tree_refinement import *

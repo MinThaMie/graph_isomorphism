@@ -1,6 +1,7 @@
+import math
+
+from color_refinement_helper import compare, debug, modules_to_graph, ModularDecomposition
 from graph import *
-from color_refinement_helper import compare, debug
-from graph import Graph, Vertex
 
 
 def checks(g, h) -> bool:
@@ -116,3 +117,62 @@ def has_cycle(g: Graph, vertex: Vertex, predecessor: Vertex, visited):
             return True
         elif v not in visited:
             return has_cycle(g, v, vertex, visited)
+
+
+def get_modular_decomposition_sizes(md: ModularDecomposition):
+    return map(len, md)
+
+
+def check_modular_decomposition(md_g: ModularDecomposition, md_h: ModularDecomposition) -> bool:
+    """
+    Check if modular decompositions of two graphs indicate anisomorphism.
+
+    :param ModularDecomposition md_g: One modular decomposition.
+    :param ModularDecomposition md_h: Another modular decomposition.
+    :return: `False` if the graphs cannot be isomorphic; `True` otherwise.
+    """
+
+    return \
+        len(md_g) == len(md_h) \
+        and compare(get_modular_decomposition_sizes(md_g), get_modular_decomposition_sizes(md_h))
+
+
+def modular_decomposition_factor(md: ModularDecomposition) -> int:
+    result = 1
+    factors = [math.factorial(len(module)) for module in md]
+
+    for factor in factors:
+        result *= factor
+
+    return result
+
+
+def _check_modular_decomposition_length(g: Graph, md_g: ModularDecomposition) -> bool:
+    return len(md_g) == g.order
+
+
+def calculate_modular_decomposition_and_factor(g: Graph, md_g: ModularDecomposition) -> (Graph, int):
+    """
+    Determine if modular decomposition yields a simpler graph for further processing, along with a factor to multiply
+    with the number of isomorphisms of those simpler graphs.
+
+    :param Graph g: The graph to analyse.
+    :param ModularDecomposition md_g: Graph g's modular decomposition.
+    :return: 2-tuple of the graph to use in the algorithm and a factor with which to multiply the outcome. The graph
+             need not be graph g's modular decomposition.
+    """
+
+    if _check_modular_decomposition_length(g, md_g):  # Implies order of MD of G is not less than order of G
+        return g, 1
+
+    factor = modular_decomposition_factor(md_g)
+    debug(f'Using modular decomposition with factor = {factor}')
+
+    g_md = modules_to_graph(md_g)
+    return g_md, factor
+
+
+def calculate_modular_decomposition_without_factor(g: Graph, md_g: ModularDecomposition) -> Graph:
+    if _check_modular_decomposition_length(g, md_g):  # Implies order of MD of G is not less than order of G
+        return g
+    return modules_to_graph(md_g)

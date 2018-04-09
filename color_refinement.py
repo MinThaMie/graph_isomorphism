@@ -10,11 +10,9 @@ from color_refinement_helper import *
 from graph_io import *
 
 PATH = 'graphs/branching/'
-GRAPH = 'bigtrees2.grl'
-
+GRAPH = 'wheeljoin14.grl'
 
 IsomorphismMapping = Dict[int, Set[int]]
-
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -195,11 +193,27 @@ def get_number_isomorphisms(g: "Graph", h: "Graph", count: bool) -> int:
     :param count: whether the number of isomorphisms
     :return: The number of isomorphisms of graph g and h
     """
+
     if not preprocessing.checks(g, h):
         return 0
+
     g, h = preprocessing.check_complement(g, h)
+
+    md_g = graph_to_modules(g)
+    md_h = graph_to_modules(h)
+
+    if not preprocessing.check_modular_decomposition(md_g, md_h):
+        debug('Modular decomposition detected anisomorphism!')
+
+        return 0
+
+    # At this point, g and h must have the same MD factor
+    g, modular_decomposition_factor = preprocessing.calculate_modular_decomposition_and_factor(g, md_g)
+    h = preprocessing.calculate_modular_decomposition_without_factor(h, md_h)
+
     coloring = initialize_coloring(g + h)
-    return count_isomorphism(g, h, coloring, count)
+
+    return modular_decomposition_factor * count_isomorphism(g, h, coloring, count)
 
 
 def is_isomorphisms(g: Graph, h: Graph) -> bool:

@@ -1,11 +1,10 @@
-from typing import Tuple
-
 import tests
-from graph import *
 from coloring import *
 from graph import *
 
 # Declare module variables
+from tools import create_graph_helper
+
 empty_graph: Graph
 connected_graph_order_2: Graph
 disconnected_graph_order_2: Graph
@@ -20,13 +19,15 @@ v5e4loop_unconnected: Graph
 v5e7: Graph
 v3e2_connected: Graph
 v5e4_connected: Graph
+modular_decomposition_graph: Graph
+butterfly: Graph
 
 
 def set_up_test_graphs():
     global empty_graph, connected_graph_order_2, disconnected_graph_order_2, non_trivial_graph, \
         non_trivial_graph_different_label, non_trivial_graph_different_weight, non_trivial_graph_complement, \
         isomorphic_graphs, anisomorphic_graphs, v4e4_connected, v5e4loop_unconnected, v5e7, v3e2_connected, \
-        v5e4_connected
+        v5e4_connected, modular_decomposition_graph, butterfly
 
     # Prepare some vertex labels for general use
     vertex_labels = ['spam', 'ham', 'eggs', 'foo', 'bar', 'baz', 'qux', 'quux', 'quuz', 'corge', 'grault', 'garply',
@@ -147,30 +148,13 @@ def set_up_test_graphs():
     v5e4_connected = create_graph_helper([(1, 2), (2, 3), (3, 5), (3, 4)])
     v5e4_connected.name = 'v5e4_connected'
 
+    # Instantiate a graph with three modules
+    modular_decomposition_graph = create_graph_helper(
+        [(6, 1), (6, 0), (6, 4), (5, 1), (5, 0), (5, 4), (2, 1), (2, 0), (2, 4), (3, 1), (3, 0), (3, 4), (2, 3)]
+    )
 
-def create_graph_helper(edges: List[Tuple[object, object]] = list()):
-    """
-    Create a graph from the specified edges.
-
-    :param edges: A list of 2-tuples of vertex labels (of any type) between which to create edges.
-    :return: The graph with labelled vertices and edges
-    """
-
-    graph = Graph(False)
-    vertices = {}
-
-    for head, tail in edges:
-        if head not in vertices:
-            vertices[head] = Vertex(graph=graph, label=head)
-            graph.add_vertex(vertices[head])
-
-        if tail not in vertices:
-            vertices[tail] = Vertex(graph=graph, label=tail)
-            graph.add_vertex(vertices[tail])
-
-        graph.add_edge(Edge(vertices[head], vertices[tail]))
-
-    return graph
+    # Instantiate a recursively modular decomposable graph
+    butterfly = create_graph_helper([(0, 1), (0, 2), (0, 3), (0, 4), (1, 4), (2, 3)])
 
 
 def create_coloring_helper_vertex(mapping: dict) -> Coloring:

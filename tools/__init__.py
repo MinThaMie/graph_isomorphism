@@ -1,4 +1,7 @@
 import os
+from typing import List, Tuple, Any
+
+from graph import Graph, Vertex, Edge
 
 _last_integer = 0
 _generated_integers = set()
@@ -31,3 +34,25 @@ def unique_integer() -> int:
 
     _generated_integers.add(_last_integer)
     return _last_integer
+
+
+def create_graph_helper(edges: List[Tuple[Any, Any]] = list()):
+    """
+    Create a graph from the specified edges.
+
+    :param edges: A list of 2-tuples of vertex labels (of any type) between which to create edges.
+    :return: The graph with labelled vertices and edges
+    """
+
+    graph = Graph(False)
+    vertices = {}
+    for head, tail in edges:
+        if head not in vertices:
+            vertices[head] = Vertex(graph=graph, label=head)
+            graph.add_vertex(vertices[head])
+        if tail not in vertices:
+            vertices[tail] = Vertex(graph=graph, label=tail)
+            graph.add_vertex(vertices[tail])
+
+        graph.add_edge(Edge(vertices[head], vertices[tail]))
+    return graph

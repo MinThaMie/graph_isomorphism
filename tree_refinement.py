@@ -96,7 +96,7 @@ def shift(vertex: Vertex, amount_verts: int) -> Vertex:
     # If no neighbour of u has weight > n/2, return u
     result = vertex
     for n in vertex.neighbours:
-        if n.weight > amount_verts/2:
+        if n.weight > amount_verts / 2:
             vertex.weight = vertex.weight - n.weight
             n.weight = vertex.weight + n.weight
             result = shift(n, amount_verts)
