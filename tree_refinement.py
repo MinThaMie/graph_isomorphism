@@ -5,20 +5,26 @@ from color_refinement_helper import group_by
 from graph import Graph, Vertex
 
 
-def tree_isomorphism(g: Graph, h: Graph, modules: [[Vertex]] = None) -> bool:
+def tree_isomorphism(g: Graph, h: Graph, modules_g: [[Vertex]] = None, modules_h: [[Vertex]] = None) -> bool:
     """
     Checks if Tree g and Tree h are isomorphic
+    :param modules_g: list of modules from graph g
+    :param modules_h: list of modules from graph h
     :param g: Graph
     :param h: Graph
     :return: Boolean whether they are isomorphic
     """
+
     # Make all the vertices have the correct attributes
     g = initialize_tree(g)
     h = initialize_tree(h)
     # Initialize module values
     counter = len(g.vertices)
-    if modules:
-        for module in modules:
+    if modules_g and modules_h:
+        for module in modules_g:
+            for v in module:
+                v.value = counter
+        for module in modules_h:
             for v in module:
                 v.value = counter
             counter += 1
