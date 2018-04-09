@@ -207,6 +207,7 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
     """
     if preprocessing.is_tree(g):
         if preprocessing.is_tree(h):
+            modular_decomposition(g, h)
             return tree_isomorphism(g, h)
         else:
             return False
