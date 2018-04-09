@@ -139,27 +139,6 @@ def construct_graph_from_components(components: dict) -> [Graph]:
     return graphs
 
 
-def compare_graph_components(g: [Graph], h: [Graph]) -> bool:
-    """
-    compares subgraphs in 2 graphs
-
-        :param g: a list of subgraphs
-        :param h: a list of subgraphs
-        :return: boolean: True if all preprocessing checks pass
-        """
-    if len(g) != len(h):
-        return False
-
-    for g_subgraph in g:
-        subgraph_equality = False
-        for h_subgraph in h:
-            if checks(g_subgraph, h_subgraph):
-                subgraph_equality = True
-        if not subgraph_equality:
-            return False
-    return True
-
-
 def is_tree(g: Graph):
     """
     This method checks whether graph g is a tree. First iteration.

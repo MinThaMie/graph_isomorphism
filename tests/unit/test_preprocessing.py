@@ -1,10 +1,10 @@
 import unittest
 
 from color_refinement_helper import graph_to_modules
+from disconnected_refinement import graph_component_isomorphic
 from preprocessing import check_modular_decomposition, modular_decomposition_factor, \
     calculate_modular_decomposition_and_factor, remove_loners, checks, check_complement, \
-    get_modular_decomposition_sizes, compare_graph_components, \
-    find_components, construct_graph_from_components
+    get_modular_decomposition_sizes, find_components, construct_graph_from_components
 from tests import *
 
 
@@ -86,10 +86,10 @@ class TestPreprocessing(unittest.TestCase):
     def test_compare_graph_components(self):
         is_connected, components1 = find_components(tests.v8e7loop_unconnected)
         graph1 = construct_graph_from_components(components1)
-        self.assertTrue(compare_graph_components(graph1, graph1))
+        self.assertTrue(graph_component_isomorphic(graph1, graph1))
         is_connected, components2 = find_components(tests.v5e4loop_unconnected)
         graph2 = construct_graph_from_components(components2)
-        self.assertFalse(compare_graph_components(graph1, graph2))
+        self.assertFalse(graph_component_isomorphic(graph1, graph2))
 
 
 if __name__ == '__main__':
