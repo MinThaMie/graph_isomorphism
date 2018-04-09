@@ -2,12 +2,13 @@
 This is a module for the Coloring class used in the Color Refinement Algorithm
 """
 # version: 7-3-18, Dorien Meijer Cluwen
+from typing import Iterable
 
 from dll import DoubleLinkedList
 from graph import *
 
 
-class Coloring(object):
+class Coloring:
     def __init__(self):
         """
         Initializes the coloring
@@ -15,6 +16,7 @@ class Coloring(object):
         Creates a dictionary to store the color classes. Color classes are stored as a key, value-pair where the key is
         a number (the color) and the value is a list of vertices belonging to that color.
         """
+
         self._dict = {}
         self._vertex_dict = {}
 
@@ -28,15 +30,14 @@ class Coloring(object):
         :param vertex: the `Vertex` to add to the color class
         :raises KeyError when vertex already belongs to the coloring
         """
-        if color not in self._dict:
-            self._dict[color] = DoubleLinkedList()
+
         if vertex in self._vertex_dict:
             raise KeyError('Vertex {} already in coloring, color: {}. '
                            'Use recolor instead'.format(str(vertex), str(self.color(vertex))))
 
-        self._dict[color].append(vertex)
+        self._dict.setdefault(color, DoubleLinkedList()).append(vertex)
         self._vertex_dict[vertex] = color
-        vertex.colornum = color
+        # vertex.colornum = color
 
     def get(self, color) -> DoubleLinkedList:
         """
@@ -45,7 +46,7 @@ class Coloring(object):
         :param color: the number (or color) of the color class
         :return: a list of vertices belonging to the color class
         """
-        return list(self._dict[color])
+        return self._dict[color]
 
     def add(self, vertices: List[Vertex], color=None):
         """
@@ -55,6 +56,7 @@ class Coloring(object):
         :param color: color for vertices, pick new color if None
         :return:
         """
+
         if color is None:
             color = self.next_color()
 
@@ -91,22 +93,22 @@ class Coloring(object):
             self.set(vertex, new_color)
 
     @property
-    def colors(self) -> List[int]:
+    def colors(self) -> Iterable[int]:
         """
         Returns the number (or colors) of the coloring
 
-        :return: a list of colors of the coloring
+        :return: iterable colors of the coloring
         """
-        return list(self._dict.keys())
+        return iter(self._dict.keys())
 
     @property
-    def vertices(self) -> List[Vertex]:
+    def vertices(self) -> Iterable[Vertex]:
         """
         Returns the vertices in the coloring
 
-        :return: list of vertices in the coloring
+        :return: iterable vertices in the coloring
         """
-        return list(self._vertex_dict.keys())
+        return self._vertex_dict.keys()
 
     def __len__(self) -> int:
         """
@@ -139,7 +141,8 @@ class Coloring(object):
     def __str__(self) -> str:
         return "{ " + ', '.join(
             str(color) + "(" + str(len(self._dict[color])) + "): [" + ', '.join(str(v) for v in self._dict[color]) + "]"
-            for color in self._dict.keys()) + " }"
+            for color in self._dict.keys()
+        ) + " }"
 
     def status(self, g: Graph, h: Graph) -> str:
         """
@@ -153,6 +156,7 @@ class Coloring(object):
         :param h: graph h
         :return: "Bijection" when coloring defines a bijection, "Unbalanced" if unbalanced, `None` otherwise
         """
+
         maybe = False
         for color in self.colors:
             vertices = self.get(color)
@@ -179,12 +183,8 @@ class Coloring(object):
         Note that the copy uses the same vertices
         :return: a copy of the coloring
         """
+
         new_coloring = Coloring()
         for c, v in self.items():
             new_coloring.add(v, color=c)
         return new_coloring
-
-    def set_colornums(self):
-        """Sets the 'colornum' attribute of the vertices in the coloring"""
-        for v, color in self._vertex_dict:
-            v.colornum = color
