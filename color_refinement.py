@@ -67,6 +67,7 @@ def color_refine(coloring: Coloring) -> Coloring:
     while has_changed:
         new_coloring = Coloring()
         for color in coloring.colors:
+            unbalanced = False
             vertices = coloring.get(color)
             while len(vertices) > 0:
                 new_color = new_coloring.next_color()
