@@ -120,6 +120,12 @@ def find_components(g: Graph):
 
 
 def construct_graph_from_components(components: dict) -> [Graph]:
+    """
+    constructs a list of graphs from a dictionary of components
+
+        :param components: a dictionary constructed from an (unconnected) graph
+        :return: list of subgraphs
+        """
     graphs = list()
     for key in components.keys():
         subgraph = Graph(False)

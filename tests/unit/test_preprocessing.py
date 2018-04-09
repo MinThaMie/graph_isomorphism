@@ -2,7 +2,9 @@ import unittest
 
 from color_refinement_helper import graph_to_modules
 from preprocessing import check_modular_decomposition, modular_decomposition_factor, \
-    calculate_modular_decomposition_and_factor, remove_loners, checks, check_complement, get_modular_decomposition_sizes
+    calculate_modular_decomposition_and_factor, remove_loners, checks, check_complement, \
+    get_modular_decomposition_sizes, \
+    find_components, construct_graph_from_components
 from tests import *
 
 
@@ -52,27 +54,27 @@ class TestPreprocessing(unittest.TestCase):
         self.assertTrue(h is w_shaped_graph)
 
     def test_find_components(self):
-        is_connected, components = preprocessing.find_components(tests.v5e4loop_unconnected)
+        is_connected, components = find_components(tests.v5e4loop_unconnected)
         self.assertFalse(is_connected)
         self.assertEqual(2, len(components))
         self.assertEqual([tests.v5e4loop_unconnected.find_vertex(4)], components[2])
         component_to_be_found = [tests.v5e4loop_unconnected.find_vertex(1), tests.v5e4loop_unconnected.find_vertex(2),
                                  tests.v5e4loop_unconnected.find_vertex(3), tests.v5e4loop_unconnected.find_vertex(5)]
         self.assertEqual(component_to_be_found, components[1])
-        is_connected, components = preprocessing.find_components(tests.v5e7)
+        is_connected, components = find_components(tests.v5e7)
         self.assertTrue(is_connected)
         self.assertEqual(1, len(components))
 
     def test_construct_graph_from_components(self):
-        is_connected, components = preprocessing.find_components(tests.v5e4loop_unconnected)
-        graphs = preprocessing.construct_graph_from_components(components)
+        is_connected, components = find_components(tests.v5e4loop_unconnected)
+        graphs = construct_graph_from_components(components)
         self.assertEqual(2, len(graphs))
         self.assertTrue(4, len(graphs[0].vertices))
         self.assertTrue(3, len(graphs[0].edges))
         self.assertTrue(1, len(graphs[1].vertices))
         self.assertTrue(1, len(graphs[1].edges))
-        is_connected, components = preprocessing.find_components(tests.v8e7loop_unconnected)
-        graphs = preprocessing.construct_graph_from_components(components)
+        is_connected, components = find_components(tests.v8e7loop_unconnected)
+        graphs = construct_graph_from_components(components)
         self.assertEqual(3, len(graphs))
         self.assertTrue(4, len(graphs[0].vertices))
         self.assertTrue(3, len(graphs[0].edges))
@@ -82,10 +84,9 @@ class TestPreprocessing(unittest.TestCase):
         self.assertTrue(1, len(graphs[2].edges))
 
 
-
-
 if __name__ == '__main__':
     unittest.main()
+
 
     def test_get_modular_decomposition_sizes(self):
         md = [self._prime_module()]
@@ -99,6 +100,7 @@ if __name__ == '__main__':
 
         md += [self._triplet_module()]
         self.assertCountEqual([1, 1, 2, 3], list(get_modular_decomposition_sizes(md)))
+
 
     def test_check_modular_decomposition(self):
         # Assert that the same singleton modular decompositions (MDs) may be isomorphic
@@ -131,6 +133,7 @@ if __name__ == '__main__':
         self.assertFalse(check_modular_decomposition(md0, md1))
         self.assertFalse(check_modular_decomposition(md1, md0))
 
+
     def test_modular_decomposition_factor(self):
         md = [self._prime_module()]
         self.assertEqual(1, modular_decomposition_factor(md))
@@ -146,6 +149,7 @@ if __name__ == '__main__':
 
         md += [self._triplet_module()]
         self.assertEqual(24, modular_decomposition_factor(md))
+
 
     def test_calculate_modular_decomposition_and_factor(self):
         graph = Graph(directed=False)
@@ -164,7 +168,6 @@ if __name__ == '__main__':
         md_graph = graph_to_modules(graph)
         _, factor = calculate_modular_decomposition_and_factor(graph, md_graph)
         self.assertEqual(24, factor)
-
 
 if __name__ == '__main__':
     unittest.main()

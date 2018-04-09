@@ -131,7 +131,7 @@ def set_up_test_graphs():
     #                 |    \ /
     #                 4     7
     v8e7loop_unconnected = create_graph_helper([(1, 2), (2, 3), (3, 4), (5, 6), (6, 7), (5, 7), (8, 8)])
-    v8e7loop_unconnected.name = 'v7e6_unconnected'
+    v8e7loop_unconnected.name = 'v8e7loop_unconnected'
 
     # Create a graph where the complement should be taken during preprocessing :
     # v5e7 =
