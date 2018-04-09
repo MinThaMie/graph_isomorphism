@@ -7,7 +7,7 @@ from typing import TypeVar
 T = TypeVar('T')
 
 
-class Node(object):
+class Node:
     def __init__(self, value: T, prev_node: "Node" = None, next_node: "Node" = None):
         """
         Initializes a node
@@ -18,6 +18,7 @@ class Node(object):
         :param prev_node: previous node
         :param next_node: next node
         """
+
         self._value = value
         self.prev = prev_node
         self.next = next_node
@@ -37,13 +38,14 @@ class Node(object):
         return str(self._value)
 
 
-class DoubleLinkedList(object):
+class DoubleLinkedList:
     def __init__(self):
         """
         Initializes a double linked list
 
         The head and tail are set to `None` and the size of the list is 0.
         """
+
         self._head = None
         self._tail = None
         self._size = 0
@@ -58,6 +60,7 @@ class DoubleLinkedList(object):
         Afterward, the size of the list is increased by one.
         :param val: value of the node to add
         """
+
         new_node = Node(val)
         if self._size == 0:
             self._head = new_node
@@ -78,6 +81,7 @@ class DoubleLinkedList(object):
         Afterward, the size of the list is increased by one.
         :param val: value of the node to add
         """
+
         new_node = Node(val)
         if self._size == 0:
             self._head = self._tail = new_node
@@ -85,6 +89,7 @@ class DoubleLinkedList(object):
             self._tail.next = new_node
             new_node.prev = self._tail
             self._tail = new_node
+
         self._size += 1
 
     def pop(self) -> T:
@@ -97,6 +102,7 @@ class DoubleLinkedList(object):
         Finally, the size of the list is decreased by one.
         :return: the value of the tail of the list
         """
+
         if self._size == 0:
             return None
         elif self._size == 1:
@@ -105,6 +111,7 @@ class DoubleLinkedList(object):
         else:
             last_node, self._tail = self._tail, self._tail.prev
             self._tail.next = None
+
         self._size -= 1
         return last_node.value
 
@@ -118,6 +125,7 @@ class DoubleLinkedList(object):
         Finally, the size of the list is decreased by one.
         :return: the value of the head of the list
         """
+
         if self._size == 0:
             return None
         elif self._size == 1:
@@ -141,6 +149,7 @@ class DoubleLinkedList(object):
         :param node: node after which the new value must be added
         :param val: value to add to the list
         """
+
         new_node = Node(val)
         new_node.prev = node
         if node.next is None:
@@ -150,6 +159,7 @@ class DoubleLinkedList(object):
             new_node.next = node.next
             node.next.prev = new_node
         node.next = new_node
+
         self._size += 1
 
     def insert_before(self, node: Node, val: T):
@@ -163,6 +173,7 @@ class DoubleLinkedList(object):
         :param node: node before which the new value must be added
         :param val: value to add to the list
         """
+
         new_node = Node(val)
         new_node.next = node
         if node.prev is None:
@@ -172,6 +183,7 @@ class DoubleLinkedList(object):
             new_node.prev = node.prev
             node.prev.next = new_node
         node.prev = new_node
+
         self._size += 1
 
     def remove(self, value: T):
@@ -182,6 +194,7 @@ class DoubleLinkedList(object):
         is removed.
         :param value: the value to remove from the list
         """
+
         node = self._head
         while node is not None:
             if node.value == value:
@@ -203,6 +216,7 @@ class DoubleLinkedList(object):
         :param node: node to delete
         :return: the value of the deleted node, `None` if the node could not be found
         """
+
         if node.value not in self:
             return None
 
@@ -216,6 +230,7 @@ class DoubleLinkedList(object):
             self._head = next_node
         if node == self._tail:
             self._tail = prev_node
+
         node.next = None
         node.prev = None
         self._size -= 1
@@ -229,6 +244,7 @@ class DoubleLinkedList(object):
         :param value: value to find in the list
         :return: the node with the given value, `None` if the value could not be found
         """
+
         node = self._head
         while node is not None:
             if node.value == value:
@@ -260,6 +276,7 @@ class DoubleLinkedList(object):
         """
         Returns an iterator for the values of the nodes in the list
         """
+
         node = self._head
         while node:
             yield node.value
@@ -269,6 +286,7 @@ class DoubleLinkedList(object):
         """
         Returns a reversed iterator for the values of the nodes in the list
         """
+
         node = self._tail
         while node:
             yield node.value
