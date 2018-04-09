@@ -9,12 +9,16 @@ import preprocessing
 from color_refinement_helper import *
 from graph_io import *
 from basicpermutationgroup import order_computation, member_of
+from graph import Vertex
 
 PATH = 'graphs/branching/'
 GRAPH = 'cubes5.grl'
 
 
 IsomorphismMapping = Dict[int, Set[int]]
+VertexMap = (Vertex, [Vertex])
+Vertex2 = (Vertex, VertexMap)
+TreeMap = Dict[Coloring, Vertex2]
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
@@ -95,7 +99,7 @@ def color_refine(coloring: Coloring) -> Coloring:
     return coloring
 
 
-def fast_color_refine(coloring: Coloring) -> Coloring:
+def fast_color_refine(old_coloring: Coloring) -> Coloring:
     """
     The fast color refine algorithm refines a given coloring by looking at the amount of neighbours of a given color.
     A queue is used to keep track of colors for which we still have to check if they lead to refinements.
@@ -108,6 +112,7 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
     : param coloring: Given coloring which needs refinement
     : return: The refined coloring of the graph
     """
+    coloring = old_coloring.copy()
     # Start with first color
     qlist = DoubleLinkedList()
     for c in sorted(coloring.colors):
@@ -225,14 +230,12 @@ def get_number_automorphisms(g: Graph) -> int:
     """
     copy_g = g.deepcopy()
     coloring = initialize_coloring(g + copy_g)
-    new_coloring = fast_color_refine(coloring)
-    lastvisited = DoubleLinkedList()
-    lastvisited.append(new_coloring)
-    generators, _ = compute_generators(g, copy_g, coloring, list(), lastvisited=lastvisited)
+    mapping : TreeMap = {coloring: (None, (None, []))}
+    generators, _ = compute_generators(g, copy_g, coloring, list(), lastvisited={})
     return order_computation(generators)
 
 
-def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvisited: DoubleLinkedList = DoubleLinkedList) -> (list(), [Coloring]):
+def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvisited: TreeMap) -> (list(), TreeMap):
     """
     Computes a set of generators of the mapping from graph g to graph h
 
@@ -258,31 +261,43 @@ def compute_generators(g: Graph, h: Graph, coloring: Coloring, X: list(), lastvi
     #     return X, []
     # Unique automorphism
     # if new_coloring.defines_bijection():
+    perm_f = Permutation(len(g.vertices), coloring=new_coloring, g=g)
     if coloring_status == "Bijection":
-        perm_f = Permutation(len(g.vertices), coloring=new_coloring, g=g)
         # is this coloring already in the set of colorings?
         if not member_of(perm_f, X):
             # put f in the set and return to last visited node
             X.append(perm_f)
-            lastvisited.pop() # TODO: really use lastvisited
         return X, lastvisited #TODO: return to last visited
     # Undecided
     else:
         # choose branching vertex x and cell C
         vertices = choose_color(new_coloring)
         vertices_in_h = [v for v in vertices if v.in_graph(h)]
-        first_vertex = choose_vertex(vertices, g)
-        trivial_mapping, non_trivial_mapping = get_mappings(first_vertex, vertices_in_h) # TODO: make sure a trivial mapping is done if there is one... Now, if a first_vertex does not have a trivial mapping but another vertex of g has a trivial mapping, the trivial mapping is not made
-        if trivial_mapping is not None:
-            lastvisited.append(new_coloring)
-            trivial_coloring = create_new_color_class(new_coloring, first_vertex, trivial_mapping)
-            X, lastvisited = compute_generators(g, h, trivial_coloring, X, lastvisited=lastvisited)
-        # vertices_in_copy = get_mapping_vertices(vertices, first_vertex)
-        for second_vertex in non_trivial_mapping:
-            adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
-            X, lastvisited = compute_generators(g, h, adapted_coloring, X, lastvisited=lastvisited)
-            if not lastvisited.__contains__(new_coloring):
-                return X, lastvisited
+        chosen_vertex_g = choose_vertex(vertices, g)
+        trivial_mapping, non_trivial_mapping = get_mappings(chosen_vertex_g, vertices_in_h) # TODO: make sure a trivial mapping is done if there is one... Now, if a first_vertex does not have a trivial mapping but another vertex of g has a trivial mapping, the trivial mapping is not made
+        # add this coloring to a map
+
+        # if this coloring is not trivial: only do left branch (if there is a trivial, do trivial, else, do one of non_trivial)
+        if not perm_f.istrivial():
+            if trivial_mapping is not None:
+                lastvisited[coloring] = (chosen_vertex_g, (trivial_mapping, []))
+                trivial_coloring = create_new_color_class(new_coloring, chosen_vertex_g, trivial_mapping)
+                X, lastvisited = compute_generators(g, h, trivial_coloring, X, lastvisited=lastvisited)
+            else:
+                if len(non_trivial_mapping) > 0:
+                    lastvisited[coloring] = (chosen_vertex_g, (None, non_trivial_mapping))
+                    adapted_coloring = create_new_color_class(new_coloring, chosen_vertex_g, non_trivial_mapping[0])
+                    X, lastvisited = compute_generators(g, h, adapted_coloring, X, lastvisited=lastvisited)
+        # if coloring is trivial: do all branches
+        else:
+            lastvisited[coloring] = (chosen_vertex_g, (trivial_mapping, non_trivial_mapping))
+            if trivial_mapping is not None:
+                trivial_coloring = create_new_color_class(new_coloring, chosen_vertex_g, trivial_mapping)
+                X, lastvisited = compute_generators(g, h, trivial_coloring, X, lastvisited=lastvisited)
+            else:
+                for second_vertex in non_trivial_mapping:
+                    adapted_coloring = create_new_color_class(new_coloring, chosen_vertex_g, second_vertex)
+                    X, lastvisited = compute_generators(g, h, adapted_coloring, X, lastvisited=lastvisited)
     return X, lastvisited
 
 
