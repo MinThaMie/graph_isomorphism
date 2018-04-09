@@ -5,6 +5,7 @@ version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 import time
 
 import preprocessing
+from basicpermutationgroup import order_computation, member_of
 from color_refinement_helper import *
 from graph_io import *
 from tools import update_known_isomorphisms, IsomorphismMapping
