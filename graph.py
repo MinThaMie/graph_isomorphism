@@ -23,7 +23,7 @@ class GraphError(Exception):
 class Vertex(object):
     """`Vertex` objects belong to graph objects. They have an attribute `label` which can be anything."""
 
-    def __init__(self, graph: "Graph", label=None):
+    def __init__(self, graph: "Graph", label=None, id=None):
         """Instantiate a vertex, part of the specified graph.
 
         :param Graph graph: The graph that this vertex is a part of.
@@ -36,6 +36,7 @@ class Vertex(object):
         self._graphs = [graph]
         self._incidence = {}
         self._label = label
+        self._id = id
 
     def __repr__(self):
         """A programmer-friendly representation of this vertex.
@@ -43,7 +44,7 @@ class Vertex(object):
         :return: The string to approximate the constructor arguments of the `Vertex'
         """
 
-        return 'Vertex(label={}, #incident={})'.format(self.label, len(self._incidence))
+        return 'Vertex(label={}, #incident={})'.format(self.label, self.id, len(self._incidence))
 
     def __str__(self) -> str:
         """A user-friendly representation of the vertex, that is, its label.
@@ -125,12 +126,19 @@ class Vertex(object):
         return sum(map(len, self._incidence.values()))
 
     @property
-    def label(self):
+    def label(self) -> str:
         return self._label
 
     @label.setter
     def label(self, label):
         self._label = label
+
+    @property
+    def id(self) -> int:
+        return self._id
+
+    def set_id(self, id: int):
+        self._id = id
 
 
 class Edge(object):
@@ -234,10 +242,11 @@ class Graph(object):
         self._simple = simple
         self._directed = directed
         self._next_label_value = 0
+        self._next_id_value = 0
         self._name = name
 
         for i in range(n):
-            self.add_vertex(Vertex(self))
+            self.add_vertex(Vertex(self, id=self._next_id()))
 
     def __repr__(self):
         """A programmer-friendly representation of this graph.
@@ -272,6 +281,14 @@ class Graph(object):
         result = self._next_label_value
         self._next_label_value += 1
         return str(self._name) + '_' + str(result)
+
+    def _next_id(self) -> int:
+        """Generate a unique numerical label for vertices in the graph.
+        :return: A unique numerical label.
+        """
+        result = self._next_id_value
+        self._next_id_value += 1
+        return result
 
     @property
     def name(self) -> str:
@@ -370,6 +387,7 @@ class Graph(object):
         for v in self.vertices:
             v_copy = Vertex(G)
             v_copy.label = v.label
+            v_copy.set_id(v.id)
             G.add_vertex(v_copy)
         for e in self.edges:
             tail = e.tail
