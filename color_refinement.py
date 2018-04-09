@@ -3,16 +3,14 @@ This is a module for the color refinement algorithm
 version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
 import time
-from typing import Dict
 
 import preprocessing
 from color_refinement_helper import *
 from graph_io import *
+from tools import IsomorphismMapping, update_known_isomorphisms
 
 PATH = 'graphs/branching/'
 GRAPH = 'bigtrees2.grl'
-
-IsomorphismMapping = Dict[int, Set[int]]
 
 
 def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, refinement_algorithm, count: bool = True) -> int:
@@ -253,21 +251,6 @@ def get_number_automorphisms(g: Graph, refinement_algorithm) -> int:
     return get_number_isomorphisms(g, g.deepcopy(), refinement_algorithm, count=True)
 
 
-def store_isomorphism(i: int, j: int, known_isomorphisms: Dict[int, Set[int]]):
-    """
-    Store a known isomorphism between two indices in the specified mapping.
-
-    :param int i: Index of one known isomorphism pair member.
-    :param int j: Index of another known isomorphism pair member.
-    :param dict known_isomorphisms: Dictionary in which to store the set of known isomorphisms.
-    """
-
-    isomorphisms = known_isomorphisms[i] | known_isomorphisms[j] | {i, j}
-
-    for index in isomorphisms:
-        known_isomorphisms[index] = isomorphisms - {index}
-
-
 def process(graphs: List[Graph], refinement_algorithm) -> IsomorphismMapping:
     """
     Process a list of graphs to find indices into that list of isomorphic graphs.
@@ -308,7 +291,7 @@ def process(graphs: List[Graph], refinement_algorithm) -> IsomorphismMapping:
                     print(graphs[i].name, 'and', graphs[j].name, 'isomorphic?', isomorphism)
 
                     if isomorphism:
-                        store_isomorphism(i, j, isomorphism_index_mapping)
+                        isomorphism_index_mapping = update_known_isomorphisms(i, j, isomorphism_index_mapping)
                         print('There are', automorphisms.get(graphs[i]), 'isomorphisms')
 
                     print('Took', end - start, 'seconds')
