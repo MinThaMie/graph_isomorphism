@@ -12,7 +12,7 @@ BRANCHING = os.path.join(GRAPHS, 'branching')
 COLORREF = os.path.join(GRAPHS, 'colorref')
 TREEPATHS = os.path.join(GRAPHS, 'treepaths')
 
-FILE = os.path.join(COLORREF, 'colorref_smallexample_4_16.grl')
+FILE = os.path.join(BRANCHING, 'trees36.grl')
 
 
 def main():
@@ -120,12 +120,12 @@ def create_data_string(isomorphs: List[List[Graph]], automorphs: List[int]) -> s
     output_format = '{:<20} {:>20}'
     data_string = output_format.format('ISOMORPHISMS', 'AUTOMORPHISMS')
     for m in range(len(isomorphs)):
-        iso_string = str(len(isomorphs[m])) + ' ('
+        iso_string = '['
         for n in range(len(isomorphs[m])):
             iso_string += isomorphs[m][n].name
             if n + 1 < len(isomorphs[m]):
                 iso_string += ', '
-        iso_string += ')'
+        iso_string += ']'
         auto_string = str(automorphs[m])
         subresult = output_format.format(iso_string, auto_string)
         data_string += '\n' + subresult
