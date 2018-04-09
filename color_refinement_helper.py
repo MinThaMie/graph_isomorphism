@@ -188,7 +188,13 @@ def modules_to_graph(modules: ModularDecomposition) -> Graph:
         if edge[0] != edge[1]:
             edges.add(tuple(sorted(edge)))
 
-    graph = create_graph_helper(list(edges))
+    if not edges:
+        graph = Graph(False)
+        if edges_list:
+            vertex = Vertex(graph, edges_list[0][0])
+        graph.add_vertex(vertex)
+    else:
+        graph = create_graph_helper(sorted(list(edges)))
     return graph
 
 
@@ -204,7 +210,7 @@ def create_new_label(module: Module) -> str:
     itermodule = iter(module)
     next(itermodule)
     for vertex in itermodule:
-        new_label += "+" + str(vertex.label)
+        new_label = "+".join(sorted([new_label, str(vertex.label)]))
     return new_label
 
 
