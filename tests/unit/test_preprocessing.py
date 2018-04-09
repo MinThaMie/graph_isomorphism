@@ -63,9 +63,30 @@ class TestPreprocessing(unittest.TestCase):
         self.assertTrue(is_connected)
         self.assertEqual(1, len(components))
 
+    def test_construct_graph_from_components(self):
+        is_connected, components = preprocessing.find_components(tests.v5e4loop_unconnected)
+        graphs = preprocessing.construct_graph_from_components(components)
+        self.assertEqual(2, len(graphs))
+        self.assertTrue(4, len(graphs[0].vertices))
+        self.assertTrue(3, len(graphs[0].edges))
+        self.assertTrue(1, len(graphs[1].vertices))
+        self.assertTrue(1, len(graphs[1].edges))
+        is_connected, components = preprocessing.find_components(tests.v8e7loop_unconnected)
+        graphs = preprocessing.construct_graph_from_components(components)
+        self.assertEqual(3, len(graphs))
+        self.assertTrue(4, len(graphs[0].vertices))
+        self.assertTrue(3, len(graphs[0].edges))
+        self.assertTrue(3, len(graphs[1].vertices))
+        self.assertTrue(3, len(graphs[1].edges))
+        self.assertTrue(1, len(graphs[2].vertices))
+        self.assertTrue(1, len(graphs[2].edges))
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
+
     def test_get_modular_decomposition_sizes(self):
         md = [self._prime_module()]
         self.assertEqual([1], list(get_modular_decomposition_sizes(md)))

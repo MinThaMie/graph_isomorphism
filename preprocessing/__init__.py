@@ -119,6 +119,20 @@ def find_components(g: Graph):
     return is_connected, components
 
 
+def construct_graph_from_components(components: dict) -> [Graph]:
+    graphs = list()
+    for key in components.keys():
+        subgraph = Graph(False)
+        for vertex in components[key]:
+            if vertex not in subgraph.vertices:
+                subgraph.add_vertex(vertex)
+                for edge in vertex.incidence:
+                    if edge not in subgraph.edges:
+                        subgraph.add_edge(edge)
+        graphs.append(subgraph)
+    return graphs
+
+
 def is_tree(g: Graph):
     """
     This method checks whether graph g is a tree. First iteration.
