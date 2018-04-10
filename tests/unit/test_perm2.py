@@ -1,9 +1,7 @@
 import unittest
-from basicpermutationgroup import *
-from basicpermutationgroup import order_computation
-from color_refinement_helper import compare
-from graph import Graph
+
 from coloring import Coloring
+from graph import Graph
 from permv2 import Permutation
 
 
@@ -11,6 +9,7 @@ class TestPermv2(unittest.TestCase):
     """
     Test for permv2.py (only for code we have written)
     """
+
     def test_coloring_to_permutation(self):
         g = Graph(directed=False, n=5, name='g')
         h = Graph(directed=False, n=5, name='h')
@@ -47,6 +46,7 @@ class TestPermv2(unittest.TestCase):
         self.assertEqual(3, p.P[2])
         self.assertEqual(4, p.P[3])
         self.assertEqual(0, p.P[4])
+
 
 if __name__ == '__main__':
     unittest.main()

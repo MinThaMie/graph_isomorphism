@@ -111,7 +111,7 @@ class GraphTests(unittest.TestCase):
 
             :param Iterable thingies: One iterable.
             :param Iterable stuffs: Another iterable.
-            :param Callable fun: Callable that maps the specified iterables to whatever being compared.
+            :param function fun: Callable that maps the specified iterables to whatever being compared.
             :return: `True` if the iterables compare equal based on the mapping made by the callable; `False` otherwise.
             """
 
