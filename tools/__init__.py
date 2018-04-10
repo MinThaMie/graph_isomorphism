@@ -1,10 +1,12 @@
 import os
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Dict, Set
 
 from graph import Graph, Vertex, Edge
 
 _last_integer = 0
 _generated_integers = set()
+
+IsomorphismMapping = Dict[int, Set[int]]
 
 
 def dot_to_pdf(dot_file_path: str, pdf_file_path: str, open_outfile: bool = False):
@@ -50,9 +52,27 @@ def create_graph_helper(edges: List[Tuple[Any, Any]] = list()):
         if head not in vertices:
             vertices[head] = Vertex(graph=graph, label=head, id=head)
             graph.add_vertex(vertices[head])
+
         if tail not in vertices:
             vertices[tail] = Vertex(graph=graph, label=tail, id=tail)
             graph.add_vertex(vertices[tail])
 
         graph.add_edge(Edge(vertices[head], vertices[tail]))
     return graph
+
+
+def update_known_isomorphisms(i: int, j: int, known_isomorphisms: IsomorphismMapping) -> IsomorphismMapping:
+    """
+    Store a known isomorphism between two indices in the specified mapping.
+
+    :param int i: Index of one known isomorphism pair member.
+    :param int j: Index of another known isomorphism pair member.
+    :param dict known_isomorphisms: Dictionary in which to store the set of known isomorphisms.
+    """
+
+    isomorphisms = known_isomorphisms[i] | known_isomorphisms[j] | {i, j}
+
+    for index in isomorphisms:
+        known_isomorphisms[index] = isomorphisms - {index}
+
+    return known_isomorphisms

@@ -23,20 +23,20 @@ class ToolsTests(unittest.TestCase):
         known_isomorphisms = {}.fromkeys([i, j, k], set())
 
         # Assert that storing an isomorphism results in a known mapping from i to j and from j to i
-        color_refinement.store_isomorphism(i, j, known_isomorphisms)
+        color_refinement.update_known_isomorphisms(i, j, known_isomorphisms)
         self.assertEqual({j}, known_isomorphisms[i])
         self.assertEqual({i}, known_isomorphisms[j])
         self.assertEqual(set(), known_isomorphisms[k])
 
         # Assert that storing the same isomorphism twice changes nothing
-        color_refinement.store_isomorphism(j, i, known_isomorphisms)
+        color_refinement.update_known_isomorphisms(j, i, known_isomorphisms)
 
         self.assertEqual({j}, known_isomorphisms[i])
         self.assertEqual({i}, known_isomorphisms[j])
         self.assertEqual(set(), known_isomorphisms[k])
 
         # Assert that storing a new known isomorphism updates all known isomorphism mappings
-        color_refinement.store_isomorphism(j, k, known_isomorphisms)
+        color_refinement.update_known_isomorphisms(j, k, known_isomorphisms)
         self.assertEqual({j, k}, known_isomorphisms[i])
         self.assertEqual({i, k}, known_isomorphisms[j])
         self.assertEqual({i, j}, known_isomorphisms[k])

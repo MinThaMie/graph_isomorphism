@@ -32,9 +32,9 @@ def get_color_ref_files():
 def testfile(filename):
     """Check if results for the given file are correct"""
     with open(PATH + "/" + filename) as f:
-        L = load_graph(f, read_list=True)
+        graphs = load_graph(f, read_list=True)
 
-    graphs = L[0]
+    graphs = graphs[0]
     results = []
     for i in range(len(graphs)):
         for j in range(len(graphs)):

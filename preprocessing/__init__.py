@@ -1,8 +1,8 @@
-from dll import DoubleLinkedList
 import math
 
 from color_refinement_helper import compare, debug, modules_to_graph, ModularDecomposition
-from graph import *
+from dll import DoubleLinkedList
+from graph import Graph, Vertex
 
 
 def checks(g, h) -> bool:
@@ -46,8 +46,8 @@ def is_same_degrees(g: Graph, h: Graph):
     :param h: Graph
     :return: Boolean: True if the degrees are the same
     """
-    degree_g = [v.degree for v in g.vertices]
-    degree_h = [v.degree for v in h.vertices]
+    degree_g = (v.degree for v in g.vertices)
+    degree_h = (v.degree for v in h.vertices)
     return compare(degree_g, degree_h)
 
 
@@ -61,7 +61,7 @@ def remove_loners(g: Graph):
     :return: processed Graph g
     """
     for vertex in g.vertices:
-        if vertex.degree is 0 or (all(neigh == vertex for neigh in vertex.neighbours)):
+        if vertex.degree == 0 or all(vertex == neighbour for neighbour in vertex.neighbours):
             g.del_vertex(vertex)
     return g
 
@@ -74,6 +74,7 @@ def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
     :param h: Graph
     :return: Graph g and h, complemented if necessary
     """
+
     amount_of_vertices = g.order
     if g.size > (amount_of_vertices * (amount_of_vertices - 1)) / 4:
         debug("Uses complements")
@@ -148,7 +149,7 @@ def is_tree(g: Graph):
     :param g: Graph
     :return: Boolean: True if the graph is a Tree
     """
-    if len(g.vertices) is 0:
+    if len(g.vertices) == 0:
         return True
     if len(g.edges) != len(g.vertices) - 1:
         return False
@@ -166,9 +167,9 @@ def has_cycle(g: Graph, vertex: Vertex, predecessor: Vertex, visited):
     :param vertex: vertex to start from
     :param predecessor: predecessor vertex of vertex
     :param visited: List with visited vertices
-    :param result: list containing the "Truth Of The Tree"
     :return: result: [True] if has_cycle
     """
+
     visited.append(vertex)
 
     for v in vertex.neighbours:
@@ -198,9 +199,7 @@ def is_same_decomposition(md_g: ModularDecomposition, md_h: ModularDecomposition
 
 def modular_decomposition_factor(md: ModularDecomposition) -> int:
     result = 1
-    factors = [math.factorial(len(module)) for module in md]
-
-    for factor in factors:
+    for factor in [math.factorial(len(module)) for module in md]:
         result *= factor
 
     return result

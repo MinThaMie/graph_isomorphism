@@ -1,4 +1,5 @@
 import unittest
+
 from color_refinement import get_number_automorphisms
 from graph import Graph, Edge
 

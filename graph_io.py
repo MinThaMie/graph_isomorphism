@@ -32,13 +32,15 @@ def read_line(f: IO[str]) -> str:
     return line
 
 
-def read_graph(graphclass, f: IO[str], name: str="G") -> Tuple[Graph, List[str], bool]:
+def read_graph(graphclass, f: IO[str], name: str = "G") -> Tuple[Graph, List[str], bool]:
     """
     Read a graph from a file
+    :param str name: Graph name.
     :param graphclass: The class of the graph
     :param f: The file
     :return: The graph
     """
+
     options = []
 
     while True:
@@ -91,7 +93,7 @@ def read_graph_list(graph_class, f: IO[str]) -> Tuple[List[Graph], List[str]]:
     cont = True
 
     while cont:
-        graph, new_options, cont = read_graph(graph_class, f, name='G'+ str(len(graphs)))
+        graph, new_options, cont = read_graph(graph_class, f, name='G' + str(len(graphs)))
         options += new_options
         graphs.append(graph)
 
@@ -133,7 +135,7 @@ def write_line(f: IO[str], line: str):
     f.write(line + '\n')
 
 
-def write_graph_list(graph_list: List[Graph], f: IO[str], options=[]):
+def write_graph_list(graph_list: List[Graph], f: IO[str], options=list()):
     """
     Write a graph list to a file.
     :param graph_list: The list of graphs
@@ -169,7 +171,7 @@ def write_graph_list(graph_list: List[Graph], f: IO[str], options=[]):
             write_line(f, '--- Next graph:')
 
 
-def save_graph(graph_list: Union[Graph, List[Graph]], f: IO[str], options=[]):
+def save_graph(graph_list: Union[Graph, List[Graph]], f: IO[str], options=list()):
     """
     Write a graph, or a list of graphs to a file.
     :param graph_list: The graph, or a list of graphs.
@@ -182,7 +184,7 @@ def save_graph(graph_list: Union[Graph, List[Graph]], f: IO[str], options=[]):
         write_graph_list([graph_list], f, options)
 
 
-def print_graph(graph_list: Union[Graph, List[Graph]], options=[]):
+def print_graph(graph_list: Union[Graph, List[Graph]], options=list()):
     """
     Print a graph, or a list of graphs to sys.stdout
     :param graph_list: The graph, or list of graphs.
@@ -252,7 +254,7 @@ def read_expected_result(f: IO[str]):
         # Read file name
         try:
             filename = read_line(f)
-            filename = filename[:filename.find(':')] #remove ':  ' from filename
+            filename = filename[:filename.find(':')]  # remove ':  ' from filename
         except Exception:
             pass
 
@@ -296,7 +298,7 @@ def read_expected_result_auto(f: IO[str]):
         # Read file name
         try:
             filename = read_line(f)
-            filename = filename[:filename.find(':')] #remove ':  ' from filename
+            filename = filename[:filename.find(':')]  # remove ':  ' from filename
         except Exception:
             pass
 
@@ -332,12 +334,3 @@ def read_expected_result_auto(f: IO[str]):
             break
 
     return expected
-
-
-if __name__ == "__main__":
-    from mygraphs import MyGraph
-    with open('examplegraph.gr') as f:
-        G = load_graph(f, MyGraph)
-    print(G)
-    G.del_vert(next(iter(G.vertices)))
-    print(G)

@@ -7,9 +7,8 @@ Remark: composition / multiplication is reversed compared to the earlier version
 """
 
 from coloring import Coloring
-from tests import create_coloring_helper,create_graph_helper
 from graph import Graph
-
+from tests import create_coloring_helper, create_graph_helper
 
 # permv2: based on permv2SOL / perm2
 # Paul Bonsma, 18-03-2015.
@@ -29,8 +28,8 @@ UseReadableOutput = True
 # If False: print(P) gives nice representation, but
 # repr(P) gives technical representation (following Python style conventions).
 
-class Permutation():
-    def __init__(self, n, cycles=None, mapping=None, coloring:Coloring=None, g:Graph=None):
+class Permutation:
+    def __init__(self, n, cycles=None, mapping=None, coloring: Coloring = None, g: Graph = None):
         """
         A permutation P on n elements can be initialized in various ways:
 
@@ -51,7 +50,7 @@ class Permutation():
 
         """
         self.n = n
-        self.P = [i for i in range(n)] # Trivial permutation
+        self.P = [i for i in range(n)]  # Trivial permutation
         if mapping is not None:
             self.construct_from_mapping(mapping, n)
         elif cycles is not None:
@@ -183,7 +182,7 @@ class Permutation():
         (Q is applied first.)
         """
         # if self.n != other.n:
-        #     raise permError()
+        #     raise permError
         Q = [0] * self.n
         for i in range(self.n):
             Q[i] = self.P[other.P[i]]
@@ -240,6 +239,6 @@ class Permutation():
 if __name__ == "__main__":
     G0 = create_graph_helper(edges=[[0, 1], [1, 2], [2, 3], [3, 4], [2, 4], [4, 5], [5, 6]])
     coloring = create_coloring_helper(G0.vertices,
-                                        {0: [0, 6], 1: [1, 5], 2: [3], 3: [2, 4]})
+                                      {0: [0, 6], 1: [1, 5], 2: [3], 3: [2, 4]})
     perm = Permutation(len(coloring.vertices), coloring=coloring)
     print(perm)

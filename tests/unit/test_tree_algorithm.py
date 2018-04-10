@@ -27,10 +27,8 @@ EXPECTED[BIGTREE3] = {'G0G1': False, 'G0G2': True, 'G0G3': False, 'G1G2': False,
 def load_graph_from_file(filename):
     """Check if results for the given file are correct"""
     with open(PATH + "/" + filename) as f:
-        L = load_graph(f, read_list=True)
-
-    graph = L[0][0]
-    return graph
+        graphs = load_graph(f, read_list=True)
+    return graphs[0][0]
 
 
 def get_expected_result(filename, g_name, h_name):
@@ -47,9 +45,9 @@ def get_tree_files():
 def testfile(filename):
     """Check if results for the given file are correct"""
     with open(PATH + "/" + filename) as f:
-        L = load_graph(f, read_list=True)
+        graphs = load_graph(f, read_list=True)
 
-    graphs = L[0]
+    graphs = graphs[0]
     results = []
     for i in range(len(graphs)):
         for j in range(len(graphs)):
@@ -191,7 +189,7 @@ class TestTrees(unittest.TestCase):
             [(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (3, 9), (3, 10), (4, 11), (4, 12)])
 
         # Pretend that [g_8,h_4] and [g_11,h_11] are isomorphic modules
-        result = tree_isomorphism(g,h,[[g.find_vertex(8), h.find_vertex(4)],[g.find_vertex(11), h.find_vertex(11)]])
+        result = tree_isomorphism(g, h, [[g.find_vertex(8), h.find_vertex(4)], [g.find_vertex(11), h.find_vertex(11)]])
         self.assertTrue(result)
 
         # Pretend that [g_6,h_4] and [g_11,h_11] are isomorphic modules
@@ -204,8 +202,7 @@ class TestTrees(unittest.TestCase):
         result = tree_isomorphism(g, h, [[g.find_vertex(2), h.find_vertex(1)], [g.find_vertex(9), h.find_vertex(4)]])
         self.assertFalse(result)
 
-
-    def test_files(self):
+    def test_more_files(self):
         files = get_tree_files()
         for file in files:
             results = testfile(file)

@@ -1,9 +1,10 @@
 import unittest
+
 from basicpermutationgroup import *
 from basicpermutationgroup import order_computation
 from color_refinement_helper import compare
-from graph import Graph
 from coloring import Coloring
+from graph import Graph
 from permv2 import Permutation
 
 

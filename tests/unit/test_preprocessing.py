@@ -1,5 +1,7 @@
 import unittest
 
+import tests
+
 from color_refinement_helper import graph_to_modules
 from disconnected_refinement import graph_component_isomorphic
 from preprocessing import is_same_decomposition, modular_decomposition_factor, \
@@ -20,9 +22,6 @@ class TestPreprocessing(unittest.TestCase):
     @staticmethod
     def _triplet_module(): return [Vertex(TestPreprocessing.graph), Vertex(TestPreprocessing.graph),
                                    Vertex(TestPreprocessing.graph)]
-
-    def setUp(self):
-        tests.set_up_test_graphs()
 
     def setUp(self):
         tests.set_up_test_graphs()
@@ -115,6 +114,7 @@ if __name__ == '__main__':
         md += [self._triplet_module()]
         self.assertCountEqual([1, 1, 2, 3], list(get_modular_decomposition_sizes(md)))
 
+
     def test_check_modular_decomposition(self):
         # Assert that the same singleton modular decompositions (MDs) may be isomorphic
         md0 = [self._prime_module()]
@@ -146,6 +146,7 @@ if __name__ == '__main__':
         self.assertFalse(is_same_decomposition(md0, md1))
         self.assertFalse(is_same_decomposition(md1, md0))
 
+
     def test_modular_decomposition_factor(self):
         md = [self._prime_module()]
         self.assertEqual(1, modular_decomposition_factor(md))
@@ -161,6 +162,7 @@ if __name__ == '__main__':
 
         md += [self._triplet_module()]
         self.assertEqual(24, modular_decomposition_factor(md))
+
 
     def test_calculate_modular_decomposition_and_factor(self):
         graph = Graph(directed=False)
@@ -179,7 +181,6 @@ if __name__ == '__main__':
         md_graph = graph_to_modules(graph)
         _, factor = calculate_modular_decomposition_and_factor(graph, md_graph)
         self.assertEqual(24, factor)
-
 
 if __name__ == '__main__':
     unittest.main()
