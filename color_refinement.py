@@ -207,9 +207,7 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
     """
     if preprocessing.is_tree(g):
         if preprocessing.is_tree(h):
-            md = graph_to_modules(g + h)
-            graph_md, modular_iso = modules_to_graph_with_module_isomorphism(md) #TODO: graph_md?
-            return tree_isomorphism(g, h, modular_iso)
+            return tree_isomorphism(g, h)
         else:
             return False
     elif preprocessing.is_tree(h):
@@ -219,9 +217,7 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
         if is_potential_isomorph:
             if preprocessing.is_tree(g):
                 if preprocessing.is_tree(h):
-                    md = graph_to_modules(g + h)
-                    graph_md, modular_iso = modules_to_graph_with_module_isomorphism(md)
-                    return tree_isomorphism(g, h, modular_iso)
+                    return tree_isomorphism(g, h)
                 else:
                     return False
             else:
