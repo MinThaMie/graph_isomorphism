@@ -2,6 +2,7 @@
 Test file for Color Refinement Algorithm
 """
 import os
+import time
 import unittest
 
 from color_refinement import get_number_automorphisms
@@ -24,6 +25,9 @@ def get_files(expected: dict):
 
 
 def testfile(filename, file_expected):
+    print('Testing', filename, end=' ', flush=True)
+    start_time = time.time()
+
     """Check if results for the given file are correct"""
     with open(PATH_auto + "/" + filename) as f:
         L = load_graph(f, read_list=True)
@@ -37,6 +41,8 @@ def testfile(filename, file_expected):
         message = "Expected " + str(expected) + " for G" + str(graph_nr) + " in " + filename + " got " + str(num)
         # print(message)
         results.append([expected, num, message])
+
+    print(f'({time.time() - start_time})', flush=True)
     return results
 
 
