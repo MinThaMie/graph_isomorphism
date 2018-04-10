@@ -131,6 +131,8 @@ class ColorRefineHelper(unittest.TestCase):
         self.assertListEqual([v_g6], list(init_coloring.get(2)))
         self.assertListEqual([v_g2, v_g4], list(init_coloring.get(3)))
 
+    # TODO: test_generate_neighbour_count_with_color
+
     def test_group_by(self):
         # group_by(List[int]) groups by number
         a = [1, 2, 3, 2, 3]
@@ -256,6 +258,37 @@ class ColorRefineHelper(unittest.TestCase):
         labels = [vertex.label for vertex in graph.vertices]
         expected_labels = ["1+2+3"]
         self.assertTrue(set(labels) == set(expected_labels))
+
+    def test_get_mappings(self):
+        g = Graph(directed=False, n=5, name='g')
+        h = Graph(directed=False, n=5, name='h')
+        vg_0, vg_1, vg_2, vg_3, vg_4 = g.vertices
+        vh_0, vh_1, vh_2, vh_3, vh_4 = h.vertices
+
+        triv, non_triv = get_mappings(vg_0, h.vertices)
+        self.assertEqual(vh_0, triv)
+        self.assertEqual(4, len(non_triv))
+        self.assertEqual([vh_1, vh_2, vh_3, vh_4], non_triv)
+
+        triv, non_triv = get_mappings(vg_0, [vh_1, vh_2, vh_3, vh_4])
+        self.assertIsNone(triv)
+        self.assertEqual(4, len(non_triv))
+        self.assertEqual([vh_1, vh_2, vh_3, vh_4], non_triv)
+
+        triv, non_triv = get_mappings(vg_0, [vh_0])
+        self.assertEqual(vh_0, triv)
+        self.assertEqual(0, len(non_triv))
+
+    def test_choose_color_trivial(self):
+        g = create_graph_helper([(1, 2), (2, 3)])
+        v_g1, v_g2, v_g3 = g.vertices
+        g_copy = g.deepcopy()
+        v_1, v_2, v_3 = g_copy.vertices
+        added = g + g_copy
+        coloring = initialize_coloring(added)
+        chosen, color_class = choose_color_trivial(coloring, g)
+        self.assertEqual([v_g1, v_g3, v_1, v_3], color_class)
+        self.assertEqual(v_g1, chosen)
 
 
 if __name__ == '__main__':

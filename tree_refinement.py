@@ -5,7 +5,7 @@ from color_refinement_helper import group_by
 from graph import Graph, Vertex
 
 
-def tree_isomorphism(g: Graph, h: Graph) -> bool:
+def tree_isomorphism(g: Graph, h: Graph, modules: [[Vertex]] = None) -> bool:
     """
     Checks if Tree g and Tree h are isomorphic
     :param g: Graph
@@ -17,6 +17,14 @@ def tree_isomorphism(g: Graph, h: Graph) -> bool:
     g = initialize_tree(g)
     h = initialize_tree(h)
 
+    # Initialize module values
+    counter = len(g.vertices)
+    if modules:
+        for module in modules:
+            for v in module:
+                v.value = counter
+            counter += 1
+
     # Get the root for the trees
     root_g = choose_a_root(g)
     root_h = choose_a_root(h)
@@ -26,6 +34,13 @@ def tree_isomorphism(g: Graph, h: Graph) -> bool:
     assign_levels(root_h)
     level_dict_g = group_by(g.vertices, lambda v: v.level)
     level_dict_h = group_by(h.vertices, lambda v: v.level)
+    # Modules must have the same level
+    if modules:
+        for module in modules:
+            level = module[0].level
+            for v in module:
+                if v.level != level:
+                    return False
     # Gets the lowest level in the tree and since we assume isomorphism the dict which is used does not matter
     lowest_level = max(level_dict_g)
     if max(level_dict_h) != lowest_level:
@@ -46,11 +61,20 @@ def tree_isomorphism(g: Graph, h: Graph) -> bool:
         value = 1
         for t in sorted(d_g):
             for v in d_g[t]:
-                v.value = value
+                if v.value is None:
+                    v.value = value
             for v in d_h[t]:
-                v.value = value
+                if v.value is None:
+                    v.value = value
             value += 1
         lowest_level -= 1
+    # Modules should all have the same tuple, just like roots
+    if modules:
+        for module in modules:
+            tuples = module[0].tuples
+            for v in module:
+                if v.tuples != tuples:
+                    return False
     # If the roots have the same tuple the trees are isomorphic
     return sorted(root_g.tuples) == sorted(root_h.tuples)
 

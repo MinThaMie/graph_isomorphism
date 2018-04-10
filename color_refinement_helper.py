@@ -4,6 +4,7 @@ Module with helper methods for the Color Refinement Algorithm
 from typing import Iterable
 
 from coloring import *
+from graph import Graph
 from tools import create_graph_helper
 
 Module = [Vertex]
@@ -77,6 +78,27 @@ def choose_color(coloring: Coloring) -> DoubleLinkedList:
         if len(vertices) >= 4 and len(vertices) % 2 == 0:
             return vertices
     return DoubleLinkedList()
+
+
+def choose_color_trivial(coloring: Coloring, g: Graph) -> (Vertex, [Vertex]):
+    """
+    Returns a partition cell (aka color class) with at least four vertices
+
+    Returns the first color class with at least four vertices that is found.
+    :param coloring: current coloring
+    :return: a color class with at least four vertices, `None` if no color class could be found
+    """
+    for key in coloring.colors:
+        vertices = list(coloring.get(key))
+        if len(vertices) >= 4 and len(vertices) % 2 == 0:
+            ordered = group_by(vertices, group_rule=lambda v: v.id)
+            for key1 in ordered.keys():
+                if len(ordered[key1]) == 2:
+                    if ordered[key1][0].in_graph(g):
+                        return ordered[key1][0], vertices
+                    else:
+                        return ordered[key1][1], vertices
+    return None, []
 
 
 def choose_vertex(color: Iterable[Vertex], g: Graph) -> Union[Vertex, None]:
@@ -233,3 +255,25 @@ def group_by(obj, group_rule=None) -> dict:
             key = group_rule(elem)
             d.setdefault(key, []).append(elem)
     return d
+
+
+def get_mappings(v: Vertex, vertices: [Vertex]) -> (Vertex, [Vertex]):
+    """
+    Returns the trivial mapping of a Vertex and a list of non-trivial mappings
+
+    Returns a 2-tuple with as first argument the trivial mapping of the Vertex. The second argument is a list of
+    vertices which are not the trivial mapping. A mapping is called trivial if the labels of two vertices are equal.
+    The list of vertices (mappings) must be from another graph compared to vertex.
+    :param Vertex v: the vertex to be mapped
+    :param [Vertex] vertices: list of vertices to map to. These vertices must belong to another graph than Vertex v
+    :return (Vertex, [Vertex]): a trivial mapping from the vertex to the other graph, `None` if it doesn't exist. And a list of vertices
+    which is not a trivial mapping.
+    """
+    trivial = None
+    non_trivial = []
+    for vertex in vertices:
+        if vertex.id == v.id:
+            trivial = vertex
+        else:
+            non_trivial.append(vertex)
+    return trivial, non_trivial

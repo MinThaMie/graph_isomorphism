@@ -181,6 +181,27 @@ class TestTrees(unittest.TestCase):
         result = tree_isomorphism(g, j)
         self.assertFalse(result)
 
+    def test_tree_isomorphisms_with_modules(self):
+        # G and H are the trees from the article, but root from our algorithm is different so doesn't match in result
+        g = tests.create_graph_helper(
+            [(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (6, 9), (6, 10), (8, 11), (8, 12)])
+        h = tests.create_graph_helper(
+            [(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (3, 9), (3, 10), (4, 11), (4, 12)])
+
+        # Pretend that [g_8,h_4] and [g_11,h_11] are isomorphic modules
+        result = tree_isomorphism(g, h, [[g.find_vertex(8), h.find_vertex(4)], [g.find_vertex(11), h.find_vertex(11)]])
+        self.assertTrue(result)
+
+        # Pretend that [g_6,h_4] and [g_11,h_11] are isomorphic modules
+        # Note modules are isomorphic, but not in the 'same' place
+        result = tree_isomorphism(g, h, [[g.find_vertex(6), h.find_vertex(4)], [g.find_vertex(11), h.find_vertex(11)]])
+        self.assertFalse(result)
+
+        # Pretend that [g_2,h_1] and [g_9,h_4] are isomorphic modules
+        # Note modules are isomorphic, but not in the 'same' place
+        result = tree_isomorphism(g, h, [[g.find_vertex(2), h.find_vertex(1)], [g.find_vertex(9), h.find_vertex(4)]])
+        self.assertFalse(result)
+
     def test_more_files(self):
         files = get_tree_files()
         for file in files:
