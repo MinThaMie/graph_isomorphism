@@ -3,6 +3,7 @@ This is a module for the color refinement algorithm
 version: 20-3-18, Claudia Reuvers & Dorien Meijer Cluwen
 """
 import time
+from typing import Dict
 
 import preprocessing
 from basicpermutationgroup import order_computation, member_of
