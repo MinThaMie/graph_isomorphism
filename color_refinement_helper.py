@@ -245,21 +245,28 @@ def determine_module_connectivity(md: ModularDecomposition):
 
 
 def modules_to_graph_with_module_isomorphism(md: ModularDecomposition) -> (Graph, [[Vertex]]):
-    def _add_iso_groups(module_size_to_md_mapping, groups, mapping):
-        for modules in module_size_to_md_mapping.values():
+    def _add_iso_groups(md_groups, groups, mapping):
+        for modules in md_groups:
             iso = []
             for module in modules:
                 iso.append(mapping[module[0]])
             groups.append(iso)
 
+    def _sort_iso_groups(length_to_module_mapping):
+        return [length_to_module_mapping[length] for length in sorted(length_to_module_mapping.keys())]
+
     graph, old_new_vertex_mapping = modules_to_graph(md)
     connected_md, disconnected_md = determine_module_connectivity(md)
-    isomorphic_connected_modules = group_by(connected_md, len)
-    isomorphic_disconnected_modules = group_by(disconnected_md, len)
+
+    length_to_iso_connected_modules = group_by(connected_md, len)
+    length_to_isomorphic_disconnected_modules = group_by(disconnected_md, len)
+
+    connected_iso_groups = _sort_iso_groups(length_to_iso_connected_modules)
+    disconnected_iso_groups = _sort_iso_groups(length_to_isomorphic_disconnected_modules)
 
     md_iso_groups = []
-    _add_iso_groups(isomorphic_connected_modules, md_iso_groups, old_new_vertex_mapping)
-    _add_iso_groups(isomorphic_disconnected_modules, md_iso_groups, old_new_vertex_mapping)
+    _add_iso_groups(connected_iso_groups, md_iso_groups, old_new_vertex_mapping)
+    _add_iso_groups(disconnected_iso_groups, md_iso_groups, old_new_vertex_mapping)
 
     return graph, md_iso_groups
 
