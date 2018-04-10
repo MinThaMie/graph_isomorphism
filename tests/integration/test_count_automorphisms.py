@@ -51,7 +51,6 @@ class CountIsomorphismCase(unittest.TestCase):
 
     def test_files(self):
         files = get_files(self.EXPECTED)
-        files.remove('torus144.grl')
         for file in files:
             results = testfile(file, self.EXPECTED)
             for result in results:
