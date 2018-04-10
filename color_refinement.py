@@ -266,29 +266,16 @@ def get_number_automorphisms(g: Graph) -> int:
     """
     copy_g = g.deepcopy()
     _, g, copy_g, factor, md_iso_groups_g, md_iso_groups_h = modular_decomposition(g, copy_g)
+    md_iso_groups_g_h = [group_g + group_h for group_g, group_h in zip(md_iso_groups_g, md_iso_groups_h)]
 
     for idx, v in enumerate(g.vertices):
         v.set_id(idx)
     for idx, v in enumerate(copy_g.vertices):
         v.set_id(idx)
-
-    coloring = Coloring()
-    # TODO: make sure only md's who are isomorph are in the same group
-    if len(md_iso_groups_g) == 0:
-        coloring = initialize_coloring(g + copy_g)
-    else:
-        for i in range(len(md_iso_groups_g)):
-            coloring.add(md_iso_groups_g[i], i)
-            coloring.add(md_iso_groups_h[i], i)
-        # for group in md_iso_groups_g:
-        #     coloring.add(group, 0)
-        # for group in md_iso_groups_h:
-        #     coloring.add(group, 0)
-        not_modules_g = [v for v in g.vertices if v not in coloring.get(0)]
-        not_modules_h = [v for v in copy_g.vertices if v not in coloring.get(0)]
-        if len(not_modules_g) > 0:
-            coloring.add(not_modules_g)
-            coloring.add(not_modules_h, coloring.color(not_modules_g[0]))
+    
+    coloring = initialize_coloring(g + copy_g)
+    for i in range(len(md_iso_groups_g_h)):
+        coloring.add(md_iso_groups_g_h[i])
     lastvisited = [coloring]
     generators = []
     generators, _ = compute_generators(g, copy_g, coloring, generators=generators, lastvisited=lastvisited)
