@@ -236,7 +236,11 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
                 else:
                     return False
             else:
+                md_iso_groups_g_h = [group_g + group_h for group_g, group_h in zip(md_iso_groups_g, md_iso_groups_h)]
                 coloring = initialize_coloring(g + h)
+                for i in range(len(md_iso_groups_g_h)):
+                    coloring.add(md_iso_groups_g_h[i])
+
                 return get_number_isomorphisms(g, h, coloring, False) > 0
         else:
             return False
