@@ -12,16 +12,22 @@ GRAPHS = 'graphs'
 BRANCHING = os.path.join(GRAPHS, 'branching')
 COLORREF = os.path.join(GRAPHS, 'colorref')
 TREEPATHS = os.path.join(GRAPHS, 'treepaths')
+BASIC = os.path.join(GRAPHS, 'game/')
 
-FILE = os.path.join(BRANCHING, 'bigtrees1.grl')
+FILE = ''
+
+GIONLY = False
 
 
 def main():
+    start = time.time()
     if FILE == '':
         graph_files = find_graphs()
     else:
         graph_files = [FILE]
     process_graph_files(graph_files)
+    end = time.time()
+    print('totale tijd: ' + str(end - start))
 
 
 def find_graphs() -> List[str]:
@@ -29,10 +35,12 @@ def find_graphs() -> List[str]:
     Find all graph files on a given path
     :return: List of strings representing the paths to graph files
     """
-    branching_graphs = [BRANCHING + file for file in os.listdir(BRANCHING)]
-    colorref_graphs = [COLORREF + file for file in os.listdir(COLORREF)]
-    treepath_graphs = [TREEPATHS + file for file in os.listdir(TREEPATHS)]
-    return branching_graphs + colorref_graphs + treepath_graphs
+    # branching_graphs = [BRANCHING + file for file in os.listdir(BRANCHING)]
+    # colorref_graphs = [COLORREF + file for file in os.listdir(COLORREF)]
+    # treepath_graphs = [TREEPATHS + file for file in os.listdir(TREEPATHS)]
+    treepath_graphs = [BASIC + file for file in os.listdir(BASIC)]
+
+    return treepath_graphs
 
 
 def process_graph_files(graph_files: List[str]):
@@ -68,13 +76,16 @@ def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[
     isomorphs = calculate_isomorphisms(graphs)
     iso_time = time.time() - iso_start
 
-    output_result(create_title_string("AUTOMORPHISMS"))
-    graphs = [graphs[0] for graphs in isomorphs]
-    auto_start = time.time()
-    automorphs = calculate_automorphisms(graphs)
-    auto_time = time.time() - auto_start
+    if GIONLY:
+        return isomorphs, iso_time, [-1 for i in isomorphs], 0
+    else:
+        output_result(create_title_string("AUTOMORPHISMS"))
+        graphs = [graphs[0] for graphs in isomorphs]
+        auto_start = time.time()
+        automorphs = calculate_automorphisms(graphs)
+        auto_time = time.time() - auto_start
 
-    return isomorphs, iso_time, automorphs, auto_time
+        return isomorphs, iso_time, automorphs, auto_time
 
 
 def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
