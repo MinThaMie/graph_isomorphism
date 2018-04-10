@@ -15,7 +15,7 @@ TREEPATHS = os.path.join(GRAPHS, 'treepaths')
 D_DAY = os.path.join(GRAPHS, 'd_day')
 BASIC = os.path.join(D_DAY, 'basic/')
 
-FILE = os.path.join(D_DAY, 'bonusGI3.grl')
+FILE = os.path.join(D_DAY, 'bonusGI5.grl')
 
 
 def main():
