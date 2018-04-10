@@ -14,7 +14,7 @@ BRANCHING = os.path.join(GRAPHS, 'branching')
 COLORREF = os.path.join(GRAPHS, 'colorref')
 TREEPATHS = os.path.join(GRAPHS, 'treepaths')
 
-FILE = os.path.join(BRANCHING, 'trees36.grl')
+FILE = os.path.join(BRANCHING, 'bigtrees1.grl')
 
 
 def main():
