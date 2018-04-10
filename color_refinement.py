@@ -229,7 +229,8 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
         if is_potential_isomorph:
             if preprocessing.is_tree(g):
                 if preprocessing.is_tree(h):
-                    return tree_isomorphism(g, h)
+                    md_gh = [g + h for g, h in zip(md_iso_groups_g, md_iso_groups_h)]
+                    return tree_isomorphism(g, h, md_gh)
                 else:
                     return False
             else:
