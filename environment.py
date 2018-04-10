@@ -15,7 +15,7 @@ TREEPATHS = os.path.join(GRAPHS, 'treepaths')
 D_DAY = os.path.join(GRAPHS, 'd_day')
 BASIC = os.path.join(D_DAY, 'basic/')
 
-FILE = os.path.join(D_DAY, 'bonusAut1.gr')
+FILE = os.path.join(D_DAY, 'bonusAut3.grl')
 
 
 def main():
@@ -46,6 +46,7 @@ def process_graph_files(graph_files: List[str]):
     """
 
     for file in graph_files:
+        print(file)
         graphs = get_graphs_from_file(file)
         isomorphs, iso_time, automorphs, auto_time = process_graphs(graphs)
         result_string = stringify_results(file, isomorphs, iso_time, automorphs, auto_time)

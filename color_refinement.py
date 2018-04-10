@@ -222,6 +222,7 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
 
     if preprocessing.is_tree(g):
         if preprocessing.is_tree(h):
+            print('G and H are trees')
             return tree_isomorphism(g, h)
         else:
             return False
@@ -233,7 +234,7 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
         if is_potential_isomorph:
             if preprocessing.is_tree(g):
                 if preprocessing.is_tree(h):
-                    print('G and H are trees')
+                    print('G and H are trees after MD')
                     return tree_isomorphism(g, h)
                 else:
                     return False
