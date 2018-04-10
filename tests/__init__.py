@@ -1,4 +1,3 @@
-import tests
 from coloring import *
 from graph import *
 
@@ -187,17 +186,17 @@ def create_coloring_helper_vertex(mapping: dict) -> Coloring:
     return coloring
 
 
-def create_coloring_helper(vertices: List[int], map: dict):
+def create_coloring_helper(vertices: List[int], mapping: dict):
     """
     Converts a dictionary of (int,[int]) pairs to a coloring,
     assuming that the given values in [int] are the labels of the given vertices
     :param vertices: list of vertex labels
-    :param map: dict of (int, [int]) pairs
+    :param mapping: dict of (int, [int]) pairs
     :return:
     """
     coloring = Coloring()
-    for color in map:
-        for value in map[color]:
+    for color in mapping:
+        for value in mapping[color]:
             vertex = [v for v in vertices if v.label == value][0]
             coloring.set(vertex, color)
     return coloring

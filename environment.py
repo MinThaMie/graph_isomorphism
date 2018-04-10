@@ -1,5 +1,4 @@
 import os
-
 import time
 from typing import List, Tuple
 
@@ -41,6 +40,7 @@ def process_graph_files(graph_files: List[str]):
     Run graph processing for every file in the input list
     :param graph_files: list of strings representing the paths to graph files
     """
+
     for file in graph_files:
         graphs = get_graphs_from_file(file)
         isomorphs, iso_time, automorphs, auto_time = process_graphs(graphs)
@@ -50,16 +50,19 @@ def process_graph_files(graph_files: List[str]):
 
 def get_graphs_from_file(file: str) -> List[Graph]:
     with open(file) as f:
-        L = load_graph(f, read_list=True)
-    return L[0]
+        graphs = load_graph(f, read_list=True)
+    return graphs[0]
 
 
 def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[int], float]:
     """
-    First preprocesses the given graphs, then runs calculations for isomorphisms and automorphisms.
-    :param graphs: raw graphs to be processed
-    :return: result tuple containing a list with: a list of isomorphic graphs, isomorphisms calculation time, automorphisms per graph and automorphisms calculation time
+    First preprocesses the given graphs, then runs calculations for isomorphisms and automorphisms. :param graphs:
+    raw graphs to be processed
+
+    :return: result tuple containing a list with: a list of isomorphic graphs, isomorphisms calculation time,
+             automorphisms per graph and automorphisms calculation time
     """
+
     output_result(create_title_string("ISOMORPHISMS"))
     iso_start = time.time()
     isomorphs = calculate_isomorphisms(graphs)
@@ -80,6 +83,7 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
     :param graphs: list of graphs to be calculated
     :return: list with list of isomorphic graphs
     """
+
     isomorphs = [[]]
     isomorphs[0] = [graphs.pop(0)]
     for i in range(len(graphs)):
@@ -93,32 +97,35 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
                 if not is_connected_g and not is_connected_h:
                     if graph_component_isomorphic(construct_graph_from_components(components_g),
                                                   construct_graph_from_components(components_h)):
+                        end_time = time.time()
                         isomorphs[j].append(graphs[i])
                         added = True
                         output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
-                            time.time() - start_time) + ")")
+                            end_time - start_time) + ")")
                         break
                 if is_connected_g and is_connected_h:
                     if is_isomorphisms(g, h):
+                        end_time = time.time()
                         isomorphs[j].append(graphs[i])
                         added = True
                         output_result(graphs[i].name + " and " + isomorphs[j][0].name + " are isomorphisms (" + str(
-                            time.time() - start_time) + ")")
+                            end_time - start_time) + ")")
                         break
         if not added:
             isomorphs.append([graphs[i]])
-            output_result(graphs[i].name + " has no isomorphisms yet (" + str(time.time() - start_time) + ")")
+            end_time = time.time()
+            output_result(f"{graphs[i].name} has no isomorphisms yet ({str(end_time - start_time)})")
     return isomorphs
 
 
 def preprocess(g: Graph, h: Graph) -> Tuple[bool, Graph, Graph]:
     """
     Preprocess graphs for isomorphism calculation
-    :param h:
-    :param g:
-    :param graphs: raw graphs
+    :param Graph h: One graph.
+    :param Graph g: Another graph.
     :return: graphs prepared for isomorphism calculation
     """
+
     is_isomorph = checks(g, h)
     if is_isomorph:
         g, h = check_complement(g, h)
@@ -131,12 +138,14 @@ def calculate_automorphisms(graphs: List[Graph]) -> List[int]:
     :param graphs: list of graphs to be calculated
     :return: list with number of automorphisms per graph
     """
+
     automorphisms = []
     for graph in graphs:
         start_time = time.time()
         num_automorphisms = get_number_automorphisms(graph)
-        output_result(graph.name + "\'s group has " + str(num_automorphisms) + " automorphisms (" + str(
-            time.time() - start_time) + ")")
+        end_time = time.time()
+        output_result(
+            f"{graph.name}\'s group has {str(num_automorphisms)} automorphisms ({str(end_time - start_time)})")
         automorphisms.append(num_automorphisms)
     return automorphisms
 
@@ -160,27 +169,22 @@ def get_file_title(file: str) -> str:
 def create_data_string(isomorphs: List[List[Graph]], automorphs: List[int]) -> str:
     output_format = '{:<20} {:>20}'
     data_string = output_format.format('ISOMORPHISMS', 'AUTOMORPHISMS')
+
     for m in range(len(isomorphs)):
-        iso_string = '['
-        for n in range(len(isomorphs[m])):
-            iso_string += isomorphs[m][n].name
-            if n + 1 < len(isomorphs[m]):
-                iso_string += ', '
-        iso_string += ']'
+        iso_string = '[' + ', '.join(graph.name for graph in isomorphs[m]) + ']'
         auto_string = str(automorphs[m])
         subresult = output_format.format(iso_string, auto_string)
         data_string += '\n' + subresult
+
     return data_string + '\n'
 
 
 def create_footer_string(iso_time: float, auto_time: float) -> str:
     output_format = '{:<20} {:>20.10f}'
-    total_time = iso_time + auto_time
-    footer = output_format.format('Isomorphisms time', iso_time) + '\n' \
-             + output_format.format('Automorphisms time', auto_time) + '\n' \
-             + '{:25} {:-<15}'.format('', '') + '\n' \
-             + output_format.format('Total time (s)', total_time)
-    return footer
+    return '{0}\n{1}\n{2}\n{3}'.format(output_format.format('Isomorphisms time', iso_time),
+                                       output_format.format('Automorphisms time', auto_time),
+                                       f'{"":25} {"":-<15}',
+                                       output_format.format('Total time (s)', iso_time + auto_time))
 
 
 def output_result(result: str):

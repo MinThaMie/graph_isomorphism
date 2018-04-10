@@ -60,12 +60,12 @@ def has_same_color_neighbours(u: Vertex, v: Vertex, coloring: Coloring) -> bool:
     :param coloring: current coloring
     :return: `True` if the vertices have the same colored neighbourhood, `False` otherwise
     """
-    ncolors_u = [coloring.color(w) for w in u.neighbours]
-    ncolors_v = [coloring.color(w) for w in v.neighbours]
+    ncolors_u = (coloring.color(w) for w in u.neighbours)
+    ncolors_v = (coloring.color(w) for w in v.neighbours)
     return compare(ncolors_u, ncolors_v)
 
 
-def choose_color(coloring: Coloring) -> List[Vertex]:
+def choose_color(coloring: Coloring) -> DoubleLinkedList:
     """
     Returns a partition cell (aka color class) with at least four vertices
 
@@ -73,11 +73,11 @@ def choose_color(coloring: Coloring) -> List[Vertex]:
     :param coloring: current coloring
     :return: a color class with at least four vertices, `None` if no color class could be found
     """
-    for key in coloring.colors:
-        vertices = list(coloring.get(key))
+    for color in coloring.colors:
+        vertices = coloring.get(color)
         if len(vertices) >= 4 and len(vertices) % 2 == 0:
             return vertices
-    return []
+    return DoubleLinkedList()
 
 
 def choose_color_trivial(coloring: Coloring, g: Graph) -> (Vertex, [Vertex]):
@@ -101,7 +101,7 @@ def choose_color_trivial(coloring: Coloring, g: Graph) -> (Vertex, [Vertex]):
     return None, []
 
 
-def choose_vertex(color: List[Vertex], g: Graph) -> Vertex:
+def choose_vertex(color: Iterable[Vertex], g: Graph) -> Union[Vertex, None]:
     """
     Returns a vertex of graph g which is in the given color class
 
@@ -114,53 +114,6 @@ def choose_vertex(color: List[Vertex], g: Graph) -> Vertex:
         if vertex.in_graph(g):
             return vertex
     return None
-
-
-# TODO: Do we really want a function for this?
-def get_vertices_of_graph(color: List[Vertex], g: Graph) -> List[Vertex]:
-    """
-    Returns the vertices of graph g in the given color class
-
-    :param color: color class from which the vertices must be retrieved
-    :param g: graph of which the vertices must be a part of
-    :return: a list of vertices belonging to graph g in the given color class. The list is empty if no vertices of graph
-    g are found in the given color class
-    """
-    return [v for v in color if g in v.graphs]
-
-
-def are_twins(u: Vertex, v: Vertex) -> bool:
-    """
-    Returns whether the two given vertices are twins
-
-    Two vertices are twins if they have the same neighbourhood except the other vertex.
-    :param u: vertex
-    :param v: vertex
-    :return: `True` if the vertices are twins, `False` otherwise
-    """
-    n_u = [x for x in u.neighbours if x != v]
-    n_v = [x for x in v.neighbours if x != u]
-    return compare(n_u, n_v, lambda vertex: vertex.label)
-
-
-def get_twins(g: Graph):  # -> List[(Vertex, Vertex)], List[(Vertex, Vertex)]:
-    """
-    Returns a list of true twins and a list of false twins
-
-    :param g: graph for which the (false) twins need to be determined
-    :return: arg1: a list of tuples of vertices containing the true twins
-             arg2: a list of tuples of vertices containing the false twins
-    """
-    twins = list()
-    false_twins = list()
-    for u in g.vertices:
-        for v in g.vertices:
-            if v.label > u.label:
-                if u.is_adjacent(v) and are_twins(u, v):
-                    twins.append((u, v))
-                if compare(u.neighbours, v.neighbours, lambda vertex: vertex.label):
-                    false_twins.append((u, v))
-    return twins, false_twins
 
 
 def graph_to_modules(graph: Graph) -> ModularDecomposition:
@@ -303,23 +256,10 @@ def initialize_coloring(g: Graph) -> Coloring:
     :param g: graph on which the coloring needs to be applied
     :return: an initial coloring of graph g by degree
     """
+
     coloring = Coloring()
     for v in g.vertices:
         coloring.set(v, v.degree)
-    debug('Init coloring ', coloring)
-    return coloring
-
-
-def get_unit_coloring(g: Graph) -> Coloring:
-    """
-    Creates a coloring of graph g where all vertices are in the same color class
-
-    :param g: graph on which the coloring needs to be applied
-    :return: an initial coloring of graph g with all vertices in the same color class
-    """
-    coloring = Coloring()
-    for v in g.vertices:
-        coloring.set(v, 0)
     debug('Init coloring ', coloring)
     return coloring
 
@@ -332,6 +272,7 @@ def generate_neighbour_count_with_color(coloring: Coloring, current_color: int) 
     :return: mapping of colors to a vertex-neighbour_count mapping, the vertex-neighbour_count mapping
                 is a dictionary which maps vertices to the amount of neighbours with current_color
     """
+
     counter = {}
     for v in coloring.vertices:
         count = 0
@@ -355,6 +296,7 @@ def group_by(obj, group_rule=None) -> dict:
     :param group_rule: Rule to use for grouping, if not set `lambda x:x` is used
     :return: A dict in which the elements of 'obj' are grouped by results of the 'group_rule'
     """
+
     d = {}
     if not group_rule:
         for elem in obj:

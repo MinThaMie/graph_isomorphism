@@ -123,7 +123,7 @@ class ColoringCase(unittest.TestCase):
 
         for c, v in self.coloring.items():
             self.assertIn(c, self.coloring.colors)
-            self.assertEqual(self.coloring.get(c), list(v))
+            self.assertEqual(list(self.coloring.get(c)), list(v))
 
     def test_status(self):
         # For different graphs
@@ -132,7 +132,7 @@ class ColoringCase(unittest.TestCase):
         #                 4 -- 5 -- 6
         #
         # G1: 10 -- 12 -- 13
-        #            |   /
+        #            \   /
         #             14 -- 11 -- 15 -- 16
         #
         # G2: 21 -- 23 -- 25 -- 20 -- 26 -- 22
