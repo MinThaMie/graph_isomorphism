@@ -1,8 +1,9 @@
 import math
 
-from color_refinement_helper import compare, debug, modules_to_graph, ModularDecomposition
+from color_refinement_helper import compare, debug, modules_to_graph, ModularDecomposition, \
+    modules_to_graph_with_module_isomorphism
 from dll import DoubleLinkedList
-from graph import Graph, Vertex
+from graph import *
 
 
 def checks(g, h) -> bool:
@@ -141,7 +142,7 @@ def construct_graph_from_components(components: dict) -> [Graph]:
     return graphs
 
 
-def is_tree(g: Graph):
+def is_tree(g: Graph) -> bool:
     """
     This method checks whether graph g is a tree. First iteration.
     Uses the is_cycle method from tree_algorithm_helper.py
@@ -183,7 +184,7 @@ def get_modular_decomposition_sizes(md: ModularDecomposition):
     return map(len, md)
 
 
-def is_same_decomposition(md_g: ModularDecomposition, md_h: ModularDecomposition) -> bool:
+def is_similar_modular_decomposition(md_g: ModularDecomposition, md_h: ModularDecomposition) -> bool:
     """
     Check if modular decompositions of two graphs indicate anisomorphism.
 
@@ -205,32 +206,32 @@ def modular_decomposition_factor(md: ModularDecomposition) -> int:
     return result
 
 
-def _check_modular_decomposition_length(g: Graph, md_g: ModularDecomposition) -> bool:
+def _is_md_length_identity(g: Graph, md_g: ModularDecomposition) -> bool:
     return len(md_g) == g.order
 
 
-def calculate_modular_decomposition_and_factor(g: Graph, md_g: ModularDecomposition) -> (Graph, int):
+def calculate_modular_decomposition_and_factor(g: Graph, md_g: ModularDecomposition) -> (Graph, int, [[Vertex]]):
     """
     Determine if modular decomposition yields a simpler graph for further processing, along with a factor to multiply
     with the number of isomorphisms of those simpler graphs.
 
     :param Graph g: The graph to analyse.
     :param ModularDecomposition md_g: Graph g's modular decomposition.
-    :return: 2-tuple of the graph to use in the algorithm and a factor with which to multiply the outcome. The graph
-             need not be graph g's modular decomposition.
+    :return: 3-tuple of the graph to use in the algorithm, a factor with which to multiply the count and the modular
+             decomposition isomorphism groups. The graph need not be graph g's modular decomposition.
     """
 
-    if _check_modular_decomposition_length(g, md_g):  # Implies order of MD of G is not less than order of G
-        return g, 1
+    if _is_md_length_identity(g, md_g):  # Implies order of MD of G is not less than order of G
+        return g, 1, []
 
     factor = modular_decomposition_factor(md_g)
     debug(f'Using modular decomposition with factor = {factor}')
 
-    g_md = modules_to_graph(md_g)
-    return g_md, factor
+    g_md, md_iso_groups = modules_to_graph_with_module_isomorphism(md_g)
+    return g_md, factor, md_iso_groups
 
 
-def calculate_modular_decomposition_without_factor(g: Graph, md_g: ModularDecomposition) -> Graph:
-    if _check_modular_decomposition_length(g, md_g):  # Implies order of MD of G is not less than order of G
-        return g
-    return modules_to_graph(md_g)
+def calculate_modular_decomposition_without_factor(g: Graph, md_g: ModularDecomposition) -> (Graph, [[Vertex]]):
+    if _is_md_length_identity(g, md_g):  # Implies order of MD of G is not less than order of G
+        return g, []
+    return modules_to_graph_with_module_isomorphism(md_g)

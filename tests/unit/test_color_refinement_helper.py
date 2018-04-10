@@ -208,7 +208,7 @@ class ColorRefineHelper(unittest.TestCase):
         self.assertCountEqual(expected_labels, [{vertex.label for vertex in module} for module in modules])
 
         # Assert that redoing modular decomposition results in another simplification of the graph
-        butterfly_modular_decomposition_graph = modules_to_graph(modules)
+        butterfly_modular_decomposition_graph, _ = modules_to_graph(modules)
         modules = graph_to_modules(butterfly_modular_decomposition_graph)
         expected_labels = [{"0"}, {"2+3", "1+4"}]
         self.assertCountEqual(expected_labels, [{vertex.label for vertex in module} for module in modules])
@@ -217,44 +217,44 @@ class ColorRefineHelper(unittest.TestCase):
         tests.set_up_test_graphs()
 
         modules = graph_to_modules(tests.non_trivial_graph)
-        graph = modules_to_graph(modules)
+        graph, _ = modules_to_graph(modules)
         labels = [vertex.label for vertex in graph.vertices]
         expected_labels = ["0", "1", "2+4", "3"]
         self.assertTrue(set(labels) == set(expected_labels))
 
         modules = graph_to_modules(tests.modular_decomposition_graph)
-        graph = modules_to_graph(modules)
+        graph, _ = modules_to_graph(modules)
         labels = [vertex.label for vertex in graph.vertices]
         expected_labels = ["0+1+4", "2+3", "5+6"]
         self.assertTrue(set(labels) == set(expected_labels))
 
         modules = graph_to_modules(tests.butterfly)
-        graph = modules_to_graph(modules)
+        graph, _ = modules_to_graph(modules)
         labels = [vertex.label for vertex in graph.vertices]
         expected_labels = ["0", "1+4", "2+3"]
         self.assertTrue(set(labels) == set(expected_labels))
 
         modules2 = graph_to_modules(graph)
-        graph2 = modules_to_graph(modules2)
+        graph2, _ = modules_to_graph(modules2)
         labels = [vertex.label for vertex in graph2.vertices]
         expected_labels = ["0", "1+4+2+3"]
         self.assertTrue(set(labels) == set(expected_labels))
 
         modules3 = graph_to_modules(graph2)
-        graph3 = modules_to_graph(modules3)
+        graph3, _ = modules_to_graph(modules3)
         labels = [vertex.label for vertex in graph3.vertices]
         expected_labels = ["0+1+4+2+3"]
         self.assertTrue(set(labels) == set(expected_labels))
 
         modules4 = graph_to_modules(graph3)
-        graph4 = modules_to_graph(modules4)
+        graph4, _ = modules_to_graph(modules4)
         labels = [vertex.label for vertex in graph4.vertices]
         expected_labels = ["0+1+4+2+3"]
         self.assertTrue(set(labels) == set(expected_labels))
 
         g = tools.create_graph_helper([[1, 2], [1, 3], [2, 3]])
         modules_triangle = graph_to_modules(g)
-        graph = modules_to_graph(modules_triangle)
+        graph, _ = modules_to_graph(modules_triangle)
         labels = [vertex.label for vertex in graph.vertices]
         expected_labels = ["1+2+3"]
         self.assertTrue(set(labels) == set(expected_labels))
