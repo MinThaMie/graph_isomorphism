@@ -229,9 +229,11 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
         return False
     else:
         is_potential_isomorph, g, h, factor, md_iso_groups_g, md_iso_groups_h = modular_decomposition(g, h)
+        print(f'MD factor = {factor}')
         if is_potential_isomorph:
             if preprocessing.is_tree(g):
                 if preprocessing.is_tree(h):
+                    print('G and H are trees')
                     return tree_isomorphism(g, h)
                 else:
                     return False
@@ -241,6 +243,7 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
                 for i in range(len(md_iso_groups_g_h)):
                     coloring.add(md_iso_groups_g_h[i])
 
+                print('Doing regular fast color refinement')
                 return get_number_isomorphisms(g, h, coloring, False) > 0
         else:
             return False
