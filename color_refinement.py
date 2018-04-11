@@ -235,6 +235,8 @@ def is_isomorphisms(g: Graph, h: Graph) -> bool:
                     return tree_isomorphism(g, h)
                 else:
                     return False
+            elif preprocessing.is_tree(h):
+                return False
             else:
                 md_iso_groups_g_h = [group_g + group_h for group_g, group_h in zip(md_iso_groups_g, md_iso_groups_h)]
                 coloring = initialize_coloring(g + h)
