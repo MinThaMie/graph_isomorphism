@@ -12,8 +12,10 @@ GRAPHS = 'graphs'
 BRANCHING = os.path.join(GRAPHS, 'branching')
 COLORREF = os.path.join(GRAPHS, 'colorref')
 TREEPATHS = os.path.join(GRAPHS, 'treepaths')
+D_DAY = os.path.join(GRAPHS, 'd_day')
+BASIC = os.path.join(D_DAY, 'basic/')
 
-FILE = os.path.join(BRANCHING, 'trees36.grl')
+FILE = os.path.join(D_DAY, 'comp1.gr')
 
 
 def main():
@@ -29,10 +31,12 @@ def find_graphs() -> List[str]:
     Find all graph files on a given path
     :return: List of strings representing the paths to graph files
     """
-    branching_graphs = [BRANCHING + file for file in os.listdir(BRANCHING)]
-    colorref_graphs = [COLORREF + file for file in os.listdir(COLORREF)]
-    treepath_graphs = [TREEPATHS + file for file in os.listdir(TREEPATHS)]
-    return branching_graphs + colorref_graphs + treepath_graphs
+    # branching_graphs = [BRANCHING + file for file in os.listdir(BRANCHING)]
+    # colorref_graphs = [COLORREF + file for file in os.listdir(COLORREF)]
+    # treepath_graphs = [TREEPATHS + file for file in os.listdir(TREEPATHS)]
+    # return branching_graphs + colorref_graphs + treepath_graphs
+    basic_graphs = [BASIC + file for file in os.listdir(BASIC)]
+    return basic_graphs
 
 
 def process_graph_files(graph_files: List[str]):
@@ -42,6 +46,7 @@ def process_graph_files(graph_files: List[str]):
     """
 
     for file in graph_files:
+        print(file)
         graphs = get_graphs_from_file(file)
         isomorphs, iso_time, automorphs, auto_time = process_graphs(graphs)
         result_string = stringify_results(file, isomorphs, iso_time, automorphs, auto_time)
@@ -192,4 +197,7 @@ def output_result(result: str):
 
 
 if __name__ == "__main__":
+    start = time.time()
     main()
+    end = time.time()
+    print('Total time:', end - start)
