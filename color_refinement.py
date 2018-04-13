@@ -16,7 +16,7 @@ from tree_refinement import tree_isomorphism
 IsomorphismMapping = Dict[int, Set[int]]
 
 
-def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True) -> int:
+def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True, new_color: int = None) -> int:
     """
     Returns the number of isomorphisms of `Graph` g and h for a given coloring
 
@@ -32,7 +32,7 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True
     :return: the number of isomorphisms of graph g and h for a given coloring
     """
 
-    new_coloring = fast_color_refine(coloring)
+    new_coloring = fast_color_refine(coloring, new_color)
     coloring_status = new_coloring.status(g, h)
 
     if coloring_status == "Unbalanced":
@@ -45,8 +45,9 @@ def count_isomorphism(g: Graph, h: Graph, coloring: Coloring, count: bool = True
     vertices_in_h = (v for v in vertices if v.in_graph(h))
     number_isomorphisms = 0
     for second_vertex in vertices_in_h:
+        new_color = new_coloring.next_color()
         adapted_coloring = create_new_color_class(new_coloring, first_vertex, second_vertex)
-        number_isomorphisms += count_isomorphism(g, h, adapted_coloring, count)
+        number_isomorphisms += count_isomorphism(g, h, adapted_coloring, count, new_color=new_color)
 
         if not count and number_isomorphisms > 0:
             return number_isomorphisms
@@ -97,7 +98,7 @@ def color_refine(coloring: Coloring) -> Coloring:
     return coloring
 
 
-def fast_color_refine(coloring: Coloring) -> Coloring:
+def fast_color_refine(coloring: Coloring, new_color: int = None) -> Coloring:
     """
     The fast color refine algorithm refines a given coloring by looking at the amount of neighbours of a given color.
     A queue is used to keep track of colors for which we still have to check if they lead to refinements.
@@ -110,11 +111,14 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
     : param coloring: Given coloring which needs refinement
     : return: The refined coloring of the graph
     """
-
     # Push the first color into the queue
     queue = DoubleLinkedList()
-    for c in sorted(coloring.colors):
-        queue.append(c)
+    if new_color:
+        queue.append(new_color)
+    else:
+        for c in sorted(coloring.colors):
+            queue.append(c)
+        debug('Queue', queue)
     debug('Queue', queue)
 
     while len(queue) > 0:
@@ -129,6 +133,11 @@ def fast_color_refine(coloring: Coloring) -> Coloring:
 
             # Partition class 'c' into cells according to #neighbours of current_color
             vertices_of_c = list(neighbour_map.keys())
+
+            nr_neighbours = neighbour_map.values()
+            if len(set(nr_neighbours)) == 1:
+                continue
+
             debug('Vertices of color', color_class, vertices_of_c)
             debug('Neighbours', neighbour_map)
 
@@ -206,7 +215,7 @@ def get_number_isomorphisms(g: Graph, h: Graph, coloring: Coloring, count: bool,
     :param count: whether the number of isomorphisms
     :return: The number of isomorphisms of graph g and h
     """
-    return modular_decomposition_factor * count_isomorphism(g, h, coloring, count)
+    return modular_decomposition_factor * count_isomorphism(g, h, coloring, count=count)
 
 
 def is_isomorphisms(g: Graph, h: Graph) -> bool:
@@ -283,7 +292,7 @@ def get_number_automorphisms(g: Graph) -> int:
         v.set_id(idx)
 
     coloring = initialize_coloring(g + copy_g)
-    for i in range(len(md_iso_groups_g_h)):
+    for i in range(len(md_iso_groups_g_h)):  # gaat nu mis als je alleen maar components hebt...
         coloring.add(md_iso_groups_g_h[i])
     lastvisited = [coloring]
     generators = []
@@ -292,7 +301,7 @@ def get_number_automorphisms(g: Graph) -> int:
 
 
 def compute_generators(g: Graph, h: Graph, start_coloring: Coloring, generators: list() = [],
-                       lastvisited: list() = list()) -> (list(), list()):
+                       lastvisited: list() = list(), new_color: int = None)-> (list(), list()):
     """
     Computes a set of generators of the mapping from graph g to graph h
 
@@ -312,7 +321,7 @@ def compute_generators(g: Graph, h: Graph, start_coloring: Coloring, generators:
     """
     # Do colorrefinement -> returns stable or unbalanced coloring
     is_previous_node_trivial = start_coloring in lastvisited
-    new_coloring = fast_color_refine(start_coloring)
+    new_coloring = fast_color_refine(start_coloring, new_color=new_color)
     coloring_status = new_coloring.status(g, h)
     # # No automorphism with given coloring
     if coloring_status == "Unbalanced":
@@ -339,27 +348,31 @@ def compute_generators(g: Graph, h: Graph, start_coloring: Coloring, generators:
         if not is_previous_node_trivial:
             if trivial_mapping is not None:
                 # lastvisited[coloring] = is_trivial
+                new_color_nr = new_coloring.next_color()
                 trivial_coloring = create_new_color_class(new_coloring, chosen_vertex_g, trivial_mapping)
                 generators, lastvisited = compute_generators(g, h, trivial_coloring, generators=generators,
-                                                             lastvisited=lastvisited)
+                                                             lastvisited=lastvisited, new_color=new_color_nr)
             else:
                 # lastvisited[coloring] = is_trivial
+                new_color_nr = new_coloring.next_color()
                 adapted_coloring = create_new_color_class(new_coloring, chosen_vertex_g, non_trivial_mapping[0])
                 generators, lastvisited = compute_generators(g, h, adapted_coloring, generators=generators,
-                                                             lastvisited=lastvisited)
+                                                             lastvisited=lastvisited, new_color=new_color_nr)
         # if coloring is trivial: do all branches
         else:
             if trivial_mapping is not None:
                 # lastvisited[coloring] = True
+                new_color_nr = new_coloring.next_color()
                 trivial_coloring = create_new_color_class(new_coloring, chosen_vertex_g, trivial_mapping)
                 lastvisited.append(trivial_coloring)
                 generators, lastvisited = compute_generators(g, h, trivial_coloring, generators=generators,
-                                                             lastvisited=lastvisited)
+                                                             lastvisited=lastvisited, new_color=new_color_nr)
                 # lastvisited[coloring] = False
             for second_vertex in non_trivial_mapping:
+                new_color_nr = new_coloring.next_color()
                 adapted_coloring = create_new_color_class(new_coloring, chosen_vertex_g, second_vertex)
                 generators, lastvisited = compute_generators(g, h, adapted_coloring, generators=generators,
-                                                             lastvisited=lastvisited)
+                                                             lastvisited=lastvisited, new_color=new_color_nr)
     return generators, lastvisited
 
 
