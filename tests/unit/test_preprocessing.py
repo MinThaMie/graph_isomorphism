@@ -3,7 +3,7 @@ import unittest
 import tests
 
 from color_refinement_helper import graph_to_modules
-from disconnected_refinement import graph_component_isomorphic
+from color_refinement import graph_component_iso
 from preprocessing import is_similar_modular_decomposition, modular_decomposition_factor, \
     calculate_modular_decomposition_and_factor, remove_loners, checks, check_complement, \
     get_modular_decomposition_sizes, find_components, construct_graph_from_components
@@ -89,17 +89,14 @@ class TestPreprocessing(unittest.TestCase):
         is_connected, components3 = find_components(tests.v8e7loop_unconnected2)
         graph3 = construct_graph_from_components(components3)
 
-        self.assertTrue(graph_component_isomorphic(graph3, graph1))
+        is_iso, _ = graph_component_iso(graph3, graph1)
+        self.assertTrue(is_iso)
 
         is_connected, components2 = find_components(tests.v5e4loop_unconnected)
         graph2 = construct_graph_from_components(components2)
 
-        self.assertFalse(graph_component_isomorphic(graph1, graph2))
-
-
-if __name__ == '__main__':
-    unittest.main()
-
+        is_iso, _ = graph_component_iso(graph1, graph2)
+        self.assertFalse(is_iso)
 
     def test_get_modular_decomposition_sizes(self):
         md = [self._prime_module()]
@@ -113,7 +110,6 @@ if __name__ == '__main__':
 
         md += [self._triplet_module()]
         self.assertCountEqual([1, 1, 2, 3], list(get_modular_decomposition_sizes(md)))
-
 
     def test_check_modular_decomposition(self):
         # Assert that the same singleton modular decompositions (MDs) may be isomorphic
@@ -146,7 +142,6 @@ if __name__ == '__main__':
         self.assertFalse(is_similar_modular_decomposition(md0, md1))
         self.assertFalse(is_similar_modular_decomposition(md1, md0))
 
-
     def test_modular_decomposition_factor(self):
         md = [self._prime_module()]
         self.assertEqual(1, modular_decomposition_factor(md))
@@ -162,7 +157,6 @@ if __name__ == '__main__':
 
         md += [self._triplet_module()]
         self.assertEqual(24, modular_decomposition_factor(md))
-
 
     def test_calculate_modular_decomposition_and_factor(self):
         graph = Graph(directed=False)
@@ -181,6 +175,27 @@ if __name__ == '__main__':
         md_graph = graph_to_modules(graph)
         _, factor, _ = calculate_modular_decomposition_and_factor(graph, md_graph)
         self.assertEqual(24, factor)
+
+    def test_disconnected_iso(self):
+        g0 = create_graph_helper([[1, 2]])
+        h0 = g0.deepcopy()
+        g1 = create_graph_helper([[1, 2], [2, 3]])
+        h1 = g1.deepcopy()
+        g2 = create_graph_helper([[1, 2], [1, 3], [2, 3]])
+        h2 = g2.deepcopy()
+        g3 = create_graph_helper([[1, 2], [1, 3], [2, 3], [3, 4]])
+        h3 = g3.deepcopy()
+        is_iso, _ = graph_component_iso([g0, g1], [h0, h1, h2])
+        self.assertFalse(is_iso)
+        is_iso, _ = graph_component_iso([g0, g1], [h0, h1])
+        self.assertTrue(is_iso)
+        is_iso, _ = graph_component_iso([g0, g1, g2], [h0, h1, h2])
+        self.assertTrue(is_iso)
+        is_iso, _ = graph_component_iso([g0, g1, g3], [h0, h1, h2])
+        self.assertFalse(is_iso)
+        is_iso, _ = graph_component_iso([g0, g0, g1], [h0, h1, h1])
+        self.assertFalse(is_iso)
+
 
 if __name__ == '__main__':
     unittest.main()

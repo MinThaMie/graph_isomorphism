@@ -159,6 +159,8 @@ class Coloring:
         maybe = False
         for color in self.colors:
             vertices = self.get(color)
+            if len(vertices) == 0:
+                continue
             if len(vertices) % 2 == 1:
                 return "Unbalanced"
             else:

@@ -1,9 +1,9 @@
 import os
 import time
 from typing import List, Tuple
+import graph_io
 
-from color_refinement import get_number_automorphisms, is_isomorphisms
-from disconnected_refinement import graph_component_isomorphic
+from color_refinement import get_number_automorphisms, is_isomorphisms, graph_component_iso
 from graph import Graph
 from graph_io import load_graph
 from preprocessing import checks, check_complement, find_components, construct_graph_from_components
@@ -100,8 +100,9 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
                 is_connected_g, components_g = find_components(g)
                 is_connected_h, components_h = find_components(h)
                 if not is_connected_g and not is_connected_h:
-                    if graph_component_isomorphic(construct_graph_from_components(components_g),
-                                                  construct_graph_from_components(components_h)):
+                    graph_component_isomorphic, mapping = graph_component_iso(
+                        construct_graph_from_components(components_g), construct_graph_from_components(components_h))
+                    if graph_component_isomorphic:
                         end_time = time.time()
                         isomorphs[j].append(graphs[i])
                         added = True

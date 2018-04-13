@@ -282,6 +282,22 @@ def get_number_automorphisms(g: Graph) -> int:
     :param g: graph for which to determine the number of automorphisms.
     :return: The number of automorphisms of graph g
     """
+
+    # Use disconnected components
+    copy_g = g.deepcopy()
+    is_connected_g, components_g = preprocessing.find_components(g)
+    is_connected_copy_g, components_copy_g = preprocessing.find_components(copy_g)
+    if not is_connected_g:
+        print('graph has disconnected components')
+        _, mapping = graph_component_iso(preprocessing.construct_graph_from_components(components_g),
+                                         preprocessing.construct_graph_from_components(components_copy_g))
+        result = 1
+        for key in mapping.keys():
+            component_g, component_h = mapping[key]
+            result = result * get_number_automorphisms(component_g[0])
+        return result
+
+    # Find modules
     copy_g = g.deepcopy()
     _, g, copy_g, factor, md_iso_groups_g, md_iso_groups_h = modular_decomposition(g, copy_g)
     md_iso_groups_g_h = [group_g + group_h for group_g, group_h in zip(md_iso_groups_g, md_iso_groups_h)]
@@ -422,3 +438,47 @@ def process(graphs: List[Graph]) -> IsomorphismMapping:
                 debug()
 
     return isomorphism_index_mapping
+
+
+def graph_component_iso(g: [Graph], h: [Graph]) -> (bool, dict()):
+    def _get_key(d: dict(), key: int) -> int:
+        for k in d.keys():
+            list_g, list_h = d[k]
+            if key in list_g:
+                return k
+            if key in list_h:
+                return k
+        return None
+
+    if len(g) != len(h):
+        return False, {}
+    subgraph_mapping = dict()
+    for i in range(len(g)):
+        g_subgraph = g[i]
+        key_subgraph = _get_key(subgraph_mapping, i)
+        if key_subgraph is None:
+            subgraph_mapping[i] = ([i], [])
+            key_subgraph = i
+        for j in range(len(h)):
+            h_subgraph = h[j]
+            if preprocessing.checks(g_subgraph, h_subgraph):
+                if is_isomorphisms(g_subgraph, h_subgraph):
+                    list_gs, list_hs = subgraph_mapping[key_subgraph]
+                    if i in list_gs:
+                        list_hs.append(j)
+                    elif j in list_hs:
+                        list_gs.append(i)
+    mapping = dict()
+    for key in subgraph_mapping.keys():
+        (gs, hs) = subgraph_mapping[key]
+        if len(gs) is not len(hs):
+            return False, {}
+        gs_graph = []
+        hs_graph = []
+        for sub_g in gs:
+            gs_graph.append(g[sub_g])
+        for sub_h in hs:
+            hs_graph.append(h[sub_h])
+        mapping[key] = (gs_graph, hs_graph)
+
+    return True, mapping

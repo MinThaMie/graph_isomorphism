@@ -65,6 +65,8 @@ class Permutation:
         :param coloring: Coloring to create permutation from
         """
         for _, vertices in coloring.items():
+            if len(vertices) == 0:
+                continue
             vertex1, vertex2 = vertices
             if vertex1.in_graph(g):
                 self.P[vertex1.id] = vertex2.id
