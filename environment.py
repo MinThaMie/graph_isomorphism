@@ -15,7 +15,9 @@ TREEPATHS = os.path.join(GRAPHS, 'treepaths')
 D_DAY = os.path.join(GRAPHS, 'd_day')
 BASIC = os.path.join(D_DAY, 'basic/')
 
-FILE = os.path.join(D_DAY, 'comp1.gr')
+FILENAME = 'bonusGI2'
+FILE = os.path.join(D_DAY, FILENAME + '.grl')
+
 
 
 def main():
@@ -48,6 +50,7 @@ def process_graph_files(graph_files: List[str]):
     for file in graph_files:
         print(file)
         graphs = get_graphs_from_file(file)
+        # write_graph_to_dot(graphs)
         isomorphs, iso_time, automorphs, auto_time = process_graphs(graphs)
         result_string = stringify_results(file, isomorphs, iso_time, automorphs, auto_time)
         output_result(result_string)
@@ -57,6 +60,13 @@ def get_graphs_from_file(file: str) -> List[Graph]:
     with open(file) as f:
         graphs = load_graph(f, read_list=True)
     return graphs[0]
+
+
+def write_graph_to_dot(graphs: List[Graph]):
+    for i in range(len(graphs)):
+        graph = graphs[i]
+        with open(os.path.join(os.getcwd(), FILENAME + '_' + str(i) + '.dot'), 'w') as f:
+            graph_io.write_dot(graph, f, graph.directed)
 
 
 def process_graphs(graphs: List[Graph]) -> Tuple[List[List[Graph]], float, List[int], float]:
@@ -100,6 +110,7 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
                 is_connected_g, components_g = find_components(g)
                 is_connected_h, components_h = find_components(h)
                 if not is_connected_g and not is_connected_h:
+                    print(str(i), 'and', str(j), 'are both not connected')
                     graph_component_isomorphic, mapping = graph_component_iso(
                         construct_graph_from_components(components_g), construct_graph_from_components(components_h))
                     if graph_component_isomorphic:
@@ -110,6 +121,7 @@ def calculate_isomorphisms(graphs: List[Graph]) -> List[List[Graph]]:
                             end_time - start_time) + ")")
                         break
                 if is_connected_g and is_connected_h:
+                    print(str(i), 'and', str(j), 'are both connected')
                     if is_isomorphisms(g, h):
                         end_time = time.time()
                         isomorphs[j].append(graphs[i])

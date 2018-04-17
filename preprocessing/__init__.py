@@ -78,7 +78,7 @@ def check_complement(g: Graph, h: Graph) -> (Graph, Graph):
 
     amount_of_vertices = g.order
     if g.size > (amount_of_vertices * (amount_of_vertices - 1)) / 4:
-        debug("Uses complements")
+        print("Uses complements")
         return g.complement(), h.complement()
     else:
         return g, h
@@ -225,7 +225,7 @@ def calculate_modular_decomposition_and_factor(g: Graph, md_g: ModularDecomposit
         return g, 1, []
 
     factor = modular_decomposition_factor(md_g)
-    debug(f'Using modular decomposition with factor = {factor}')
+    print(f'Using modular decomposition with factor = {factor}')
 
     g_md, md_iso_groups = modules_to_graph_with_module_isomorphism(md_g)
     return g_md, factor, md_iso_groups

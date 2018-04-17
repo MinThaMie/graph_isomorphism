@@ -88,6 +88,8 @@ class Coloring:
             raise KeyError('Vertex ' + str(vertex) + ' not found in coloring, use set() instead')
         else:
             self._dict[old_color].remove(vertex)
+            # if len(self._dict[old_color]) == 0:
+            #     self._dict.pop(old_color)
             self._vertex_dict.pop(vertex)
             self.set(vertex, new_color)
 
